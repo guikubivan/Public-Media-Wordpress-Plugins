@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nprml version="0.93">
+  <list>
+    <title>NPR: News</title>
+    <teaser><![CDATA[NPR news, audio, and news podcasts. Coverage of breaking stories, national and world news, politics, business, science, technology, and extended coverage of major national and world events.]]></teaser>
+    <miniTeaser><![CDATA[Breaking news from acclaimed programs "Morning Edition" and "All Things Considered."]]></miniTeaser>
+    <link type="api">http://api.npr.org/query/query?id=1001&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+    <link type="html">http://www.npr.org/templates/story/story.php?storyId=1001&amp;ft=3&amp;f=1001</link>
+    <story id="123107726">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123107726&amp;ft=3&amp;f=1001</link>
+      <link type="api">http://api.npr.org/query?id=123107726&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Geek's Dream Lab Could Create Jobs In Michigan</title>
+    </story>
+    <story id="123221579">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123221579&amp;ft=3&amp;f=1001</link>
+      <link type="api">http://api.npr.org/query?id=123221579&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Iraq's Truckers In It For The Long, Dangerous Haul</title>
+    </story>
+    <story id="123229085">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123229085&amp;ft=3&amp;f=1001</link>
+      <link type="api">http://api.npr.org/query?id=123229085&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Obama Walks A Line With Budget Priorities, Deficit</title>
+    </story>
+    <story id="123229089">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123229089&amp;ft=3&amp;f=1001</link>
+      <link type="api">http://api.npr.org/query?id=123229089&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Deficit Expert: 'We Shouldn't Give Up Balancing The Budget'</title>
+    </story>
+    <story id="123111882">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123111882&amp;ft=3&amp;f=1001</link>
+      <link type="api">http://api.npr.org/query?id=123111882&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Storms In Space Disrupt Travel On Earth</title>
+    </story>
+  </list>
+</nprml>

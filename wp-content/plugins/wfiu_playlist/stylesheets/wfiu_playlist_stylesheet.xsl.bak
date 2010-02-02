@@ -1,0 +1,56 @@
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:output method="html"/>
+
+<xsl:template match="/post">
+<h3 class="sidebar_header">Playlist</h3>
+  <div>
+
+
+	<xsl:for-each select="item">
+
+	
+	<div style="border: 1px solid gray;">
+	
+		<xsl:if test="title">
+			Title: <xsl:value-of select="title"/> <br />
+		</xsl:if>
+	
+		<xsl:if test="artist">
+			Artist: <xsl:value-of select="artist"/> <br />
+		</xsl:if>
+
+		<xsl:if test="composer">
+			Composer: <xsl:value-of select="composer"/> <br />
+		</xsl:if>
+
+		<xsl:if test="album">
+			Album: <xsl:value-of select="album"/> <br />
+		</xsl:if>
+		<xsl:if test="label">
+			Label: <xsl:value-of select="label"/> <br />
+		</xsl:if>
+
+		<xsl:if test="asin">
+			ASIN: <xsl:value-of select="asin"/> <br />
+		</xsl:if>
+
+		<xsl:if test="release_year">
+			Year: <xsl:value-of select="release_year"/> <br />
+		</xsl:if>
+		<xsl:if test="notes">
+			Notes: <xsl:value-of select="notes"/> <br />
+		</xsl:if>
+		<br/>
+		
+	</div>
+		
+		
+	</xsl:for-each>
+
+  </div>
+
+</xsl:template>
+
+
+</xsl:stylesheet>

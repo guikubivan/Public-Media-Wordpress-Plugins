@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nprml version="0.93">
+  <list>
+    <title>NPR: Arts &amp; Life</title>
+    <teaser><![CDATA[Art and entertainment commentary plus interviews, book reviews, movie reviews, music reviews, comedy, and visual art. Subscribe to podcasts and follow trends in music, painting, art, architecture, photography, and design.]]></teaser>
+    <miniTeaser/>
+    <link type="api">http://api.npr.org/query/query?id=1008&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+    <link type="html">http://www.npr.org/templates/story/story.php?storyId=1008&amp;ft=3&amp;f=1008</link>
+    <story id="123209339">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123209339&amp;ft=3&amp;f=1008</link>
+      <link type="api">http://api.npr.org/query?id=123209339&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>'The Quants': It Pays To Know Your Wall Street Math</title>
+    </story>
+    <story id="122805624">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=122805624&amp;ft=3&amp;f=1008</link>
+      <link type="api">http://api.npr.org/query?id=122805624&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>'Get Me Out': Making Babies Through The Ages</title>
+    </story>
+    <story id="123139535">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123139535&amp;ft=3&amp;f=1008</link>
+      <link type="api">http://api.npr.org/query?id=123139535&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>T.C. Boyle: Stories Of Nature's Violence And Wonder</title>
+    </story>
+    <story id="123137188">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123137188&amp;ft=3&amp;f=1008</link>
+      <link type="api">http://api.npr.org/query?id=123137188&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Ahmad Zahir: The Voice Of The Golden Years</title>
+    </story>
+    <story id="123187652">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123187652&amp;ft=3&amp;f=1008</link>
+      <link type="api">http://api.npr.org/query?id=123187652&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Alice Eve Cohen On 'What I Thought I Knew'</title>
+    </story>
+  </list>
+</nprml>

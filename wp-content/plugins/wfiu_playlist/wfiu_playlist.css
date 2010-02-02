@@ -1,0 +1,30 @@
+.wfiuPlaylist_extra {
+	display: none;
+	
+}
+
+.wfiuItemHead {
+	
+
+}
+
+.wfiuPlaylistItem{
+	padding:5px;
+	margin-top:5px;
+	min-height: 20px;
+}
+
+#podPressstuff a.dbx-toggle-open, #podPressstuff a.dbx-toggle-open:visited {
+	height: 22px;
+	width: 22px;
+	background-position: 0 -28px;
+}
+
+
+* html #podPress_mp3info .dbx-toggle-open, * html #podPress_mp3info .dbx-toggle-open {
+	margin-right: 8px;
+}
+
+img.wfiuPlaylist_imgHeight{
+	height: 12px;
+}

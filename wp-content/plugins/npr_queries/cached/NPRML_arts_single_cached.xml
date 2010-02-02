@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nprml version="0.93">
+  <list>
+    <title>NPR: Arts &amp; Life</title>
+    <teaser><![CDATA[Art and entertainment commentary plus interviews, book reviews, movie reviews, music reviews, comedy, and visual art. Subscribe to podcasts and follow trends in music, painting, art, architecture, photography, and design.]]></teaser>
+    <miniTeaser/>
+    <link type="api">http://api.npr.org/query/query?id=1008&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+    <link type="html">http://www.npr.org/templates/story/story.php?storyId=1008&amp;ft=3&amp;f=1008</link>
+    <story id="123229360">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123229360&amp;ft=3&amp;f=1008</link>
+      <link type="api">http://api.npr.org/query?id=123229360&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Monsters Inc.? The Lady Gaga And Madonna Parade</title>
+      <teaser><![CDATA[Lady Gaga draws easy comparisons to Madonna, but if our new queen of pop, sex and art wants to endure the test of time, she'll need more than luck and mediocrity &mdash; she'll need a lasting blueprint for fame. Essayist Elizabeth Scalia explains.]]></teaser>
+    </story>
+  </list>
+</nprml>

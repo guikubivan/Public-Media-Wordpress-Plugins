@@ -1,0 +1,129 @@
+#new_slideshow_button {
+	margin-bottom:10px;
+
+}
+
+#wpss_parent_div{
+	background-color: #A79C8E;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 5px;
+}
+
+.wpss_slideshow_container{
+	background-color: #333333;
+	color:#FFFFFF;
+	/*cursor:crosshair;	*/
+	padding-bottom: 10px;
+	width: auto;/*width: 670px;*/
+}
+
+.wpss_photo_container{
+	background-color: #54597B;
+
+	cursor:move;
+	margin: 15px;
+	padding: 5px;
+	width: auto;
+}
+
+
+.wpss_cover_highlight {
+	background-color: #612323;
+	color: #E15A29;
+	border: solid 3px #8D6523;/*#5B738F;*/
+	cursor: pointer;
+}
+
+.wpss_photo_thumb{
+	border-color:#000000;
+	border: solid 2px;
+	cursor: pointer;
+}
+img.wpss_cover_highlight, img.wpss_photo_thumb{
+
+	width: 130px;
+	height: 130px;
+}
+
+
+.wpss_slideshow_container table tr td{
+	text-align: left;
+}
+
+.centervertical{
+	vertical-align: middle;
+}
+
+.map_icon {
+	height: 40px;
+	margin-left: 2px;
+	cursor:pointer;
+}
+
+.topalign{
+	vertical-align:top;
+	
+}
+.highlight {
+	background-color: #E56F29;
+	color: #000000;
+	padding:2px;
+
+}
+
+
+
+
+span.wpss_required{
+	padding-left:4px;
+	padding-right:4px;
+	border: 1px solid #000000;
+}
+
+.wpss_required {
+	background-color: #E4C27A;
+}
+
+.organizer_item_heading {
+	text-align:center;
+	width:100%;
+	background-color:#000000;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+.organizer_item_heading2 {
+	text-align:center;
+	width:100%;
+	color: #AAAAAA;
+	background-color:#C6C1C1;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+img.adjustIcon{
+	height: 12px;
+}
+
+.missing_photo_transparency {
+	padding-top:	50px;
+	height:		160px;
+	width:		430px;
+	position:	absolute;
+	margin:		0px;
+	z-index:	1;
+	text-align:	center;
+	opacity:	0.85;
+	filter:		alpha(opacity=85);
+	background-color:#000000;
+	cursor:default;
+	color:		#FFFFFF;
+}
+
+.sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+
+#sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+
+
+/*----------------------------*/

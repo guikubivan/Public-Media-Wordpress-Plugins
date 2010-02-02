@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nprml version="0.93">
+  <list>
+    <title>NPR: News</title>
+    <teaser><![CDATA[NPR news, audio, and news podcasts. Coverage of breaking stories, national and world news, politics, business, science, technology, and extended coverage of major national and world events.]]></teaser>
+    <miniTeaser><![CDATA[Breaking news from acclaimed programs "Morning Edition" and "All Things Considered."]]></miniTeaser>
+    <link type="api">http://api.npr.org/query/query?id=1001&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+    <link type="html">http://www.npr.org/templates/story/story.php?storyId=1001&amp;ft=3&amp;f=1001</link>
+    <story id="123223248">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=123223248&amp;ft=3&amp;f=1001</link>
+      <link type="api">http://api.npr.org/query?id=123223248&amp;apiKey=MDAyNTE4NjgzMDEyMjkxMTI0MDVmOGMwMQ001</link>
+      <title>Karzai's Brother Tied To Corrupt Afghan Land Deals</title>
+      <teaser><![CDATA[In Afghanistan, the theft of public and private land is a growing form of corruption. President Hamid Karzai has vowed to tackle the vexing issue. But one obstacle to his vision is his own brother, who is allegedly at the center of land grabs in Kandahar province.]]></teaser>
+    </story>
+  </list>
+</nprml>

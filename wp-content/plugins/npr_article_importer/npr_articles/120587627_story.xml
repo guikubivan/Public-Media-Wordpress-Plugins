@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nprml version="0.93">
+  <list>
+    <title>NPR: Stories from NPR</title>
+    <teaser><![CDATA[Assorted stories from NPR]]></teaser>
+    <miniTeaser><![CDATA[Custom NPR News Feed API.  Visit http://www.npr.org/templates/apidoc/index.php for more information.]]></miniTeaser>
+    <link type="api">http://api.npr.org/query/query?id=120587627&amp;apiKey=MDAyMjcyMzExMDEyMjYzNDYzMDI0MDk3Yw001</link>
+    <link type="html">http://www.npr.org/templates/story/story.php?storyId=120587627&amp;ft=3&amp;f=120587627</link>
+    <story id="120587627">
+      <link type="html">http://www.npr.org/templates/story/story.php?storyId=120587627&amp;ft=3&amp;f=120587627</link>
+      <link type="api">http://api.npr.org/query?id=120587627&amp;apiKey=MDAyMjcyMzExMDEyMjYzNDYzMDI0MDk3Yw001</link>
+      <title>Pelosi: Abortion Issue Won't Sink Health Care Bill</title>
+      <teaser><![CDATA[In an NPR interview, the House speaker predicted she can corral enough votes from moderate Democrats to guarantee final passage of health care legislation &mdash; even if it contains the less-restrictive rules on abortion contained in the Senate version of the bill.]]></teaser>
+      <audio id="120604825" type="primary">
+        <title>House Speaker Nancy Pelosi talks to Renee Montagne about Afghanistan and health care.</title>
+        <duration>0</duration>
+        <format>
+          <mp3 type="m3u">http://api.npr.org/m3u/1120604825-fc0c31.m3u?orgId=1&amp;ft=3&amp;f=120587627</mp3>
+          <wm>http://www.npr.org/templates/dmg/dmg_wmref_em.php?id=120604825&amp;type=1&amp;mtype=WM&amp;orgId=1&amp;ft=3&amp;f=120587627</wm>
+          <rm>http://www.npr.org/templates/dmg/dmg_rpm.rpm?id=120604825&amp;type=1&amp;mtype=RM&amp;orgId=1&amp;ft=3&amp;f=120587627</rm>
+        </format>
+        <rightsHolder/>
+        <permissions>
+          <download allow="false"/>
+          <stream allow="true"/>
+          <embed allow="true"/>
+        </permissions>
+      </audio>
+      <byline id="120587630">
+        <name personId="101266638">Liz Halloran </name>
+        <link type="html">http://www.npr.org/templates/story/story.php?storyId=101266638&amp;ft=3&amp;f=120587627</link>
+        <link type="api">http://api.npr.org/query?id=101266638&amp;apiKey=MDAyMjcyMzExMDEyMjYzNDYzMDI0MDk3Yw001</link>
+      </byline>
+    </story>
+  </list>
+</nprml>

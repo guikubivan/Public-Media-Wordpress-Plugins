@@ -1,0 +1,6 @@
+application/x-httpd-php                         php5
+application/x-httpd-php-source                  phps
+application/x-httpd-php3                        php3
+application/x-httpd-php3-preprocessed           php3p
+application/x-httpd-php4                        php4
+
