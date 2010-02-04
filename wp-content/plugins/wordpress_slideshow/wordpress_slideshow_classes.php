@@ -1960,7 +1960,7 @@ jQuery(function($){
 		//jQuery(\"#media-item-$id\").find(\".submit\").hide();";
 			//}
 			$string .= "jQuery(\"#media-item-$id\").find(\".submit\").find(\"td.savesend\").find(\"input:first\").hide();
-	jQuery(\"#media-item-$id\").find(\".submit\").find(\"td.savesend\").prepend(jQuery(\"#insert_photo_span_$id\").html());
+				jQuery(\"#media-item-$id\").find(\".submit\").find(\"td.savesend\").prepend(jQuery(\"#insert_photo_span_$id\").html());
 
 
 
@@ -1981,7 +1981,7 @@ jQuery(function($){
 	}
 	$string .= "  });
 </script>";
-			$string .= "</td></tr>";
+			$string .= "</td></tr><tr><td></td></tr>";
 			$string .= $this->media_field('original_url', 'Original URL', $id, '100%', false);
 			$string .= $this->media_field('photo_credit', 'Photo credit', $id, '100%', true);
 			$string .= $this->media_field('geo_location', 'Geo location', $id, '180px');
