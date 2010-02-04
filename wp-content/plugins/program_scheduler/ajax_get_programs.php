@@ -1,6 +1,6 @@
 <?php
 if(!class_exists('ProgramSchedule')) {
-	require_once(dirname(__FILE__).'/../../../wp-load.php');
+	require_once(ABSPATH.'/wp-load.php');
 	require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/plugin_functions.php');
 	require_once(ABSPATH.PLUGINDIR.'/program_scheduler/program_scheduler_classes.php');	
 	if($_POST['action'] == 'action_send_programs'){
