@@ -8,11 +8,9 @@
 
 <xsl:template match="/slideshows/slideshow">
 
-
+<![CDATA[<div class="slideshow_wrapper"> ]]>
+<![CDATA[<h3 class='slideshow_title'>]]><xsl:value-of select="title"/><![CDATA[</h3>]]>
 	<![CDATA[<div class="slideshow"> ]]>
-	
-	<![CDATA[<h3>]]><xsl:value-of select="title"/><![CDATA[</h3>]]>
-	
 	
 	<!-- here goes the intro slide stuff -->
 	
@@ -25,14 +23,11 @@
 	
 
 			<![CDATA[<img alt="]]> <xsl:value-of select="alt"/> <![CDATA[" src="]]><xsl:value-of select="large_url"/><![CDATA[" />]]>
-			<![CDATA[<p class='photometa'>]]>
+			<![CDATA[<div class='photo_meta'>]]>
 				<xsl:if test="title">
 					<![CDATA[<span class="title">]]><xsl:value-of select="title"/><![CDATA[</span>]]>
 				</xsl:if>
-				<xsl:if test="photo_credit">
-					<![CDATA[<span class="credit">]]><xsl:value-of select="photo_credit"/><![CDATA[</span>]]>
-				</xsl:if>
-			<![CDATA[</p>]]>
+			<![CDATA[</div>]]>
 
 		<![CDATA[</div>]]>
 
@@ -45,12 +40,12 @@
 	<![CDATA[<ul id='thumb_list' class='jcarousel-skin-tango'> ]]>
 	<xsl:for-each select="photo">
 		<![CDATA[<li> ]]>
-			<![CDATA[<img style='width:150px;height:150px' onclick="viewpic(jQuery(this).parent().attr('jcarouselindex')-1);" alt="]]> <xsl:value-of select="title"/> <![CDATA[" src="]]><xsl:value-of select="thumb_url"/><![CDATA[" />]]>
+			<![CDATA[<img style='width:75px;height:75px;cursor:pointer;' onclick="viewpic(jQuery(this).parent().attr('jcarouselindex')-1);" alt="]]> <xsl:value-of select="title"/> <![CDATA[" src="]]><xsl:value-of select="thumb_url"/><![CDATA[" />]]>
 		<![CDATA[</li>]]>
 
 	</xsl:for-each>
 	<![CDATA[</ul>]]>
-
+<![CDATA[</div> ]]>
 <![CDATA[
 <script type='text/javascript'>
 jQuery.noConflict();
@@ -75,7 +70,9 @@ jQuery(document).ready(function(){
 
 
   jQuery('#thumb_list').jcarousel({
-    scroll:2 
+    scroll:2 ,
+    visible: 5
+
   });
 
   jQuery('.slideshow div:first').addClass('active');

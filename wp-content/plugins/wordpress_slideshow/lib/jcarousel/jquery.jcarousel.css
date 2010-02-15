@@ -1,5 +1,13 @@
 /**wpss styling**/
+.slideshow_wrapper {
+	text-align: center;
+	padding: 5px 0;
+	background: #000;
+	color: #FAF6BB;
+	margin: 10px 0;
+}
 div.slideshow {
+	padding: 5px 0 0 0;
 	height:540px;/*needs to be bigger than the photo size*/
 }
 
@@ -10,7 +18,7 @@ div.slideshow {
 
 
 .slideshow div.photoitem {
-	/*background-color:#000011;*/
+	background-color:#000;
 	left:0;
 	margin:auto;
 	opacity:0;
@@ -28,6 +36,35 @@ div.slideshow {
 }
 .slideshow div.photoitem img {
 	height: 480px;
+}
+.photo_credit {
+	float:right;
+	font-size:smaller;
+}
+
+.photo_meta {
+	padding: 0 50px;
+	width: 400px;
+	margin: 0 auto;
+}
+
+.slideshow_title {
+	font-size: x-large;
+	padding: 10px;
+}
+
+.jcarousel-skin-tango .jcarousel-container {
+	margin: 0 auto;
+	background: #000 !important;
+	border:none !important;
+}
+
+.jcarousel-skin-tango .jcarousel-container-horizontal {
+	width: 395px !important;
+}
+
+.jcarousel-skin-tango .jcarousel-clip-horizontal {
+	width: 395px !important;
 }
 
 /**
