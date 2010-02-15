@@ -10,11 +10,16 @@ Author URI: http://www.wfiu.org
 define('WPINC', 'wp-includes');
 
 require_once(ABSPATH. WPINC . '/post.php');
-require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/plugin_functions.php');
+if(file_exists(ABSPATH.PLUGINDIR.'/wfiu_utils/ipm-utils-class.php')){
+	require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/ipm-utils-class.php');
+}else{
+	require_once(dirname(__FILE__) . '/ipm-utils-class.php');
+}
+
 
 
 if(!class_exists ('wordpress_slideshow')) {
-	require_once(ABSPATH.PLUGINDIR.'/wordpress_slideshow/wordpress_slideshow_classes.php');
+	require_once(dirname(__FILE__).'/wordpress_slideshow_classes.php');
 	$wp_slideshow = new wordpress_slideshow;
 }
 
@@ -42,14 +47,14 @@ add_filter('attachment_fields_to_save', array(&$wp_slideshow,'save_photo_fixed_p
 add_filter('manage_posts_columns', array(&$wp_slideshow,'add_column'));
 add_filter('manage_posts_custom_column', array(&$wp_slideshow,'do_column'), 10, 2);
 
-
+$myutils = new IPM_Utils();
 function slideshow_manager_menu(){
-	global $wp_slideshow;
+	global $wp_slideshow, $myutils;
 
 	if(current_user_can('edit_plugins')){
-		wfiu_do_main_page();
-		add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'Slideshow Manager', 'Slideshow Manager', 7, 'Slideshow Manager',  array($wp_slideshow, 'manage_slideshows'));
-		wfiu_google_api_key();
+		$myutils->add_page_main();
+		add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, 'Slideshow Manager',  array(&$wp_slideshow, 'manage_slideshows'));
+		$myutils->add_page_google_api_key();
 	}
 }
 add_action('admin_menu', 'slideshow_manager_menu');
@@ -61,10 +66,37 @@ add_action('admin_menu', 'slideshow_manager_menu');
 //*********************FRONTEND STUFF*********************************
 add_action('the_content', array(&$wp_slideshow, 'replace_tags')); 
 
-function wpss_photos($stylesheet){
+function wpss_photos($stylesheet=''){
 	global $wp_slideshow, $post;
-	$wp_slideshow->show_photos($post->ID, $stylesheet);
+	if(!$wp_slideshow->post_has_tags($post->post_content)){
+		$wp_slideshow->show_photos($post->ID, $stylesheet);
+	}
+}
 
+function wpss_post_image($stylesheet= ''){
+	global $wp_slideshow, $post;
+	$stylesheet = $stylesheet ? $stylesheet : get_option($wp_slideshow->option_default_style_post_image);
+
+	$post_image_id = get_post_meta($post->ID, $wp_slideshow->postmeta_post_image, true);
+	if(!$post_image_id){
+		//the image if it's single photo post
+		$post_image_id=get_post_meta($post->ID,$wp_slideshow->plugin_prefix.'photo_id', true);
+		if(!$post_image_id){
+			if($sid=get_post_meta($post->ID,$wp_slideshow->fieldname, true)){
+				$sProps = $wp_slideshow->getSlideshowProps($sid);
+				$post_image_id = $sProps['thumb_id'];
+				if(!$post_image_id){
+					$photos = $wp_slideshow->getPhotos($sid);
+					$post_image_id = key($photos);
+				}
+			}
+		}
+	}
+	if($post_image_id){
+		echo $wp_slideshow->get_photo_clip($post_image_id,$stylesheet);
+		return true;
+	}
+	return false;
 }
 
 //****************************************************************
@@ -92,7 +124,7 @@ function wp_slideshow_menu(){
 		$query = "SELECT ID, post_title, post_excerpt, post_content FROM ".$wpdb->prefix."posts WHERE post_mime_type LIKE '%image%';";
 		$posts = $wpdb->get_results($query);
 
-		echo table_headers('&nbsp;','Title', 'Photo Credit','&nbsp;');
+		echo $myutils->table_headers('&nbsp;','Title', 'Photo Credit','&nbsp;');
 		foreach($posts as $img_post){
 			$id = $img_post->ID;
 			$titles = array($img_post->post_title);
