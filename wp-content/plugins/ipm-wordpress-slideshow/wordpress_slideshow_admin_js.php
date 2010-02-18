@@ -272,10 +272,12 @@ function showSlideshowMenu(checkValue,show){
 		jQuery("#slideshow_options").hide();
 		jQuery("#wpss_save").show();
 	}else if(checkValue!='none'){
-		jQuery("#single_photo_button").hide();
+    jQuery("#slideshow_options").hide();
+
+		/*jQuery("#single_photo_button").hide();
 		jQuery("#wpss_or").hide();
 		jQuery("#slideshow_button").hide();
-		jQuery("#wpss_save").show();
+		jQuery("#wpss_save").show();*/
 	}
 }
 

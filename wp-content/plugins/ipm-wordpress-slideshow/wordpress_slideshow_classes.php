@@ -2256,7 +2256,7 @@ jQuery(function($){
 			//echo"$mid***<br />";
 			//if($photo['update']){
 			//	echo "updating photo $pid<br />";
-			$query= "INSERT INTO $pmrtable VALUES($internal_photo_id, $mid, '".addslashes($pPropVal)."');";
+			$query= "INSERT INTO $pmrtable VALUES($internal_photo_id, $mid, '$pPropVal');";
 			$result = $wpdb->query($query);
 			if($result===false){//duplicate primary key (photo_id, meta_id), so try to update
 				$query = "UPDATE $pmrtable SET meta_value=\"$pPropVal\" WHERE photo_id=$internal_photo_id AND meta_id=$mid;";
@@ -2404,9 +2404,11 @@ jQuery(function($){
 				if(is_array($spropVal)){
 					echo $verbose ? "\n<br />" : '';
 					$photos = $spropVal;
-					foreach($spropVal as $pid => $photo){
-						foreach($photo as $pProp => $pPropVal){
-							echo $verbose ? "<b> Photo $pid ($pProp)</b>: $pPropVal\n<br />" : '';
+					if($verbose){
+						foreach($spropVal as $pid => $photo){
+							foreach($photo as $pProp => $pPropVal){
+								echo $verbose ? "<b> Photo $pid ($pProp)</b>: $pPropVal\n<br />" : '';
+							}
 						}
 					}
 					unset($slideshow[$sprop]);
