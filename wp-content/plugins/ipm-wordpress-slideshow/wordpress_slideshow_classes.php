@@ -384,7 +384,7 @@ class wordpress_slideshow{
 	}
 
 	function plugin_url(){
-		$result = get_bloginfo('url').'/wp-content/plugins/wordpress_slideshow/';
+		$result = get_bloginfo('url').'/wp-content/plugins/ipm-wordpress-slideshow/';
 		return $result;
 	}
 	function show_map(){

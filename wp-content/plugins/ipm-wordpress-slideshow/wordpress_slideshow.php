@@ -26,7 +26,7 @@ if(!class_exists ('wordpress_slideshow')) {
 
 //*********************ADMIN STUFF*********************************
 //activate plugin
-add_action('activate_wordpress_slideshow/wordpress_slideshow.php', array(&$wp_slideshow, 'activate'));
+add_action('activate_ipm-wordpress-slideshow/wordpress_slideshow.php', array(&$wp_slideshow, 'activate'));
 add_action('media_upload_slideshow_image', array(&$wp_slideshow,'simple_image_chooser'));
 add_action('media_upload_replace_wp_image', array(&$wp_slideshow,'new_image_chooser'));
 add_action('media_upload_map', array(&$wp_slideshow,'show_map'));
