@@ -1,0 +1,118 @@
+/**wpss styling**/
+.slideshow_wrapper {
+	text-align: center;
+	padding: 5px 0;
+	background: #000;
+	color: #FAF6BB;
+	margin: 10px 0;
+}
+div.slideshow {
+	padding: 5px 0 0 0;
+	height:540px;/*needs to be bigger than the photo size*/
+}
+
+.slideshow {
+	position:relative;
+}
+
+
+
+.slideshow div.photoitem {
+	background-color:#000;
+	left:0;
+	margin:auto;
+	opacity:0;
+	position:absolute;
+	text-align:center;
+	top:0;
+	width:100%;
+	z-index:8;
+	/*height:520px;*/
+}
+
+.slideshow div.active {
+	opacity:1;
+	z-index:10;
+}
+.slideshow div.photoitem img {
+	height: 480px;
+}
+.photo_credit {
+	float:right;
+	font-size:smaller;
+}
+
+.photo_meta {
+	padding: 0 50px;
+	width: 400px;
+	margin: 0 auto;
+}
+
+.slideshow_title {
+	font-size: x-large;
+	padding: 10px;
+}
+
+.jcarousel-skin-tango .jcarousel-container {
+	margin: 0 auto;
+	background: #000 !important;
+	border:none !important;
+}
+
+.jcarousel-skin-tango .jcarousel-container-horizontal {
+	width: 395px !important;
+}
+
+.jcarousel-skin-tango .jcarousel-clip-horizontal {
+	width: 395px !important;
+}
+
+/**
+ * This <div> element is wrapped by jCarousel around the list
+ * and has the classname "jcarousel-container".
+ */
+.jcarousel-container {
+    position: relative;
+}
+
+.jcarousel-clip {
+    z-index: 2;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.jcarousel-list {
+    z-index: 1;
+    overflow: hidden;
+    position: relative;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.jcarousel-list li,
+.jcarousel-item {
+    float: left;
+    list-style: none;
+    /* We set the width/height explicitly. No width/height causes infinite loops. */
+    width: 75px;
+    height: 75px;
+}
+
+/**
+ * The buttons are added dynamically by jCarousel before
+ * the <ul> list (inside the <div> described above) and
+ * have the classnames "jcarousel-next" and "jcarousel-prev".
+ */
+.jcarousel-next {
+    z-index: 3;
+    display: none;
+}
+
+.jcarousel-prev {
+    z-index: 3;
+    display: none;
+}
