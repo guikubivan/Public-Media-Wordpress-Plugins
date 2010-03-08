@@ -2558,12 +2558,12 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 
 	}
 
-	function replace_photo_tags($text, $probe=false){
+	function replace_photo_tags2($sid, $text, $s_index, $probe=false){
 		global $wpdb, $post;
 		$post_id = $post->ID;
-		if($sid=get_post_meta($post_id,$this->fieldname, true)){
-			$slideshow_photo_rels = $wpdb->prefix.$this->plugin_prefix."slideshow_photo_relations";
-			$query ="SELECT DISTINCT spr.photo_id FROM $slideshow_photo_rels as spr WHERE spr.slideshow_id=$sid ORDER BY spr.photo_order;";
+
+		if($sid){
+			$query ="SELECT DISTINCT spr.photo_id FROM $this->t_spr as spr WHERE spr.slideshow_id=$sid ORDER BY spr.photo_order;";
 			$ids = $wpdb->get_col($query);
 		}else if($pid=get_post_meta($post_id,$this->plugin_prefix.'photo_id', true)){//photo only
 			$ids = array($pid);
@@ -2571,28 +2571,47 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 			if($probe)return false;
 			return $text;
 		}
-		
+
 		for($h=0;$h<sizeof($ids);++$h){
 			$index = $h+1;
-			if(preg_match_all("/\[\s*photo\s*\-?\s*$index\s*([^\]\s]*)\s*\]/",$text, $matches)>0){
-				if($probe){
-					return true;
-				}	
-				for($i=0;$i<sizeof($matches[0]);++$i){
-					$stylesheet = $matches[1][$i];
-					if(!preg_match("/^.*\.xsl$/", $stylesheet)){
-						$stylesheet = $stylesheet.".xsl";
-					}
-					if(!$stylesheet || !file_exists(dirname(__FILE__).'/stylesheets/'.$stylesheet)){
-						$stylesheet = get_option($this->option_default_style_photo);
-					}
-					$out = $this->get_photo_clip($ids[$h],$stylesheet);
-					$text = str_replace($matches[0][$i], $out, $text);
-				}
-			}
+      $patterns = array("/\[\s*photo\s*\-?\s*$index\s*([^\]\s]*)\s*\]/", "/\[\s*slideshow\s*$s_index\s*,\s*photo\s*\-?\s*$index\s*([^\]\s]*)\s*\]/");
+      foreach($patterns as $pat){
+			  if(preg_match_all($pat,$text, $matches)>0){
+				  if($probe){
+					  return true;
+				  }	
+				  for($i=0;$i<sizeof($matches[0]);++$i){
+					  $stylesheet = $matches[1][$i];
+					  if(!preg_match("/^.*\.xsl$/", $stylesheet)){
+						  $stylesheet = $stylesheet.".xsl";
+					  }
+					  if(!$stylesheet || !file_exists(dirname(__FILE__).'/stylesheets/'.$stylesheet)){
+						  $stylesheet = get_option($this->option_default_style_photo);
+					  }
+					  $out = $this->get_photo_clip($ids[$h],$stylesheet);
+					  $text = str_replace($matches[0][$i], $out, $text);
+				  }
+			  }
+      }
 		}
 		if($probe)return false;
 		return $text;
+  }
+
+
+	function replace_photo_tags($text, $probe=false){
+		global $post;
+		$post_id = $post->ID;
+    $sids = get_post_meta($post_id, $this->fieldname, false);//get all slideshows, not single
+    $text_or_probe = $text;
+    if(sizeof($sids) > 0){
+      foreach($sids as $index => $sid){
+        $text_or_probe = $this->replace_photo_tags2($sid, $text_or_probe, $index+1, $probe);
+      }
+    }else{
+      $text_or_probe = $this->replace_photo_tags2('', $text_or_probe, -1, $probe);
+    }
+    return $text_or_probe;
 	}
 
 	function replace_slideshow_tags($text, $probe=false){
