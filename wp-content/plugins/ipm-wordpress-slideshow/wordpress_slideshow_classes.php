@@ -2069,7 +2069,7 @@ jQuery(function($){
 	var currentMediaItem = -1;
   jQuery(document).ready(function(){
 
-//	jQuery(\"input[name='send[$id]']\").hide();";
+	jQuery(\"input[name='send[$id]']\").hide();";
 			//if(!current_user_can('edit_plugins')){
 				$string .= "
 		jQuery(\"#media-item-$id\").find(\".url\").hide();
@@ -2099,7 +2099,7 @@ jQuery(function($){
 	}
 	$string .= "  });
 </script>";
-			$string .= "</td></tr>";
+			$string .= "</td></tr><tr><th>&nbsp;</th><td>&nbsp;</td></tr>";
 			$string .= $this->media_field('original_url', 'Original URL', $id, '100%', false);
 			$string .= $this->media_field('photo_credit', 'Photo credit', $id, '100%', true);
 			$string .= $this->media_field('geo_location', 'Geo location', $id, '180px');
