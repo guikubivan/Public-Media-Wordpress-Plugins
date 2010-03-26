@@ -40,30 +40,36 @@ if(!function_exists('wfiu_maybe_create_table')) {
 }
 
 function activate_wfiu_playlist() {
-    global $wpdb;
-    $table = $wpdb->prefix."wfiu_playlist";
-    $query = "CREATE TABLE $table (
-      playlist_item_id INT(9) NOT NULL AUTO_INCREMENT,
-      post_id INT(9) NOT NULL DEFAULT 0,
-      title VARCHAR(255) NOT NULL,
-      composer VARCHAR(255),
-      artist VARCHAR(255) NOT NULL,
-      album VARCHAR(255),
-      label VARCHAR(255),
-      release_year INT(4) DEFAULT 0,
-      asin VARCHAR(20),
-      notes VARCHAR(1023),
-      PRIMARY KEY (playlist_item_id),
-      KEY post_id (post_id),
-      INDEX(post_id)
+	global $wpdb,$wfiuPlaylist;
+	$table = $wpdb->prefix."wfiu_playlist";
+	$query = "CREATE TABLE $table (
+	playlist_item_id INT(9) NOT NULL AUTO_INCREMENT,
+	post_id INT(9) NOT NULL DEFAULT 0,
+	title VARCHAR(255) NOT NULL,
+	composer VARCHAR(255),
+	artist VARCHAR(255) NOT NULL,
+	album VARCHAR(255),
+	label VARCHAR(255),
+	release_year INT(4) DEFAULT 0,
+	asin VARCHAR(20),
+	notes VARCHAR(1023),
+	PRIMARY KEY (playlist_item_id),
+	KEY post_id (post_id),
+	INDEX(post_id)
 	);";
 
-     wfiu_maybe_create_table($table,$query);
+	wfiu_maybe_create_table($table,$query);
+
+	if(!class_exists ('XmlTransformClass')) {
+		require_once(dirname(__FILE__).'/xml_transform_class.php');
+	}
+	$transformClass = new XmlTransformClass($wfiuPlaylist->plugin_url());
+	$transformClass->activate();
 }
 
 
 function page_form_wfiu_playlist() {
-	GLOBAL $wfiuPlaylist;
+	global $wfiuPlaylist;
 	return $wfiuPlaylist->post_form('page');
 }
 
@@ -93,30 +99,13 @@ add_action('delete_post', array(&$wfiuPlaylist,'delete_playlist'));
 
 //*********************FRONTEND STUFF*********************************
 	//add_action('the_content', array(&$wfiuPlaylist, 'insert_content')); //used a tag isntead
-function the_playlist($xsl_file){
+function the_playlist($xsl_file, $suppress = true){
 	global $wfiuPlaylist;
-	
-	$wfiuPlaylist->get_wfiu_playlist($xsl_file);
-	
-	
+	$wfiuPlaylist->get_wfiu_playlist($xsl_file, $suppress);
 }
+
 add_action('the_playlist', array(&$wfiuPlaylist,'get_wfiu_playlist') );
-
-	/* stuff that goes in the display of the Post */
-/*	add_action('the_content', array(&$podPress, 'insert_content'));
-	add_action('get_the_excerpt', array(&$podPress, 'insert_the_excerpt'), 1);
-	add_action('the_excerpt', array(&$podPress, 'insert_the_excerptplayer'));
-
-	add_filter('get_attached_file', 'podPress_get_attached_file');
-	add_filter('wp_get_attachment_metadata', 'podPress_wp_get_attachment_metadata');
-	
-	// stuff that goes in the HTML header
-	add_action('wp_head', 'podPress_wp_head');
-	add_action('wp_footer', 'podPress_wp_footer');
-	add_action('switch_theme', 'podPress_switch_theme');
-*/
-
-//****************************************************************
+add_action('the_content', array(&$wfiuPlaylist, 'replace_tags')); 
 
 //**************************AJAX STUFF(needs work)*****************************
 add_action('admin_print_scripts', 'myplugin_js_admin_header' );
@@ -162,23 +151,6 @@ function myplugin_js_admin_header() // this is a PHP function
 } // end of PHP function myplugin_js_admin_header
 //**************************END AJAX STUFF*****************************
 
-
-
-
-
-
-/*
-function wfiuPlaylist_menu()
-{
-    global $wpdb;
-    include 'wfiu_playlist-admin.php';
-}
-*/
-/*function wfiuPlaylist_admin_actions(){
-	add_options_page("WFIU Playlist", "WFIU Playlist", 1, "WFIU Playlist", "wfiuPlaylist_menu");
-}*/
- 
-//add_action('admin_menu', 'wfiuPlaylist_admin_actions');
 
 
 ?>

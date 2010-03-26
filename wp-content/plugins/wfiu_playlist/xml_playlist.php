@@ -1,9 +1,4 @@
 <?php
-function wfiuPlaylist_url(){
-	$result = 'http';
-	$result .= '://'.$_SERVER['HTTP_HOST'].'/wp-content/plugins/wfiu_playlist/';
-	return $result;
-}
 
 require_once('../../../wp-config.php');
 require_once('../../../wp-includes/wp-db.php');

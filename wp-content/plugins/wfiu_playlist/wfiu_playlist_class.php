@@ -14,19 +14,23 @@ class wfiuPlaylist_class {
 		$playlist = $wpdb->get_results($query);
 		$playlistLink = '';
 		if(sizeof($playlist)>0){
-			$playlistLink = "<a href='" . $this->wfiuPlaylist_url().'xml_playlist.php?blog='.$wpdb->prefix . "&post_id=" . $post->ID . "'>Playlist XML</a>";
+			$playlistLink = "<a href='" . $this->plugin_url().'xml_playlist.php?blog='.$wpdb->prefix . "&post_id=" . $post->ID . "'>Playlist XML</a>";
 		}
 		
 		return $content . $playlistLink;
 	}*/
 
-	function get_wfiu_playlist($xslfile){
+	function get_wfiu_playlist($xslfile, $suppress = true){
 		global $wpdb, $post;
 		$post_id = $post->ID;
-		//if(!$post_id){
-		//	$post_id = get_the_id();
-		//}
-		//echo 'post id: ' . $post_id;
+		if(!class_exists ('XmlTransformClass')) {
+			require_once(dirname(__FILE__).'/xml_transform_class.php');
+		}
+		$transformClass = new XmlTransformClass($this->plugin_url());
+		if($suppress && $transformClass->replace_playlist_tags($post->post_content, true)){//probe only
+			return false;
+		}
+
 
 		$mytable = $wpdb->prefix."wfiu_playlist";
 		$query = "SELECT count(post_id) FROM ".$mytable ." WHERE post_id=".$post_id . " ORDER BY playlist_item_id ASC";
@@ -34,12 +38,12 @@ class wfiuPlaylist_class {
 		if($playlist_count>0){
 
 			$xml = new DOMDocument;
-			//echo $this->wfiuPlaylist_url().'xml_playlist.php?blog='.$wpdb->prefix . "&post_id=" . $post_id;
-			$xml_url = $this->wfiuPlaylist_url().'xml_playlist.php?blog='.$wpdb->prefix . "&post_id=" . $post_id;
+			//echo $this->plugin_url().'xml_playlist.php?blog='.$wpdb->prefix . "&post_id=" . $post_id;
+			$xml_url = $this->plugin_url().'xml_playlist.php?blog='.$wpdb->prefix . "&post_id=" . $post_id;
 			@$xml->load($xml_url);
 
 			$xsl = new DOMDocument;
-			@$xsl->load($this->wfiuPlaylist_url().'stylesheets/'.$xslfile);
+			@$xsl->load($this->plugin_url().'stylesheets/'.$xslfile);
 
 			// Configure the transformer
 			$proc = new XSLTProcessor;
@@ -52,9 +56,10 @@ class wfiuPlaylist_class {
 				echo $xml_url;
 			}
 		}
+		return true;
 	}
 
-	function wfiuPlaylist_url(){
+	function plugin_url(){
 		$result = get_bloginfo('url').'/wp-content/plugins/wfiu_playlist/';
 		return $result;
 	}
@@ -145,8 +150,8 @@ class wfiuPlaylist_class {
 
 	function admin_head(){
 		global $post, $wpdb;
-		echo '<link rel="stylesheet" href="'.$this->wfiuPlaylist_url().'wfiu_playlist.css" type="text/css" />'."\n";
-		wp_register_script( 'wfiu_playlist', $this->wfiuPlaylist_url().'wfiu_playlist.js', array());
+		echo '<link rel="stylesheet" href="'.$this->plugin_url().'wfiu_playlist.css" type="text/css" />'."\n";
+		wp_register_script( 'wfiu_playlist', $this->plugin_url().'wfiu_playlist.js', array());
 		//wp_enqueue_script('jquery-ui-sortable');
 		$pinfo = pathinfo($_SERVER[ 'REQUEST_URI' ] );
 		//if( in_array($pinfo['filename'] , array('post','post-new')) ) {
@@ -596,6 +601,17 @@ class wfiuPlaylist_class {
 		}
 
 	}
+
+
+	function replace_tags($content){
+		global $post;
+		if(!class_exists ('XmlTransformClass')) {
+			require_once(dirname(__FILE__).'/xml_transform_class.php');
+		}
+		$transformClass = new XmlTransformClass($this->plugin_url());
+		return $transformClass->replace_playlist_tags($content);
+	}
+
 
 }
 ?>
