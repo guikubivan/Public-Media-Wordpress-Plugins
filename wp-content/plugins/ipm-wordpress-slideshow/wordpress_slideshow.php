@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name:Wordpress slideshow
+Plugin Name: IPM - Wordpress slideshow
 Plugin URI: http://www.wfiu.org
 Description: Let's you make a slideshow using wordpress' native way of storing photos.
 Version: 1.0
@@ -73,16 +73,17 @@ function wpss_photos($stylesheet=''){
 	}
 }
 
-function wpss_post_image($stylesheet= ''){
+function wpss_post_image($stylesheet= '', $post_id=''){
 	global $wp_slideshow, $post;
+	if(!$post_id)$post_id = $post->ID;
 	$stylesheet = $stylesheet ? $stylesheet : get_option($wp_slideshow->option_default_style_post_image);
 
-	$post_image_id = get_post_meta($post->ID, $wp_slideshow->postmeta_post_image, true);
+	$post_image_id = get_post_meta($post_id, $wp_slideshow->postmeta_post_image, true);
 	if(!$post_image_id){
 		//the image if it's single photo post
-		$post_image_id=get_post_meta($post->ID,$wp_slideshow->plugin_prefix.'photo_id', true);
+		$post_image_id=get_post_meta($post_id,$wp_slideshow->plugin_prefix.'photo_id', true);
 		if(!$post_image_id){
-			if($sid=get_post_meta($post->ID,$wp_slideshow->fieldname, true)){
+			if($sid=get_post_meta($post_id,$wp_slideshow->fieldname, true)){
 				$sProps = $wp_slideshow->getSlideshowProps($sid);
 				$post_image_id = $sProps['thumb_id'];
 				if(!$post_image_id){

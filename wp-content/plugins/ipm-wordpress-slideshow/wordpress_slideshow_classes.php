@@ -6,10 +6,10 @@ class wordpress_slideshow{
 	public $photo_props = Array('id','title', 'caption', 'geo_location', 'photo_credit','description','url');
 	private $fixed_photo_props = array('geo_location', 'photo_credit','latitude','longitude', 'original_url');
 	public $t_s, $t_spr, $t_p, $t_pm, $t_pmr;
-	public $default_style_photo = 'wpss_simple.xsl';
-	public $default_style_slideshow = 'wpss_simple.xsl';
-	public $default_style_post_image = 'wpss_simple.xsl';
-	public $default_multiple_slideshows = false;
+	public $default_style_photo = 'wpss_program_single_new.xsl';
+	public $default_style_slideshow = 'wpss_program_single_new.xsl';
+	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
+	public $default_multiple_slideshows = true;
 	public $photo_id_translation = Array();
 	public function __construct(){
 	    	global $wpdb;
@@ -1324,7 +1324,7 @@ jQuery(document).ready(function() {
 		unset($sProps['update']);
 		foreach($sProps as $name => $value){
 			if($value){
-				$str .= "<$name>$value</$name>\n";
+				$str .= "<$name>".htmlspecialchars($value)."</$name>\n";
 			}
 		}
 		//slideshow thumb photo
