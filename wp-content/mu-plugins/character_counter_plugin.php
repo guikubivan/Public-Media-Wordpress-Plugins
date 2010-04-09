@@ -62,7 +62,7 @@ character_counter_initialize();
 
 $path = $_SERVER['SCRIPT_NAME'];
 
-$pattern = get_option('char_count_in_pages') ?  'post|page' : 'post';
+$pattern = get_option('char_count_in_pages') ?  '(post|page)' : 'post';
 if(preg_match("/wp-admin\/$pattern/",$path)){
 	add_action( "admin_print_scripts", 'character_count_js');
 }
