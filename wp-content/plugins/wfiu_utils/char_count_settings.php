@@ -14,16 +14,22 @@ $defaults['excerpt']['min']=0;
 $defaults['excerpt']['max']=350;
 $defaults['excerpt']['optional']='on';
 
+$defaults['in_pages']='off';
 
 $prefix='char_count_';
 if ($_POST) {
 	if($_POST['reset']){
 		foreach($defaults as $name => $props){
 			//echo "*";
-			foreach($props as $p => $option_val){
-				//echo "-";
+			if(is_array($props)){
+				foreach($props as $p => $option_val){
+					//echo "-";
 				
-				$option_name = $prefix . $name . '_' . $p;
+					$option_name = $prefix . $name . '_' . $p;
+					delete_option($option_name);
+				}
+			}else{
+				$option_name = $prefix . $name ;
 				delete_option($option_name);
 			}
 		}	
@@ -33,11 +39,29 @@ if ($_POST) {
 	}
 	
 	foreach($_POST[field] as $name => $props){
-		foreach($props as $p => $val){
-			$option_name = $prefix . $name . '_' . $p;
-			$option_val = $defaults[$name][$p];
-			if(isset($val) && $val){
-				$option_val = $val;
+		if(is_array($props)){
+			foreach($props as $p => $val){
+				$option_name = $prefix . $name . '_' . $p;
+				$option_val = $defaults[$name][$p];
+				if(isset($val) && $val){
+					$option_val = $val;
+				}
+				//echo $option_name  . ': ' . $option_val .  "<br />";
+				if ( get_option($option_name) !== false) {
+					update_option($option_name, $option_val);
+				} else {
+					add_option($option_name, $option_val);
+				}
+			}
+			if(!isset($props['optional']) ){
+				$option_name = $prefix . $name . '_optional';
+				delete_option($option_name);
+			}
+		}else{
+			$option_name = $prefix . $name;
+			$option_val = $defaults[$name];
+			if(isset($props) && $props){
+				$option_val = $props;
 			}
 			//echo $option_name  . ': ' . $option_val .  "<br />";
 			if ( get_option($option_name) !== false) {
@@ -46,11 +70,10 @@ if ($_POST) {
 				add_option($option_name, $option_val);
 			}
 		}
-
-		if(!isset($props['optional']) ){
-			$option_name = $prefix . $name . '_optional';
-			delete_option($option_name);
-		}
+	}
+	if(!isset($_POST[field][in_pages]) ){
+		$option_name = $prefix . 'in_pages';
+		delete_option($option_name);
 	}
 	print "<div class='highlight'>Succesful update</div> <!--meta http-equiv='refresh' content='0'-->";
 }
@@ -60,16 +83,22 @@ $fields = array();
 
 foreach($defaults as $name => $props){
 	//echo "*";
-	foreach($props as $p => $blah){
-		//echo "-";
-		$option_name = $prefix . $name . '_' . $p;
+	if(is_array($props)){
+		foreach($props as $p => $blah){
+			//echo "-";
+			$option_name = $prefix . $name . '_' . $p;
+			$val = get_option($option_name);
+			//echo $option_name  . ': ' . $val  .  "<br />";
+			if( ($p !='optional') || ($val!='off') ){
+				//echo 'getting: '. $option_name .'<br />';
+				$fields[$name][$p] = $val;
+			}
+		}
+	}else{
+		$option_name = $prefix . $name;
 		$val = get_option($option_name);
-		//echo $option_name  . ': ' . $val  .  "<br />";
-		if( ($p =='optional') && ($val=='off') ){
-			$donuthin='';
-		}else{
-			//echo 'getting: '. $option_name .'<br />';
-			$fields[$name][$p] = $val;
+		if( $val !='off' ){
+			$fields[$name] = $val ;
 		}
 	}
 }
@@ -77,8 +106,12 @@ foreach($defaults as $name => $props){
 //print_r($fields);
 
 
-print "<h2>Character Count Settings</h2><br><form action='' method='post'><table style='width: 400px;' class='widefat'>";
-print "<thead><tr> <th>Field</th> <th>Max/Min Characters</th> <th>Optional?</th> </tr></thead>";
+print "<h2>Character Count Settings</h2><br><form action='' method='post'>";
+
+$checked = $fields[in_pages] ? 'checked' : '';
+print "	<label>Use in pages: <input type='checkbox' name='field[in_pages]' ". $checked ." /> </label>";
+
+print "<table style='width: 400px;' class='widefat'><thead><tr> <th>Field</th> <th>Max/Min Characters</th> <th>Optional?</th> </tr></thead>";
 $min = $fields[title][min];
 $max = $fields[title][max];
 $checked = $fields[title][optional] ? 'checked' : '';

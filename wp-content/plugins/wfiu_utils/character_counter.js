@@ -1,6 +1,6 @@
 var isAdmin = CharCountSettings.isAdmin;//obtained from wordpress plugin when localized
-var optionalColor = '#FFD7D7';
-var requiredColor = '#FF9A8D';
+var optionalColor = '#D6FFD8';
+var requiredColor = '#FFD7D7';
 
 function check_excerpt_char_count(excerpt_obj, do_message){
 	if(jQuery(excerpt_obj).val() == undefined){
@@ -72,7 +72,7 @@ function check_title_char_count(title_obj, do_message){
 
 jQuery(document).ready(function($){
 	if(isAdmin){
-		$("#title").parent().prepend("<div style='text-align: right;'><span style='background-color: #A7FF77;'>You are an admin and can override the character count limits.</span></div>");
+		$("#title").parent().prepend("<div style='text-align: right;'><span style='background-color: #D6FFD8;'>You are an admin and can override the character count limits.</span></div>");
 	}
 
 	var minText = '';
@@ -115,7 +115,7 @@ jQuery(document).ready(function($){
 		check_title_char_count(this, false);
 	});
 	/**********************************************/
-	if(window.location.toString().indexOf("post-new.php") != -1){
+	if( window.location.toString().match(/(post|page)-new.php/) ){
 		check_excerpt_char_count($("#excerpt"), false);
 		check_teaser_char_count($("#teaser"), false);
 		check_title_char_count($("#title"), false);
