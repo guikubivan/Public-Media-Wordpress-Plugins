@@ -1841,7 +1841,9 @@ jQuery(function($){
 	<h2 style='margin-bottom:50px'>Choose picture</h2>
 <div>
 
-<form method='POST' name='search_form' action='?type=slideshow_image&post_id=<?php echo $pid; ?><?php echo $img_id_var;?>' >
+<form method='post' name='search_form' action='?type=slideshow_image<?php echo $img_id_var;?>' >
+
+
 <input id="post-search-input" type="text" value="<?php $search = $_POST['s'] ? $_POST['s'] : $_GET['s']; echo $_POST['see_all'] ? '' : $search; ?>" name="s"/>
 <input type="submit" value="Search Photos"/> <input type="submit" name='see_all' value="See all"/>
 
@@ -1876,21 +1878,25 @@ jQuery(function($){
 		}
 		//$query .= ' LIMIT 20';
 		if($search && !$_POST['see_all']){
-			//echo "S!";
-
 			$q['orderby']=$orderby;
 			$q['order']=$direction;
-			list($post_mime_types, $avail_post_mime_types) = wp_edit_attachments_query($q);
-			if( is_array($GLOBALS['wp_the_query']->posts) ) {
-				foreach ( $GLOBALS['wp_the_query']->posts as $attachment )
-					$posts[$attachment->ID] = $attachment;
-				//print_r($posts);
-			}else{
-				$msg .= "No results found, try again.";
-
+			$q['s']=$search;
+			$q['post_mime_type'] = 'image';
+			$q['post_status'] = 'open';
+			$wp_results = new WP_Query($q);
+			//print_r($wp_results);
+			//$search->posts
+			//list($post_mime_types, $avail_post_mime_types) = wp_edit_attachments_query($q);
+			if( is_array($wp_results->posts) && ( sizeof($wp_results->posts) > 0 ) ) {
+				$post_ids_array = array();
+				foreach ( $wp_results->posts as $attachment )
+					$post_ids_array[] = $attachment->ID;
+				$post_ids = "OR posts.ID IN (".implode(',', $post_ids_array).") ";
 			}
-			$query = "SELECT DISTINCT posts.ID, posts.post_title, posts.post_excerpt, posts.post_content, posts.post_modified, post_mime_type FROM ".$wpdb->prefix."posts as posts LEFT JOIN ".$wpdb->prefix."postmeta as postmeta ON (posts.ID=postmeta.post_id AND postmeta.meta_key='photo_credit') WHERE posts.post_mime_type LIKE '%image%' AND posts.post_type='attachment' AND postmeta.meta_value LIKE \"%".$search."%\" ORDER BY postmeta.meta_value $direction";
+			$query = "SELECT DISTINCT posts.ID, posts.post_title, posts.post_excerpt, posts.post_content, posts.post_modified, post_mime_type FROM ".$wpdb->prefix."posts as posts LEFT JOIN ".$wpdb->prefix."postmeta as postmeta ON (posts.ID=postmeta.post_id AND postmeta.meta_key='photo_credit') WHERE posts.post_mime_type LIKE '%image%' AND posts.post_type='attachment' AND (postmeta.meta_value LIKE \"%".$search."%\" $post_ids) ORDER BY postmeta.meta_value $direction";
+
 			$rows = $wpdb->get_results($query);
+
 			if(is_array($rows)){
 				//$posts = array_merge($posts, $rows);
 				foreach ( $rows as $attachment )
