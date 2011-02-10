@@ -3,8 +3,7 @@
 	require_once(dirname(__FILE__).'/../../../wp-admin/admin.php');
 	header("Content-Type: text/javascript");
 ?>
-
-
+//<script type="text/javascript"> //this is just to make my editor pick up on the color scheme
 function simplifyUploadInterface(){
 	jQuery("#tab-gallery").hide();
 	jQuery("#tab-library").hide();
@@ -179,19 +178,43 @@ function resetPhotoJS(){
 
 	jQuery(".editable").blur(function () {
 		jQuery(this).attr("readonly", true);
-		jQuery(this).next().hide();
+		
+		if(updateClicked == false)
+		{
+			jQuery(this).next().hide();
+		}
+		else
+		{
+			jQuery(this).focus();
+		}
+			
 		jQuery(this).nextAll('img').show();
 		jQuery(this).css({'background-color' : '', 'text-decoration': ''});
 		jQuery(this).val(currentFieldValue);
 	});
-
+	
+	jQuery(".editable").parent().mousedown(function(){
+		
+		if( jQuery(this).children(".button").is(':visible') )
+			updateClicked = true;		
+	});
+	jQuery(".editable").parent().mouseup(function(){
+		updateClicked = false;
+	});
+	
+	
 	jQuery(".editable").next().click(function () {
 		elementID = jQuery(this).prev().attr("id");
 		prop = elementID.substring(elementID.lastIndexOf('[')+1,elementID.lastIndexOf(']'));
 		photo_id = elementID.substring(elementID.lastIndexOf('[', elementID.lastIndexOf('[')-1)+1,elementID.lastIndexOf(']', elementID.lastIndexOf(']')-1));
 		slideshow_id = elementID.substring(14,elementID.indexOf(']',14));
 		updateID = elementID.replace(prop,'update');
-		update = '';
+		if(typeof update == "undefined")
+		{
+			var update = "";
+		}		
+		//alert(update);
+		//update = '';
 		if(document.getElementById(updateID) != null){
 			update = document.getElementById(updateID).value;
 		}
@@ -207,6 +230,8 @@ function resetPhotoJS(){
 		//jQuery(this).hide();
 
 		//jQuery(this).prev().val(currentFieldValue);
+		
+		jQuery(this).prev().focus();
 	});
 }
 jQuery(document).ready(function(){
@@ -247,6 +272,7 @@ function reloadPostImageSelect(setval){
 
 var currentSlideshowID = '';
 var currentFieldValue = '';
+var updateClicked = false;
 
 function removeHTMLTags(strInputCode){
  	 strInputCode = strInputCode.replace(/&(lt|gt);/g, function (strMatch, p1){
