@@ -1,4 +1,6 @@
 <?php
+//test
+
 class wordpress_slideshow{
 	public $fieldname = 'slideshow_id';
 	public $plugin_prefix = 'wpss_';
