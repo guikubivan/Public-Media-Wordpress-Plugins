@@ -53,7 +53,8 @@ function slideshow_manager_menu(){
 
 	if(current_user_can('edit_plugins')){
 		$myutils->add_page_main();
-		add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, 'Slideshow Manager',  array(&$wp_slideshow, 'manage_slideshows'));
+		//add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, 'Slideshow Manager',  array(&$wp_slideshow, 'manage_slideshows'));
+		add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, ABSPATH.PLUGINDIR.'/ipm-wordpress-slideshow/wordpress_slideshow.php',  array(&$wp_slideshow, 'manage_slideshows'));
 		$myutils->add_page_google_api_key();
 	}
 }
