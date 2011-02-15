@@ -2,6 +2,7 @@
 //test
 $tab_order = 100;
 class wordpress_slideshow{
+	
 	public $fieldname = 'slideshow_id';
 	public $plugin_prefix = 'wpss_';
 	public $slideshow_props = Array('id','title','photo_credit','description','geo_location');
@@ -13,6 +14,9 @@ class wordpress_slideshow{
 	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
 	public $default_multiple_slideshows = true;
 	public $photo_id_translation = Array();
+	
+	public $plugin_path = "/wp-content/plugins/ipm-wordpress-slideshow";
+	
 	public function __construct(){
 	    	global $wpdb;
 		$this->t_s = $wpdb->prefix.$this->plugin_prefix."slideshows";
@@ -1298,7 +1302,7 @@ jQuery(document).ready(function() {
 
 		foreach($photo as $name => $value){
 			if($value){
-				$str .= "<$name>". htmlspecialchars($value)."</$name>\n";
+				$str .= "<$name>". htmlentities(htmlspecialchars($value))."</$name>\n";
 			}								
 		}
 		$str .= "</$root_tag>\n";
@@ -1325,7 +1329,7 @@ jQuery(document).ready(function() {
 		unset($sProps['update']);
 		foreach($sProps as $name => $value){
 			if($value){
-				$str .= "<$name>".htmlspecialchars($value)."</$name>\n";
+				$str .= "<$name>".htmlentities(htmlspecialchars($value))."</$name>\n";
 			}
 		}
 		//slideshow thumb photo
@@ -1393,18 +1397,24 @@ jQuery(document).ready(function() {
 			//$xml->loadXML($xml_text);
 			return;
 		}
-
+		// get absolute path of current file
+		$stylesheet_path = $_SERVER['DOCUMENT_ROOT'].$this->plugin_path.'/stylesheets/'.$stylesheet;
+		
 		$xsl = new DOMDocument;
-		@$xsl->load($this->plugin_url().'/stylesheets/'.$stylesheet);
+		@$xsl->load($stylesheet_path);
 
 		// Configure the transformer
 		$proc = new XSLTProcessor;
 		@$proc->importStyleSheet($xsl); // attach the xsl rules
 		$output = @$proc->transformToXML($xml);
+		//echo "<pre>".print_r($xml_text, true)."</pre>";
 		if($output){
 			echo $output;
 		}else{
-			echo "error";
+			if($stylesheet = "")
+				echo "Error. The Slideshow Stylesheets have not been defined.";
+			else
+				echo "Unknown error.";
 		}
 
 	}

@@ -3,86 +3,168 @@
 <xsl:output method="text"/>
 
 <!-- slideshow -->
-<xsl:template match="/slideshow">
-<![CDATA[<div class="program-slideshow"> ]]>
+<xsl:template match="/slideshows/slideshow">
+&lt;div class="program-slideshow"&gt;
 
-	<![CDATA[<h3>]]><xsl:value-of select="title"/><![CDATA[</h3>]]>
+	&lt;h3&gt;<xsl:value-of select="title"/>&lt;/h3&gt;
 
-	
-	<![CDATA[<div class="scrollable"><ul class="items">]]>
+	&lt;div class="scrollable" rel="#overlay<xsl:value-of select="ID"/>"&gt;&lt;ul class="items"&gt;
 	<!-- here goes the intro slide stuff -->
-		<![CDATA[<li class="item">]]>
-			<![CDATA[<a rel="slideshow-colorbox" class="colorbox" href="]]><xsl:value-of select="slideshow_thumb/medium_url"/> <![CDATA[" >]]>
-				<![CDATA[<img alt="]]>
+	
+		&lt;li class="item"&gt;
+		
+			&lt;a rel="slideshow-colorbox" class="colorbox" href="<xsl:value-of select="slideshow_thumb/large_url"/> " &gt;
+				&lt;img alt="
 				<xsl:value-of select="description"/>
-				<![CDATA[" src="]]><xsl:value-of select="slideshow_thumb/medium_url"/><![CDATA[" />]]>
-			<![CDATA[</a>]]>
+				" src="<xsl:value-of select="slideshow_thumb/large_url"/>" /&gt;
+				&lt;div class="slideshow-enlarge enlarge-title"&gt;&lt;/div&gt;
+			&lt;/a&gt;
+			
+			&lt;p class="photo-number"&gt;
+			<xsl:value-of select="count(//photo)"/>
+			 Images&lt;/p&gt;
+			
 		<xsl:choose>
 			<xsl:when test="original_url">
-				<![CDATA[<p class="photo-credit">]]>Photo: <![CDATA[<a href="]]><xsl:value-of select="original_url"/><![CDATA[">]]><xsl:value-of select="photo_credit"/><![CDATA[</a>]]><![CDATA[</p>]]>
+				&lt;p class="photo-credit"&gt;Photo: &lt;a href="<xsl:value-of select="original_url"/>"&gt;<xsl:value-of select="photo_credit"/>&lt;/a&gt;&lt;/p&gt;
 			</xsl:when>
         	<xsl:otherwise>
-				<![CDATA[<p class="photo-credit">]]>Photo: <xsl:value-of select="photo_credit"/><![CDATA[</p>]]>
+				&lt;p class="photo-credit"&gt;Slideshow: <xsl:value-of select="photo_credit"/>&lt;/p&gt;
 			</xsl:otherwise>
 		</xsl:choose>
-	<![CDATA[
-	</li><!--item-->
-	]]>
+			&lt;div class="clear"&gt;&lt;/div&gt;
+		&lt;p class="photo-caption"&gt;<xsl:value-of select="description"/>&lt;/p&gt;
+	&lt;/li&gt;<!--item-->
+	
 	<!-- and now, the rest of the images -->
 	<xsl:for-each select="photo">
-	<![CDATA[<li class="item">]]>
+	&lt;li class="item"&gt;
 		<xsl:if test="url">
-			<![CDATA[<a rel="slideshow-colorbox" class="colorbox" href="]]><xsl:value-of select="medium_url"/> <![CDATA[" >]]>
+			&lt;a rel="slideshow-colorbox" class="colorbox" href="<xsl:value-of select="large_url"/> " &gt;
 			<xsl:if test="thumb_url">
-				<![CDATA[<img alt="]]>
-				<![CDATA[" src="]]><xsl:value-of select="medium_url"/><![CDATA[" />]]>	
+				&lt;img alt="<xsl:value-of select="alt"/>
+				" src="<xsl:value-of select="large_url"/>" /&gt;	
 			</xsl:if>
-			<![CDATA[</a>]]>
+			&lt;div class="slideshow-enlarge enlarge-slide"&gt;&lt;/div&gt;
+			&lt;/a&gt;
+			
+			&lt;p class="photo-number"&gt;Image <xsl:value-of select="position()"/>
+			of
+			<xsl:value-of select="count(//photo)"/>
+			&lt;/p&gt;
+			
 			<xsl:choose>
 			<xsl:when test="original_url">
-				<![CDATA[<p class="photo-credit">]]>Photo: <![CDATA[<a href="]]><xsl:value-of select="original_url"/><![CDATA[">]]><xsl:value-of select="photo_credit"/><![CDATA[</a>]]><![CDATA[</p>]]>
+				&lt;p class="photo-credit"&gt;Photo: &lt;a href="<xsl:value-of select="original_url"/>"&gt;<xsl:value-of select="photo_credit"/>&lt;/a&gt;&lt;/p&gt;
 			</xsl:when>
         	<xsl:otherwise>
-				<![CDATA[<p class="photo-credit">]]>Photo: <xsl:value-of select="photo_credit"/><![CDATA[</p>]]>
+				&lt;p class="photo-credit"&gt;Photo: <xsl:value-of select="photo_credit"/>&lt;/p&gt;
 			</xsl:otherwise>
 		</xsl:choose>
-			<![CDATA[<p>]]><xsl:value-of select="caption"/><![CDATA[</p>]]>
+			&lt;div class="clear"&gt;&lt;/div&gt;
+			&lt;p class="photo-caption"&gt;<xsl:value-of select="caption"/>&lt;/p&gt;
 		</xsl:if>
-	<![CDATA[
-	</li><!--item-->
-	]]>
+
+	&lt;/li&gt;<!--item-->
+
 	</xsl:for-each>
-	<![CDATA[
-	</ul><!--items-->
-	</div><!--scrollable-->
-	]]>
-	<![CDATA[<a class="prevPage">&laquo;</a>]]>
-	<![CDATA[<a class="nextPage">&raquo;</a>]]>
+
+	&lt;/ul&gt;<!--items-->
+	&lt;/div&gt;<!--scrollable-->
+
+	&lt;a class="scrollable-nav prevPage"&gt;&lt;/a&gt;
+	&lt;a class="scrollable-nav nextPage"&gt;&lt;/a&gt;
 	
-<![CDATA[
-</div><!-- program-slideshow -->
-]]>
+&lt;/div&gt;<!-- program-slideshow -->
+
+
+
+
+
+&lt;div class="the-overlay" id="overlay]]&gt;<xsl:value-of select="ID"/>" style="display:none;"&gt;
+
+	&lt;h3&gt;<xsl:value-of select="title"/>&lt;/h3&gt;
+	
+	&lt;div class="scrollable"&gt;&lt;ul class="items"&gt;
+	
+	
+	
+	&lt;li&gt;&lt;a class="colorbox"&gt;&lt;img alt="<xsl:value-of select="alt"/>
+				" src="<xsl:value-of select="slideshow_thumb/large_url"/>" /&gt;&lt;/a&gt;
+				
+				&lt;p class="photo-number"&gt;
+			<xsl:value-of select="count(//photo)"/>
+			Images&lt;/p&gt;
+			
+				<xsl:choose>
+			<xsl:when test="original_url">
+				&lt;p class="photo-credit"&gt;Photo: &lt;a href="<xsl:value-of select="slideshow_thumb/original_url"/>"&gt;<xsl:value-of select="photo_credit"/>&lt;/a&gt;&lt;/p&gt;
+			</xsl:when>
+        	<xsl:otherwise>
+				&lt;p class="photo-credit"&gt;Slideshow: <xsl:value-of select="photo_credit"/>&lt;/p&gt;
+			</xsl:otherwise>
+		</xsl:choose>
+		&lt;div class="clear"&gt;&lt;/div&gt;
+		&lt;p class="photo-caption"&gt;<xsl:value-of select="description"/>&lt;/p&gt;
+		&lt;/li&gt;
+	
+	
+	
+	
+	<xsl:for-each select="photo">
+		&lt;li&gt;&lt;a class="colorbox"&gt;&lt;img alt="
+				" src="<xsl:value-of select="large_url"/>" /&gt;&lt;a&gt;
+				
+				&lt;p class="photo-number"&gt;Image<xsl:value-of select="position()"/>
+			of
+			<xsl:value-of select="count(//photo)"/>
+			&lt;/p&gt;
+				
+				<xsl:choose>
+			<xsl:when test="original_url">
+				&lt;p class="photo-credit"&gt;Photo: &lt;a href="<xsl:value-of select="original_url"/>"&gt;<xsl:value-of select="photo_credit"/>&lt;/a&gt;&lt;/p&gt;
+			</xsl:when>
+        	<xsl:otherwise>
+				&lt;p class="photo-credit"&gt;Photo: <xsl:value-of select="photo_credit"/>&lt;/p&gt;
+			</xsl:otherwise>
+		</xsl:choose>
+		&lt;div class="clear"&gt;&lt;/div&gt;
+		&lt;p class="photo-caption"&gt;<xsl:value-of select="caption"/>&lt;/p&gt;
+		&lt;/li&gt;
+	</xsl:for-each>
+	&lt;/ul&gt;&lt;/div&gt; <!--the-images-->
+	&lt;a class="prevPage"&gt;&lt;/a&gt; 
+	&lt;a class="nextPage"&gt;&lt;/a&gt; 
+&lt;/div&gt;<!-- the-overlay --> 
+
 </xsl:template>
+
+
+
+
+
+
 
 <xsl:template match="/photo">
 
 		<xsl:if test="url">
-			<![CDATA[<div class="postimage-wrapper"><img class="postimage" src="]]><xsl:value-of select="large_url"/> <![CDATA[" alt="]]>
-			<xsl:value-of select="alt"/><![CDATA[" />]]>
+			&lt;div class="postimage-wrapper"&gt;&lt;div class="the-image-wrapper"&gt;&lt;img class="postimage" src="<xsl:value-of select="large_url"/> " alt="
+			<xsl:value-of select="alt"/>" /&gt;&lt;/div&gt;
 		</xsl:if>
         <xsl:choose>
 			<xsl:when test="original_url">
-				<![CDATA[<p class="photo-credit">]]>Photo: <![CDATA[<a href="]]><xsl:value-of select="original_url"/><![CDATA[">]]><xsl:value-of select="photo_credit"/><![CDATA[</a>]]><![CDATA[</p>]]>
+				&lt;p class="photo-credit"&gt;Photo: &lt;a href="<xsl:value-of select="original_url"/>"&gt;<xsl:value-of select="photo_credit"/>&lt;/a&gt;&lt;/p&gt;
 			</xsl:when>
         	<xsl:otherwise>
-				<![CDATA[<p class="photo-credit">]]>Photo: <xsl:value-of select="photo_credit"/><![CDATA[</p>]]>
+				&lt;p class="photo-credit"&gt;Photo: <xsl:value-of select="photo_credit"/>&lt;/p&gt;
 			</xsl:otherwise>
 		</xsl:choose>
+		&lt;div class="clear"&gt;&lt;/div&gt;
         <xsl:if test="caption">
-			<![CDATA[<p class="photo-caption">]]><xsl:value-of select="caption"/>
+			&lt;p class="photo-caption"&gt;<xsl:value-of select="caption"/>
 		</xsl:if>
 		<xsl:if test="url">
-		<![CDATA[</p></div><!--end postimage-wrapper-->]]>
+		&lt;/p&gt;&lt;/div&gt;<!--end postimage-wrapper-->
 		</xsl:if>
 
 </xsl:template>
