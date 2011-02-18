@@ -108,7 +108,7 @@ jQuery(document).ready(function(){
 			
 			}
 		
-			var url  = '<?php echo get_option('siteurl'); ?>/wp-content/plugins/more-fields/more-fields-write-js.php?';
+			var url  = '<?php echo get_option('siteurl'); ?>/wp-content/plugins/ipm-more-fields/more-fields-write-js.php?';
 			url = url + 'post_id=' + jQuery('#post_ID').val() + '&action=get_file_list&clicked=' + clicked;
 			jQuery.getJSON(url, function(json){
 				html = '';

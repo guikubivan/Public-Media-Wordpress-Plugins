@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: More Fields with Character Counter
+Plugin Name: IPM - More Fields with Character Counter
 Version: 1.3.10
 Author URI: http://henrikmelin.se/
 Plugin URI: http://labs.dagensskiva.com/plugins/more-fields/
