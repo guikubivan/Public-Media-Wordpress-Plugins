@@ -10,7 +10,7 @@ Author URI: http://www.wfiu.org
 
 
 if(!class_exists('category_manager')) {
-	require_once(ABSPATH.PLUGINDIR.'/category_manager/category_manager_classes.php');
+	require_once(ABSPATH.PLUGINDIR.'/ipm-category_manager/category_manager_classes.php');
 	//echo "<h1>sdklfj</h1>";
 	//print_r(get_declared_classes());
 	$category_manager  =  new category_manager("Top Categories");	
