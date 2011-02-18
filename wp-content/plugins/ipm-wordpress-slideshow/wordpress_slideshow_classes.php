@@ -2553,10 +2553,15 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 		$str = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		$str .= '<?xml-stylesheet type="text/xsl" href="'.$this->plugin_url().'/stylesheets/'.$stylesheet.'" version="1.0"?>' . "\n";
 
-		$str .= urlencode($this->get_photo_xml($pid));
+	$str .= (($this->get_photo_xml($pid)));
 		//echo nl2br(htmlentities($str));
-		
 		$xml = new DOMDocument;
+		
+		$str = htmlspecialchars($str);
+		
+		//$str = str_replace(array("&gt;", "&lt;", "&quot;", "&#039;", "&amp;"), array(">", "<", '"', "'", "&"), $str);
+		//
+		
 		if(!$xml->loadXML($str)){
 
 			return '';
