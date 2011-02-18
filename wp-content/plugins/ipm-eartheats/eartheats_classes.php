@@ -9,7 +9,7 @@ class eartheats extends box_custom_field_plugin{
 
 
 	function plugin_url(){
-		$result = get_bloginfo('url').'/wp-content/plugins/eartheats/';
+		$result = get_bloginfo('url').'/wp-content/plugins/ipm-eartheats/';
 		return $result;
 	}
 

@@ -2,7 +2,7 @@
 /* 
 Plugin Name: IPM - Category Manager
 Plugin URI: http://wfiu.org
-Version: 1.0
+Version: 1.0.1
 Description: Managing categories with logic.
 Author: Pablo Vanwoerkom
 Author URI: http://www.wfiu.org
