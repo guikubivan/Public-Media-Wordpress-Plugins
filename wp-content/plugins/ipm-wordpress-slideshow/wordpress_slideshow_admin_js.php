@@ -1,26 +1,6 @@
 <?php
-	require_once(dirname(__FILE__).'/../../../wp-load.php');
-	require_once(dirname(__FILE__).'/../../../wp-admin/admin.php');
 	header("Content-Type: text/javascript");
 ?>
-
-
-function simplifyUploadInterface(){
-	jQuery("#tab-gallery").hide();
-	jQuery("#tab-library").hide();
-	jQuery("#media-buttons").hide();
-
-
-	
-	if(jQuery(".post_title").length == 0){
-		jQuery("#html-upload-ui").next().nextAll().hide();
-	}else{
-		//alert("must hide svae button");
-		jQuery("#media-items").nextAll().hide();
-		jQuery("input[name='save']").hide();
-	}
-}
-
 
 jQuery(document).ready(function(){
 
@@ -59,8 +39,6 @@ jQuery(document).ready(function(){
 		}
 		return valid;
 	});
-	<?php if(!current_user_can('edit_plugins')){ echo "simplifyUploadInterface();"; }?>
-	
 });
 
 

@@ -147,7 +147,7 @@ class wordpress_slideshow{
 
 		//$apicall = "http://maps.google.com/maps/geo?q=".str_replace(',','+',str_replace(' ','',$location))."&output=csv&key=ABQIAAAApmJqiGeKB-folcWGraVHMhQFYWY_ifD3IWMB9xUmFY5e004cnhSiWgNhJltBkYMFEzExEdBE784vAA";
 
-		$coords = get_google_coordinates($location);
+		$coords = $this->utils->get_google_coordinates($location);
 		$lat = $coords[0];
 		$long = $coords[1];
 
@@ -205,20 +205,22 @@ class wordpress_slideshow{
 			el = el.nextSibling;
 
 		}";
-	
-		if(update_post_meta($post_id, $property_name, $property_value)){
+                
+                $res = update_post_meta($post_id, $property_name, $property_value);
+		if($res===true){
 			if($property_name == 'geo_location'){
-				$coords = get_google_coordinates($property_value);
+				$coords = $this->utils->get_google_coordinates($property_value);
 				$lat = $coords[0];
 				$long = $coords[1];
 				add_post_meta($post_id, 'latitude', $lat, true) or update_post_meta($post_id, 'latitude', $lat);
 				add_post_meta($post_id, 'longitude', $long, true) or update_post_meta($post_id, 'longitude', $long);
-			}	
+			}
 			$retStr .= "el.className='highlight';";
 			$retStr .= "el.innerHTML='Updated';";
 		}else{
 			$retStr .= "el.className='highlight';";
 			$retStr .= "el.innerHTML='Error...';";
+                        $retStr .= "alert('|$res|');";
 		}
 		die($retStr);
 	}
@@ -250,7 +252,7 @@ class wordpress_slideshow{
 		die($retStr);
 	}
 
-	public function plugin_head(){
+	public function admin_print_scripts(){
 		$google_api_key = $this->utils->google_api_key;
 		//Register javascript 
 		wp_register_script( 'google_map_api', 'http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$google_api_key);
@@ -287,12 +289,45 @@ class wordpress_slideshow{
 			echo '<link rel="stylesheet" href="'.$this->plugin_url().'wordpress_slideshow_admin.css" type="text/css" />'."\n";
 		}
 
+                if(current_user_can('edit_plugins') && preg_match("/media\-upload.php/", $_SERVER[ 'REQUEST_URI' ]) ){
+                  wp_enqueue_script( 'jquery' );
+                }
 
-  		wp_print_scripts( array( 'sack' ));
+  		wp_print_scripts( array( 'sack' )); //Doesn't seem like I need this
 		?>
+<?php
 
-		<script type="text/javascript">
-		//<![CDATA[
+	}
+
+	public function admin_head(){
+          ?>
+		<script type="text/javascript">//<![CDATA[
+
+               <?php if(!current_user_can('edit_plugins') && preg_match("/media\-upload.php/", $_SERVER[ 'REQUEST_URI' ]) ): ?>
+
+                  function simplifyUploadInterface(){
+                          jQuery("#tab-gallery").hide();
+                          jQuery("#tab-library").hide();
+                          jQuery("#media-buttons").hide();
+
+
+
+                          if(jQuery(".post_title").length == 0){
+                                  jQuery("#html-upload-ui").next().nextAll().hide();
+                          }else{
+                                  //alert("must hide svae button");
+                                  jQuery("#media-items").nextAll().hide();
+                                  jQuery("input[name='save']").hide();
+                          }
+                  }
+
+
+                  jQuery(document).ready(function(){
+                    simplifyUploadInterface();
+                  });
+                <?php endif; ?>
+                  
+		
 		function ajax_replace_wp_photo(photo_id, wp_photo_id, new_url, pcred, gloc){
 		   var mysack = new sack( 
 		       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
@@ -370,14 +405,8 @@ class wordpress_slideshow{
 			  mysack.runAJAX();
 			  return true;
 		}
-
-
 		 // end of JavaScript function myplugin_ajax_elevation
 		//]]>
-
-
-
-
 		</script>
 <?php
 
@@ -387,6 +416,8 @@ class wordpress_slideshow{
 		$result = get_bloginfo('url').'/wp-content/plugins/ipm-wordpress-slideshow/';
 		return $result;
 	}
+        
+        //Thickbox view of map for a location
 	function show_map(){
 		global $google_api_key;
 		?>
@@ -399,7 +430,7 @@ class wordpress_slideshow{
 		$lat = $_GET['latitude'];
 		$long = $_GET['longitude'];
 		if(!$lat && !$long){
-			$coords = get_google_coordinates($location);
+			$coords = $this->utils->get_google_coordinates($location);
 			$lat=$coords[0];
 			$long=$coords[1];
 		}

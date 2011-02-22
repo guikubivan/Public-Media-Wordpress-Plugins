@@ -33,7 +33,8 @@ add_action('media_upload_map', array(&$wp_slideshow,'show_map'));
 
 //admin javacript, css, etc..
 
-add_action( "admin_print_scripts", array(&$wp_slideshow, 'plugin_head') );
+add_action( "admin_print_scripts", array(&$wp_slideshow, 'admin_print_scripts') );
+add_action( "admin_head", array(&$wp_slideshow, 'admin_head') );
 add_action('admin_menu', array(&$wp_slideshow, 'slideshowBox'), 1);//add slideshow box
 
 //save and delete post hook
