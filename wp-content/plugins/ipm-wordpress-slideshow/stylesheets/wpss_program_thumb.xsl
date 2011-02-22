@@ -5,7 +5,7 @@
 <xsl:template match="/slideshow">
 
 				&lt;img class="program-photo" alt="
-					<xsl:value-of select="description"/>
+					<xsl:value-of select="alt"/>
 				" src="
 					<xsl:value-of select="slideshow_thumb/medium_url"/>
 				" />
@@ -16,7 +16,7 @@
 <xsl:template match="/photo">
 
 				&lt;img class="program-photo" alt="
-					<xsl:value-of select="description"/>
+					<xsl:value-of select="alt"/>
 				" src="
 					<xsl:value-of select="medium_url"/>
 				" />
