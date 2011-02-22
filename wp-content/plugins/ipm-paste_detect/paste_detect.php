@@ -1,6 +1,6 @@
 <?php
 /* 
-Plugin Name: Paste Detect
+Plugin Name: IPM Paste Detect
 Plugin URI: http://wfiu.org
 Version: 1.0
 Description: Detects for pasting from word
@@ -251,7 +251,7 @@ function paste_detect_menu() {
 	if(get_bloginfo('version')>= 2.7 ){
 		wfiu_do_main_page();
 
-		add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'Word Paste Destroyer', 'Word Paste Destroyer', 7, 'Word Paste Destroyer', 'check_wordpaste_posts');
+		add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'Word Paste Destroyer', 'Word Paste Destroyer', 7, ABSPATH."ipm-paste_detect".'/paste_detect.php', 'check_wordpaste_posts');
 
 
 	}else{

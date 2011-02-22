@@ -55,7 +55,7 @@ function ipm_archives_permalink_menu(){
 
 	if(current_user_can('edit_plugins')){
 		$myutils->add_page_main();
-		add_submenu_page($myutils->main_page_path(), 'Archives Permalink', 'Archives Permalink', 7, 'Archives Permalink',  'ipm_archives_permalink_settings');
+		add_submenu_page($myutils->main_page_path(), 'Archives Permalink', 'Archives Permalink', 7, ABSPATH.PLUGINDIR.'/ipm_archives_permalink_settings.php',  'ipm_archives_permalink_settings');
 
 	}
 }
