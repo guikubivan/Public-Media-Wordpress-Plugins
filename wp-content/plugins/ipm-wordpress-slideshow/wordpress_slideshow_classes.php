@@ -206,22 +206,24 @@ class wordpress_slideshow{
 
 		}";
                 
-                $res = update_post_meta($post_id, $property_name, $property_value);
-		if($res===true){
-			if($property_name == 'geo_location'){
-				$coords = $this->utils->get_google_coordinates($property_value);
-				$lat = $coords[0];
-				$long = $coords[1];
-				add_post_meta($post_id, 'latitude', $lat, true) or update_post_meta($post_id, 'latitude', $lat);
-				add_post_meta($post_id, 'longitude', $long, true) or update_post_meta($post_id, 'longitude', $long);
-			}
-			$retStr .= "el.className='highlight';";
-			$retStr .= "el.innerHTML='Updated';";
-		}else{
-			$retStr .= "el.className='highlight';";
-			$retStr .= "el.innerHTML='Error...';";
-                        $retStr .= "alert('|$res|');";
-		}
+                $prev_value = get_post_meta($post_id, $property_name, true);
+                if($property_value != $prev_value){
+                  update_post_meta($post_id, $property_name, $property_value);
+                }
+                if($property_name == 'geo_location'){
+                  if(!empty($property_value)){
+                    $coords = $this->utils->get_google_coordinates($property_value);
+                    $lat = $coords[0];
+                    $long = $coords[1];
+                    update_post_meta($post_id, 'latitude', $lat);
+                    update_post_meta($post_id, 'longitude', $long);
+                  }else{
+                    update_post_meta($post_id, 'latitude', "");
+                    update_post_meta($post_id, 'longitude', "");
+                  }
+                }
+                $retStr .= "el.className='highlight';";
+                $retStr .= "el.innerHTML='Updated';";
 		die($retStr);
 	}
 
