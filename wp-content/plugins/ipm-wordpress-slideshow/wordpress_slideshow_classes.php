@@ -1288,6 +1288,8 @@ jQuery(document).ready(function() {
 	}
 
 	function get_photo_xml($photo, $root_tag = 'photo'){
+			
+			
 		if(!is_array($photo)){
 			$photo = $this->getPhoto($photo);
 		}
@@ -1302,7 +1304,7 @@ jQuery(document).ready(function() {
 
 		foreach($photo as $name => $value){
 			if($value){
-				$str .= "<$name>". htmlentities(htmlspecialchars($value))."</$name>\n";
+				$str .= "<$name>". (htmlspecialchars($value))."</$name>\n";
 			}								
 		}
 		$str .= "</$root_tag>\n";
@@ -1329,7 +1331,7 @@ jQuery(document).ready(function() {
 		unset($sProps['update']);
 		foreach($sProps as $name => $value){
 			if($value){
-				$str .= "<$name>".htmlentities(htmlspecialchars($value))."</$name>\n";
+				$str .= "<$name>".(htmlspecialchars($value))."</$name>\n";
 			}
 		}
 		//slideshow thumb photo
@@ -2550,31 +2552,26 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 
 
 	function get_photo_clip($pid, $stylesheet='wpss_simple.xsl'){
+			
+		//create the XML document	
 		$str = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		$str .= '<?xml-stylesheet type="text/xsl" href="'.$this->plugin_url().'/stylesheets/'.$stylesheet.'" version="1.0"?>' . "\n";
-
-	$str .= (($this->get_photo_xml($pid)));
-		//echo nl2br(htmlentities($str));
+		$str .= (($this->get_photo_xml($pid)));
 		$xml = new DOMDocument;
-		
-		$str = htmlspecialchars($str);
-		
-		//$str = str_replace(array("&gt;", "&lt;", "&quot;", "&#039;", "&amp;"), array(">", "<", '"', "'", "&"), $str);
-		//
-		
 		if(!$xml->loadXML($str)){
-
 			return '';
 		}
+		
+		//create the stylesheet
 		$xsl = new DOMDocument;
 		@$xsl->load(dirname(__FILE__).'/stylesheets/'.$stylesheet);
-
+		
 		// Configure the transformer
 		$proc = new XSLTProcessor;
 		@$proc->importStyleSheet($xsl); // attach the xsl rules
 		$output = @$proc->transformToXML($xml);
-
-		if($output){
+		
+		if($output)
+		{
 			return $output;
 		}else{
 			return "error";
@@ -2639,6 +2636,7 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 	}
 
 	function replace_slideshow_tags($text, $probe=false){
+		
 		global $wpdb, $post;
 		$post_id = $post->ID;
 		$sids=get_post_meta($post_id,$this->fieldname, false);
@@ -2666,6 +2664,7 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 				}
 			}
 		}
+
 		if($probe)return false;
 		return $text;
 	}

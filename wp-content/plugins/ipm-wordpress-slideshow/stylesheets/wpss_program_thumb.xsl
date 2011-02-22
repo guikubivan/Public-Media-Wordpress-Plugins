@@ -4,31 +4,23 @@
 
 <xsl:template match="/slideshow">
 
-
-			
-
-				<![CDATA[<img class="program-photo" alt="]]>
-				<xsl:value-of select="description"/>
-				<![CDATA[" src="]]><xsl:value-of select="slideshow_thumb/medium_url"/><![CDATA[" />]]>
-				
-			
-
-
+				&lt;img class="program-photo" alt="
+					<xsl:value-of select="description"/>
+				" src="
+					<xsl:value-of select="slideshow_thumb/medium_url"/>
+				" />
 
 </xsl:template>
 
 
 <xsl:template match="/photo">
 
-
-
-			
-
-				<![CDATA[<img class="program-photo" alt="]]>
-				<xsl:value-of select="description"/>
-				<![CDATA[" src="]]><xsl:value-of select="medium_url"/><![CDATA[" />]]>
-
-
+				&lt;img class="program-photo" alt="
+					<xsl:value-of select="description"/>
+				" src="
+					<xsl:value-of select="medium_url"/>
+				" />
+				
 </xsl:template>
 
 </xsl:stylesheet>
