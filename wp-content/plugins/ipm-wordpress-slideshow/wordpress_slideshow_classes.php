@@ -2569,7 +2569,8 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 		if(!$xml->loadXML($str)){
 			return '';
 		}
-		echo "<pre>".htmlentities($str)."</pre>";
+		//echo "<pre>".htmlentities($str)."</pre>";
+		
 		//create the stylesheet
 		$xsl = new DOMDocument;
 		@$xsl->load(dirname(__FILE__).'/stylesheets/'.$stylesheet);
