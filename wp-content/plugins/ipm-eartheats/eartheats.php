@@ -1,8 +1,8 @@
 <?php
 /* 
-Plugin Name: Earth Eats
+Plugin Name: IPM - Earth Eats
 Plugin URI: http://wfiu.org
-Version: 1.5
+Version: 1.5.1
 Description: Earth eats box. <a href="admin.php?page=Eartheats">Settings</a>
 Author: Pablo Vanwoerkom
 Author URI: http://www.wfiu.org
@@ -11,7 +11,7 @@ Author URI: http://www.wfiu.org
 //require_once(ABSPATH.'wp-includes/formatting.php');
 if(!class_exists('eartheats')) {
 require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/plugin_classes.php');
-	require_once(ABSPATH.PLUGINDIR.'/eartheats/eartheats_classes.php');
+	require_once(ABSPATH.PLUGINDIR.'/ipm-eartheats/eartheats_classes.php');
 	$eartheats  =  new eartheats('input', 'side', 'Recipe(s)', 'recipe_ids', 'recipe_ids_input');
 }
 
@@ -39,7 +39,7 @@ function eartheats_settings_menu() {
 	if(current_user_can('edit_plugins')){
 		if(get_bloginfo('version')>= 2.7 ){
 			wfiu_do_main_page();
-			add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'Eartheats', 'Eartheats', 7, 'Eartheats',   array($eartheats, 'settings'));
+			add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'Eartheats', 'Eartheats', 7, 'ipm-eartheats/eartheats.php',   array($eartheats, 'settings'));
 		}else{
 			add_menu_page('Eartheats', 'Eartheats', 7, __FILE__ , array($eartheats, 'settings'));
 		}

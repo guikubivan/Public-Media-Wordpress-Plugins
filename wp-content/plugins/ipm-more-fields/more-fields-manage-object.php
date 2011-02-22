@@ -138,7 +138,7 @@ class more_fields_manage {
 		wp_enqueue_script('jquery');
 //		wp_enqueue_script('postbox');
 //		wp_enqueue_script('prototype');
-		$path = get_option('siteurl') . '/wp-content/plugins/more-fields/more-fields-manage-js.php';
+		$path = get_option('siteurl') . '/wp-content/plugins/ipm-more-fields/more-fields-manage-js.php';
 		wp_enqueue_script('mf_js', $path, 'jquery');
 	}
 

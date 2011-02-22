@@ -10,12 +10,12 @@ function check_excerpt_char_count(excerpt_obj, do_message){
 
 	if(jQuery(excerpt_obj).val().length < CharCountSettings.char_count_excerpt_min){
 		jQuery(excerpt_obj).css('background-color', CharCountSettings.char_count_excerpt_optional =='off' ? requiredColor : optionalColor);
-		if(do_message){
+		if(do_message && CharCountSettings.char_count_excerpt_optional =='off' ){
 			alert("Please make the excerpt between " + CharCountSettings.char_count_excerpt_min + " and " + CharCountSettings.char_count_excerpt_max + " characters");
 		}
 	}else if(jQuery(excerpt_obj).val().length > CharCountSettings.char_count_excerpt_max){
 		jQuery(excerpt_obj).css('background-color', CharCountSettings.char_count_excerpt_optional =='off' ? requiredColor : optionalColor);
-		if(do_message){
+		if(do_message && CharCountSettings.char_count_excerpt_optional =='off' ){
 			alert("Please shorten the excerpt to " + CharCountSettings.char_count_excerpt_max + " characters or less");
 		}
 	}else{
@@ -31,12 +31,12 @@ function check_teaser_char_count(teaser_obj, do_message){
 
 	if(jQuery(teaser_obj).val().length < CharCountSettings.char_count_teaser_min){
 		jQuery(teaser_obj).css('background-color', CharCountSettings.char_count_teaser_optional =='off' ? requiredColor : optionalColor);
-		if(do_message){
+		if(do_message && CharCountSettings.char_count_teaser_optional == 'off'){
 			alert("Please make the teaser between " + CharCountSettings.char_count_teaser_min + " and " + CharCountSettings.char_count_teaser_max + " characters");
 		}
 	}else if(jQuery(teaser_obj).val().length > CharCountSettings.char_count_teaser_max){
 		jQuery(teaser_obj).css('background-color', CharCountSettings.char_count_teaser_optional =='off' ? requiredColor : optionalColor);
-		if(do_message){
+		if(do_message && CharCountSettings.char_count_teaser_optional == 'off'){
 			alert("Please shorten the teaser to " + CharCountSettings.char_count_teaser_max + " characters or less");
 		}
 	}else{
@@ -55,12 +55,12 @@ function check_title_char_count(title_obj, do_message){
 
 	if(jQuery(title_obj).val().length > CharCountSettings.char_count_title_max){
 		jQuery(title_obj).css('background-color', CharCountSettings.char_count_title_optional =='off' ? requiredColor : optionalColor);
-		if(do_message){
+		if(do_message && CharCountSettings.char_count_title_optional =='off'){
 			alert("Please shorten the title to " + CharCountSettings.char_count_title_max + " characters or less");
 		}
 	}else if(jQuery(title_obj).val().length < CharCountSettings.char_count_title_min){
 		jQuery(title_obj).css('background-color', CharCountSettings.char_count_title_optional =='off' ? requiredColor : optionalColor);
-		if(do_message){
+		if(do_message &&  CharCountSettings.char_count_title_optional =='off'){
 			alert("Please make the title between " + CharCountSettings.char_count_title_min + " and " + CharCountSettings.char_count_title_max + " characters");
 		}
 	}else{

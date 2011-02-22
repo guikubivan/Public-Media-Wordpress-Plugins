@@ -1,8 +1,8 @@
 <?php
 /* 
-Plugin Name: Category Manager
+Plugin Name: IPM - Category Manager
 Plugin URI: http://wfiu.org
-Version: 1.0
+Version: 1.0.1
 Description: Managing categories with logic.
 Author: Pablo Vanwoerkom
 Author URI: http://www.wfiu.org
@@ -10,7 +10,7 @@ Author URI: http://www.wfiu.org
 
 
 if(!class_exists('category_manager')) {
-	require_once(ABSPATH.PLUGINDIR.'/category_manager/category_manager_classes.php');
+	require_once(ABSPATH.PLUGINDIR.'/ipm-category_manager/category_manager_classes.php');
 	//echo "<h1>sdklfj</h1>";
 	//print_r(get_declared_classes());
 	$category_manager  =  new category_manager("Top Categories");	
@@ -42,7 +42,7 @@ function category_manager_menu() {
 	if(current_user_can('edit_plugins')){
 		if(get_bloginfo('version')>= 2.7 ){
 			wfiu_do_main_page();
-			add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'WFIU Category Manager', 'WFIU Category Manager', 7, 'WFIU Category Manager',   array($category_manager, 'main_config_form'));
+			add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'WFIU Category Manager', 'WFIU Category Manager', 7, 'ipm-category_manager/category_manager.php',   array($category_manager, 'main_config_form'));
 		}else{
 
 			add_menu_page('WFIU Category Manager', 'WFIU Category Manager', 7, __FILE__ , array($category_manager, 'config_form'));

@@ -3,7 +3,7 @@ if (!class_exists('IPM_Utils')) {
 
 	class IPM_Utils {
 		public $google_api_key = 'ABQIAAAAIVgh1deAtW1cu85uZMLCBhTnn3xAjQHqpFtU4TMbi6qQki1QvhSoa7FSZMKpfIEdNdXx68sI8xbwhA';
-
+		
 		public function __construct($title = 'IPM Plugins'){
 			if(function_exists('add_site_option')){//single wordpress install
 				if($slak=get_site_option('google_api_key')){
@@ -98,7 +98,7 @@ if (!class_exists('IPM_Utils')) {
 				}
 				if(!$exists){
 					$this->add_page_main();
-					add_submenu_page($this->main_page_path(), 'Google API Key', 'Google API Key', 7, 'Google API Key', array(&$this,'google_api_key_form'));
+					add_submenu_page($this->main_page_path(), 'Google API Key', 'Google API Key', 7, ABSPATH.PLUGINDIR."/wfiu_utils/google-api-key.php", array(&$this,'google_api_key_form'));
 				}
 			}else{
 				global $menu;
@@ -110,7 +110,7 @@ if (!class_exists('IPM_Utils')) {
 					}
 				}
 				if(!$exists){
-					add_menu_page('Google API Key', 'Google API Key', 7, 'Google API Key', __FILE__, array(&$this,'google_api_key_form'));
+					add_menu_page('Google API Key', 'Google API Key', 7, ABSPATH.PLUGINDIR."/wfiu_utils/google-api-key.php", __FILE__, array(&$this,'google_api_key_form'));
 				}
 
 			}

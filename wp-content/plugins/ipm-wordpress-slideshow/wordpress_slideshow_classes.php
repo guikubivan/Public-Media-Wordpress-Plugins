@@ -1,4 +1,5 @@
 <?php
+$tab_order = 100;
 class wordpress_slideshow{
 	public $fieldname = 'slideshow_id';
 	public $plugin_prefix = 'wpss_';
@@ -11,8 +12,14 @@ class wordpress_slideshow{
 	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
 	public $default_multiple_slideshows = true;
 	public $photo_id_translation = Array();
+	
+	public $plugin_path = "/ipm-wordpress-slideshow/";#folder name in wp-content/plugins, updated in constructor
+        public $stylesheets_path = "";#Default is set in constructor if none given here
+	
 	public function __construct(){
 	    	global $wpdb;
+                $this->plugin_path =  ABSPATH.PLUGINDIR.$this->plugin_path;
+                $this->stylesheets_path =  $this->plugin_path . "stylesheets/";
 		$this->t_s = $wpdb->prefix.$this->plugin_prefix."slideshows";
 		$this->t_p = $wpdb->prefix.$this->plugin_prefix."photos";
 		$this->t_spr = $wpdb->prefix.$this->plugin_prefix."slideshow_photo_relations";
@@ -908,13 +915,13 @@ echo ' hello' ;
 	});
 
 </script>
-			</div>
+                  </div>
 
-		<div id='wpss_import'>
-	<?php echo $this->import_utility(); ?>
-		</div>
+                  <div id='wpss_import'>
+                    <?php echo $this->import_utility(); ?>
+                  </div>
+                </div>
 <?php 
-		echo "</div>";
 	}
 
 	function page_form(){
@@ -924,32 +931,31 @@ echo ' hello' ;
 
 	function slideshowFields($id, $itemV= array()){
 		
-
 		$fieldW = '70%';
 
 		$str = "<tr>
 				<td style='width:auto'>Slideshow title: 
 				</td>
 				<td style='width:auto;'> 
-				<input type='text' tabindex='140' id='slideshowItem[$id][title]' name='slideshowItem[$id][title]' style='width:$fieldW' value='" . $itemV['title'] . "' class='".$this->plugin_prefix."required' />
+				<input type='text' tabindex='".($GLOBALS["tab_order"]+1)."' id='slideshowItem[$id][title]' name='slideshowItem[$id][title]' style='width:$fieldW' value='" . $itemV['title'] . "' class='".$this->plugin_prefix."required' />
 				</td>
 				<td style='vertical-align:top;width:auto;' rowspan='3'>
 				Slideshow description:<br />
-				<textarea tabindex='143' id='slideshowItem[$id][description]' name='slideshowItem[$id][description]' style='width:100%;height:100%;' class='".$this->plugin_prefix."required' >".$itemV['description']."</textarea>
+				<textarea tabindex='".($GLOBALS["tab_order"]+4)."' id='slideshowItem[$id][description]' name='slideshowItem[$id][description]' style='width:100%;height:100%;' class='".$this->plugin_prefix."required' >".$itemV['description']."</textarea>
 				</td>
 			</tr>
 			<tr>
 				<td>Slideshow photo credit:
 				</td>
 				<td>
-				<input type='text' tabindex='141' name='slideshowItem[$id][photo_credit]' style='width:$fieldW' value='" . $itemV['photo_credit'] . "' />
+				<input type='text' tabindex='".($GLOBALS["tab_order"]+2)."' name='slideshowItem[$id][photo_credit]' style='width:$fieldW' value='" . $itemV['photo_credit'] . "' />
 				</td>
 			</tr>
 			<tr>
 				<td class='topalign'>Slideshow geo location:
 				</td>
 				<td>
-				<input type='text' tabindex='142' name='slideshowItem[$id][geo_location]' id='slideshowItem[$id][geo_location]' style='width:50%' value='" . $itemV['geo_location'] . "' onkeyup='slideshow_getCoords(this.id);' onblur='slideshow_getCoords(this.id);' /><img onClick='showMap(this.previousSibling.value,this.nextSibling.id, this.nextSibling.nextSibling.id, this);' class='map_icon centervertical' src='".$this->plugin_url()."images/map_icon.jpg' /><input type='hidden' id='slideshowItem[$id][latitude]' name='slideshowItem[$id][latitude]' ReadOnly size='4' value='" . $itemV['latitude'] . "' /><input type='hidden' id='slideshowItem[$id][longitude]' name='slideshowItem[$id][longitude]' ReadOnly size='4' value='" . $itemV['longitude'] . "' /><!--&#176; latitude--><!--&#176; longitude-->
+				<input type='text' tabindex='".($GLOBALS["tab_order"]+3)."' name='slideshowItem[$id][geo_location]' id='slideshowItem[$id][geo_location]' style='width:50%' value='" . $itemV['geo_location'] . "' onkeyup='slideshow_getCoords(this.id);' onblur='slideshow_getCoords(this.id);' /><img onClick='showMap(this.previousSibling.value,this.nextSibling.id, this.nextSibling.nextSibling.id, this);' class='map_icon centervertical' src='".$this->plugin_url()."images/map_icon.jpg' /><input type='hidden' id='slideshowItem[$id][latitude]' name='slideshowItem[$id][latitude]' ReadOnly size='4' value='" . $itemV['latitude'] . "' /><input type='hidden' id='slideshowItem[$id][longitude]' name='slideshowItem[$id][longitude]' ReadOnly size='4' value='" . $itemV['longitude'] . "' /><!--&#176; latitude--><!--&#176; longitude-->
 				</td>
 
 			</tr>
@@ -958,7 +964,7 @@ echo ' hello' ;
 				<ul class='sortable' style='margin-bottom: 10px;' id='".$this->plugin_prefix."slideshow_photos_ul_${id}'></ul><span id='addphoto_button_$id' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(this.previousSibling.id);' tip='Add Media'>Add photo</span>
 
 ";
-
+$GLOBALS["tab_order"]+=5;
 		$str .= "</li>";			//$notes = str_replace(array("\r", "\n", "\0"), array('\r', '\n', '\0'), $notes);
 		
 		return $str;
@@ -1330,7 +1336,7 @@ jQuery(document).ready(function() {
 
 		foreach($photo as $name => $value){
 			if($value){
-				$str .= "<$name>". htmlspecialchars($value)."</$name>\n";
+				$str .= "<$name>". ent2ncr($value)."</$name>\n";
 			}								
 		}
 		$str .= "</$root_tag>\n";
@@ -1357,7 +1363,7 @@ jQuery(document).ready(function() {
 		unset($sProps['update']);
 		foreach($sProps as $name => $value){
 			if($value){
-				$str .= "<$name>".htmlspecialchars($value)."</$name>\n";
+				$str .= "<$name>".ent2ncr($value)."</$name>\n";
 			}
 		}
 		//slideshow thumb photo
@@ -1425,18 +1431,22 @@ jQuery(document).ready(function() {
 			//$xml->loadXML($xml_text);
 			return;
 		}
-
+	
 		$xsl = new DOMDocument;
-		@$xsl->load($this->plugin_url().'/stylesheets/'.$stylesheet);
+		@$xsl->load($this->stylesheets_path.$stylesheet);
 
 		// Configure the transformer
 		$proc = new XSLTProcessor;
 		@$proc->importStyleSheet($xsl); // attach the xsl rules
 		$output = @$proc->transformToXML($xml);
+		//echo "<pre>".print_r($xml_text, true)."</pre>";
 		if($output){
 			echo $output;
 		}else{
-			echo "error";
+			if($stylesheet = "")
+				echo "Error. The Slideshow Stylesheets have not been defined.";
+			else
+				echo "Unknown error.";
 		}
 
 	}
@@ -1505,7 +1515,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Title: 
 				</td>
 				<td>
-				<input type='text' id='slideshowItem[s_id][photos][$id][title]' name='slideshowItem[s_id][photos][$id][title]' size='20' value='");
+				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 1)."' id='slideshowItem[s_id][photos][$id][title]' name='slideshowItem[s_id][photos][$id][title]' size='20' value='");
 		if($itemV['title']){
 			$ret[] = array('escape'=>true, 'text'=>$itemV['title']);
 		}else if($doJS){
@@ -1522,14 +1532,14 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Photo credit:
 				</td>
 				<td>
-				<input type='text' id='slideshowItem[s_id][photos][$id][photo_credit]' name='slideshowItem[s_id][photos][$id][photo_credit]' size='20' ReadOnly value='" . $itemV['photo_credit'] . "'  title='Click to edit' class='editable ".$this->plugin_prefix."required' /> <span class='button' style='display:none' >Update</span>
+				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 2)."' id='slideshowItem[s_id][photos][$id][photo_credit]' name='slideshowItem[s_id][photos][$id][photo_credit]' size='20' ReadOnly value='" . $itemV['photo_credit'] . "'  title='Click to edit' class='editable ".$this->plugin_prefix."required' /> <span class='button' style='display:none' >Update</span>
 				</td>
 			</tr>
 			<tr>
 				<td>Geo location:
 				</td>
 				<td>
-				<input type='text' name='slideshowItem[s_id][photos][$id][geo_location]' id='slideshowItem[s_id][photos][$id][geo_location]' size='20' ReadOnly value='" . $itemV['geo_location'] . "' class='editable' title='Click to edit' /><span class='button' style='display:none' >Update</span><img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='".$this->plugin_url()."images/map_icon.jpg' />
+				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 3)."' name='slideshowItem[s_id][photos][$id][geo_location]' id='slideshowItem[s_id][photos][$id][geo_location]' size='20' ReadOnly value='" . $itemV['geo_location'] . "' class='editable' title='Click to edit' /><span class='button' style='display:none' >Update</span><img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='".$this->plugin_url()."images/map_icon.jpg' />
 				</td>
 
 			</tr>
@@ -1537,14 +1547,14 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Original URL:
 				</td>
 				<td>
-				<input type='text' id='slideshowItem[s_id][photos][$id][original_url]' name='slideshowItem[s_id][photos][$id][original_url]' size='20' ReadOnly value='" . $itemV['original_url'] . "'  title='Click to edit' class='editable' /> <span class='button' style='display:none' >Update</span>
+				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 4)."' id='slideshowItem[s_id][photos][$id][original_url]' name='slideshowItem[s_id][photos][$id][original_url]' size='20' ReadOnly value='" . $itemV['original_url'] . "'  title='Click to edit' class='editable' /> <span class='button' style='display:none' >Update</span>
 				</td>
 			</tr>
 			<tr>
 				<td>Alt text:
 				</td>
 				<td>
-				<input type='text' name='slideshowItem[s_id][photos][$id][alt]' size='20' value='".$itemV['alt']."' />
+				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 5)."'  name='slideshowItem[s_id][photos][$id][alt]' size='20' value='".$itemV['alt']."' />
 				</td>
 			</tr>
 
@@ -1553,7 +1563,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Caption:
 				</td>
 				<td style='width:auto'>
-					<textarea name='slideshowItem[s_id][photos][$id][caption]' id='slideshowItem[s_id][photos][$id][caption]' tabindex='6' rows='2' style='width:300px' class='".$this->plugin_prefix."required' >".$itemV['caption']."</textarea>
+					<textarea  tabindex='".($GLOBALS['tab_order'] + 6)."' name='slideshowItem[s_id][photos][$id][caption]' id='slideshowItem[s_id][photos][$id][caption]' rows='2' style='width:300px' class='".$this->plugin_prefix."required' >".$itemV['caption']."</textarea>
 				</td>
 
 			</tr>
@@ -1561,6 +1571,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 			</table>
 		</li>");
 		//print_r($ret);
+		$GLOBALS['tab_order'] += 7; 
 		$dhtml = $this->utils->prepareDHTML($ret);
 		return str_replace(array("\r", "\n", "\0"),array('\r', '\n', '\0'), $dhtml);
 	}
@@ -1584,13 +1595,13 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Title: 
 				</td>
 				<td>
-				<input type='text' id='slideshowItem[s_id][photos][$id][title]' name='slideshowItem[s_id][photos][$id][title]' size='20' value='");
+				<input tabindex='".($GLOBALS['tab_order'] + 1)."' type='text' id='slideshowItem[s_id][photos][$id][title]' name='slideshowItem[s_id][photos][$id][title]' size='20' value='");
 		if($itemV['title']){
 			$ret[] = array('escape'=>true, 'text'=>$itemV['title']);
 		}else{
 			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(document.getElementById('attachments[${id}][post_title]').value) +'");
 		}
-
+		
 		$ret[] = array('escape'=>true, 'text'=>"' class='".$this->plugin_prefix."required photo_title' />
 				</td>
 				<td rowspan='5' style='width:100%; text-align:center;'>
@@ -1602,7 +1613,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Photo credit:
 				</td>
 				<td>
-				<input type='text' name='slideshowItem[s_id][photos][$id][photo_credit]' id='slideshowItem[s_id][photos][$id][photo_credit]' size='20' ReadOnly value='");
+				<input tabindex='".($GLOBALS['tab_order'] + 2)."' type='text' name='slideshowItem[s_id][photos][$id][photo_credit]' id='slideshowItem[s_id][photos][$id][photo_credit]' size='20' ReadOnly value='");
 
 		if($itemV['photo_credit']){
 			$ret[] = array('escape'=>true, 'text'=>$itemV['photo_credit']);
@@ -1616,7 +1627,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Geo location:
 				</td>
 				<td>
-				<input type='text' name='slideshowItem[s_id][photos][$id][geo_location]' id='slideshowItem[s_id][photos][$id][geo_location]' size='20' ReadOnly value='");
+				<input tabindex='".($GLOBALS['tab_order'] + 3)."'type='text' name='slideshowItem[s_id][photos][$id][geo_location]' id='slideshowItem[s_id][photos][$id][geo_location]' size='20' ReadOnly value='");
 		if($itemV['geo_location']){
 			$ret[] = array('escape'=>true, 'text'=>$itemV['geo_location']);
 		}else{
@@ -1631,7 +1642,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Original URL:
 				</td>
 				<td>
-				<input type='text' id='slideshowItem[s_id][photos][$id][original_url]' name='slideshowItem[s_id][photos][$id][original_url]' size='20' ReadOnly value='");
+				<input tabindex='".($GLOBALS['tab_order'] + 4)."'type='text' id='slideshowItem[s_id][photos][$id][original_url]' name='slideshowItem[s_id][photos][$id][original_url]' size='20' ReadOnly value='");
 		if($itemV['original_url']){
 			$ret[] = array('escape'=>true, 'text'=>$itemV['original_url']);
 		}else{
@@ -1644,7 +1655,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Alt text:
 				</td>
 				<td>
-				<input type='text' name='slideshowItem[s_id][photos][$id][alt]' size='20' value='");
+				<input type='text' tabindex='".($GLOBALS['tab_order'] + 5)."'name='slideshowItem[s_id][photos][$id][alt]' size='20' value='");
 		if($itemV['alt']){
 			$ret[] = array('escape'=>true, 'text'=>$itemV['alt']);
 		}else{
@@ -1657,7 +1668,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				<td>Caption:
 				</td>
 				<td style='width:auto;'>
-					<textarea name='slideshowItem[s_id][photos][$id][caption]' id='slideshowItem[s_id][photos][$id][caption]' tabindex='6' rows='2' style='width:300px' class='".$this->plugin_prefix."required' >");
+					<textarea name='slideshowItem[s_id][photos][$id][caption]' id='slideshowItem[s_id][photos][$id][caption]' tabindex='".($GLOBALS['tab_order'] + 6)."' rows='2' style='width:300px' class='".$this->plugin_prefix."required' >");
 		if($itemV['caption']){
 			$ret[] = array('escape'=>true, 'text'=>$itemV['caption']);
 		}else{
@@ -1671,6 +1682,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 			</table>
 		</li>");
 		//print_r($ret);
+		$GLOBALS['tab_order'] += 7;
 		$dhtml = $this->utils->prepareDHTML($ret);
 		return str_replace(array("\r", "\n", "\0"),array('\r', '\n', '\0'), $dhtml);
 	}
@@ -2565,7 +2577,7 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 		}else{
 			return "error";
 		}
-
+ 
 	}
 
 
@@ -2580,7 +2592,6 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 
 			return '';
 		}
-
 		$xsl = new DOMDocument;
 		@$xsl->load(dirname(__FILE__).'/stylesheets/'.$stylesheet);
 

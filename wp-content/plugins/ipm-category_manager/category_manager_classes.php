@@ -365,7 +365,7 @@ class category_manager{
 
 
 	function plugin_url(){
-		$result = get_bloginfo('url').'/wp-content/plugins/category_manager/';
+		$result = get_bloginfo('url').'/wp-content/plugins/ipm-category_manager/';
 		return $result;
 	}
 

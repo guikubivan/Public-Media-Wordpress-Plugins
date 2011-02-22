@@ -54,7 +54,7 @@ function slideshow_manager_menu(){
 
 	if(current_user_can('edit_plugins')){
 		$myutils->add_page_main();
-		add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, 'Slideshow Manager',  array(&$wp_slideshow, 'manage_slideshows'));
+		add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, $wp_slideshow->plugin_path.basename(__FILE__), array(&$wp_slideshow, 'manage_slideshows'));
 		$myutils->add_page_google_api_key();
 	}
 }
