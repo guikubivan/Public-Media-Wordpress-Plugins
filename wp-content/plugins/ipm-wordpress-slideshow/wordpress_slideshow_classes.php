@@ -1555,6 +1555,7 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 				</td>
 				<td>
 				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 5)."'  name='slideshowItem[s_id][photos][$id][alt]' size='20' value='".$itemV['alt']."' />
+				<small>Specific to this Slideshow</small>
 				</td>
 			</tr>
 
@@ -1661,7 +1662,8 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 		}else{
 			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(removeHTMLTags(document.getElementById('attachments[${id}][post_excerpt]').value)) +'");
 		}
-		$ret[] = array('escape'=>true, 'text'=>"' />
+		$ret[] = array('escape'=>true, 'text'=>"' /><small>Specific to this Slideshow</small>
+				
 				</td>
 			</tr>
 			<tr>
@@ -2133,10 +2135,17 @@ jQuery(function($){
 
 
 
-	jQuery(\"label[for='attachments[$id][post_excerpt]']\").find(\"span:first\").html('Alt Text');
+	jQuery(\"label[for='attachments[$id][post_excerpt]']\").find(\"span:first\").html('Alt Text <br /><small>Default for slideshows</small>');
 	jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]\").next().hide();
 
-
+	jQuery(\"tr.image_alt\").hide();
+	
+	jQuery(\"input#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]\").blur(function(){
+	
+		jQuery(\"input#attachments\\\\[$id\\\\]\\\\[image_alt\\\\]\").val( jQuery(\"input#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]\").val()	);
+	});
+	jQuery(\"input#attachments\\\\[$id\\\\]\\\\[image_alt\\\\]\").val( jQuery(\"input#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]\").val()	);
+	
 	jQuery(\"label[for='attachments[$id][post_content]']\").find(\"span:first\").html('Caption');
 	jQuery(\"label[for='attachments[$id][post_content]']\").find(\"span:first\").after(\"<span class='alignright'><abbr class='required' title='required'>*</abbr></span>\");
 	jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_content\\\\]\").addClass('".$this->plugin_prefix."required');
@@ -2582,6 +2591,7 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 
 
 	function get_photo_clip($pid, $stylesheet='wpss_simple.xsl'){
+		//create the XML document	
 		$str = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		$str .= '<?xml-stylesheet type="text/xsl" href="'.$this->plugin_url().'/stylesheets/'.$stylesheet.'" version="1.0"?>' . "\n";
 
@@ -2589,17 +2599,18 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 		//echo nl2br(htmlentities($str));
 		$xml = new DOMDocument;
 		if(!$xml->loadXML($str)){
-
 			return '';
 		}
+		//echo "<pre>".htmlentities($str)."</pre>";
+		//create the stylesheet
 		$xsl = new DOMDocument;
 		@$xsl->load(dirname(__FILE__).'/stylesheets/'.$stylesheet);
-
+		
 		// Configure the transformer
 		$proc = new XSLTProcessor;
 		@$proc->importStyleSheet($xsl); // attach the xsl rules
 		$output = @$proc->transformToXML($xml);
-
+		
 		if($output){
 			return $output;
 		}else{
@@ -2665,6 +2676,7 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 	}
 
 	function replace_slideshow_tags($text, $probe=false){
+		
 		global $wpdb, $post;
 		$post_id = $post->ID;
 		$sids=get_post_meta($post_id,$this->fieldname, false);
@@ -2692,6 +2704,7 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 				}
 			}
 		}
+
 		if($probe)return false;
 		return $text;
 	}
