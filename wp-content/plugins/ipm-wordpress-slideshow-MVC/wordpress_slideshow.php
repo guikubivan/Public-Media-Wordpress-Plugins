@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: IPM - Wordpress slideshow
+Plugin Name: IPM - Wordpress slideshow - MVC
 Plugin URI: http://www.wfiu.org
 Description: Let's you make a slideshow using wordpress' native way of storing photos.
 Version: 1.0
-Author: Pablo Vanwoerkom
+Author: Pablo Vanwoerkom, Ben Serrette
 Author URI: http://www.wfiu.org
 */
 define('WPINC', 'wp-includes');
@@ -23,6 +23,9 @@ if(!class_exists ('wordpress_slideshow')) {
 	$wp_slideshow = new wordpress_slideshow;
 }
 
+if(!class_exists ('IPM_Photo')) {
+	require_once(dirname(__FILE__).'/models/photo.model.php');
+}
 
 //*********************ADMIN STUFF*********************************
 //activate plugin

@@ -1,25 +1,30 @@
 <?php
 $tab_order = 100;
+
+
 class wordpress_slideshow{
 	public $fieldname = 'slideshow_id';
 	public $plugin_prefix = 'wpss_';
 	public $slideshow_props = Array('id','title','photo_credit','description','geo_location');
 	public $photo_props = Array('id','title', 'caption', 'geo_location', 'photo_credit','description','url');
-	private $fixed_photo_props = array('geo_location', 'photo_credit','latitude','longitude', 'original_url');
+	public $fixed_photo_props = array('geo_location', 'photo_credit','latitude','longitude', 'original_url');
 	public $t_s, $t_spr, $t_p, $t_pm, $t_pmr;
 	public $default_style_photo = 'wpss_program_single_new.xsl';
 	public $default_style_slideshow = 'wpss_program_single_new.xsl';
 	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
 	public $default_multiple_slideshows = true;
 	public $photo_id_translation = Array();
+	public $wpdb;
 	
-	public $plugin_path = "/ipm-wordpress-slideshow/";#folder name in wp-content/plugins, updated in constructor
-        public $stylesheets_path = "";#Default is set in constructor if none given here
+	public $plugin_path = "/ipm-wordpress-slideshow-MVC/";#folder name in wp-content/plugins, updated in constructor
+    public $stylesheets_path = "";#Default is set in constructor if none given here
 	
 	public function __construct(){
 	    	global $wpdb;
-                $this->plugin_path =  ABSPATH.PLUGINDIR.$this->plugin_path;
-                $this->stylesheets_path =  $this->plugin_path . "stylesheets/";
+		$this->wpdb = $wpdb;
+			
+        $this->plugin_path =  ABSPATH.PLUGINDIR.$this->plugin_path;
+        $this->stylesheets_path =  $this->plugin_path . "stylesheets/";
 		$this->t_s = $wpdb->prefix.$this->plugin_prefix."slideshows";
 		$this->t_p = $wpdb->prefix.$this->plugin_prefix."photos";
 		$this->t_spr = $wpdb->prefix.$this->plugin_prefix."slideshow_photo_relations";
@@ -41,6 +46,22 @@ class wordpress_slideshow{
 		$this->postmeta_post_image = $plugin_prefix.'post_image';
 		$this->utils = new IPM_Utils();
 	}
+
+	public function render_view( $view_name, $parameter = array(), $end = "frontend")
+	{
+		ob_start();
+		if(is_array($parameter))
+		{
+			extract($parameter);
+		}
+		
+		include($this->plugin_path."views/".$end."/".$view_name);
+		$output = ob_get_contents();
+		ob_end_clean();
+		
+		return $output;
+	}
+	
 	function add_column($defaults){//add column when listing posts
 		$defaults['wpss'] = 'Photos';
 		//print_r($defaults);
@@ -422,7 +443,7 @@ class wordpress_slideshow{
 	}
 
 	function plugin_url(){
-		$result = get_bloginfo('url').'/wp-content/plugins/ipm-wordpress-slideshow/';
+		$result = get_bloginfo('url').'/wp-content/plugins/ipm-wordpress-slideshow-MVC/';
 		return $result;
 	}
         
@@ -1061,7 +1082,7 @@ $GLOBALS["tab_order"]+=5;
 	}
 
 	function getPhoto($pid){
-		global $wpdb;
+		/*global $wpdb;
 
 		$photo_meta_rels = $wpdb->prefix.$this->plugin_prefix."photo_meta_relations";
 		$slideshow_photos = $wpdb->prefix.$this->plugin_prefix."photos";
@@ -1071,16 +1092,28 @@ $GLOBALS["tab_order"]+=5;
 				pmr.meta_id=pm.meta_id AND
 				sp.photo_id=$pid;";
 		//echo $query;
+		
 		$result = $wpdb->get_results($query);
 		$photo= array();
+		
 		foreach($result as $row){
 			$photo['wp_photo_id']=$row->wp_photo_id;
 			$photo[$row->meta_name]=$row->meta_value;
 		}
+
+
 		$fprops = $this->getPhotoFixedProps($photo['wp_photo_id']);
 		$photo = array_merge($photo,$fprops);
+		
+		
 		$photo['update']='yes';
-		return $photo;
+		echo "<pre>".print_r($photo, true)."</pre>";*/
+		
+		
+		$photo = new IPM_Photo($this, $pid);
+		$temp = $photo->getPhoto_emulator();
+		
+		return $temp;
 
 	}
 
@@ -2580,7 +2613,6 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 		$proc = new XSLTProcessor;
 		@$proc->importStyleSheet($xsl); // attach the xsl rules
 		$output = @$proc->transformToXML($xml);
-
 		if($output){
 			return $output;
 		}else{
@@ -2591,11 +2623,13 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 
 
 	function get_photo_clip($pid, $stylesheet='wpss_simple.xsl'){
+		/*echo $pid;
 		//create the XML document	
 		$str = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		$str .= '<?xml-stylesheet type="text/xsl" href="'.$this->plugin_url().'/stylesheets/'.$stylesheet.'" version="1.0"?>' . "\n";
 
 		$str .= $this->get_photo_xml($pid);
+		//echo $str;
 		//echo nl2br(htmlentities($str));
 		$xml = new DOMDocument;
 		if(!$xml->loadXML($str)){
@@ -2610,12 +2644,22 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 		$proc = new XSLTProcessor;
 		@$proc->importStyleSheet($xsl); // attach the xsl rules
 		$output = @$proc->transformToXML($xml);
+		echo "<pre style='z-index: 100; background: white; width: 100%'>".htmlentities($str)."</pre>";
 		
 		if($output){
 			return $output;
 		}else{
 			return "error";
 		}
+		/*
+		 * 
+		 */
+		
+		$photo = new IPM_Photo($this, $pid);
+		echo "<pre style='z-index: 100; background: white; width: 100%'>".htmlentities(print_r($photo,true))."</pre>";
+		
+		$stylesheet = str_replace("xsl", "php", $stylesheet);
+		return $this->render_view($stylesheet, array("photo"=>$photo), "frontend");
 
 	}
 
