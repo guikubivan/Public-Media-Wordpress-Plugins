@@ -15,6 +15,7 @@ class wordpress_slideshow{
 	public $default_multiple_slideshows = true;
 	public $photo_id_translation = Array();
 	public $wpdb;
+	public $tab_order = 100;
 	
 	public $plugin_path = "/ipm-wordpress-slideshow-MVC/";#folder name in wp-content/plugins, updated in constructor
     public $stylesheets_path = "";#Default is set in constructor if none given here
@@ -953,41 +954,10 @@ echo ' hello' ;
 	function slideshowFields($id, $itemV= array()){
 		
 		$fieldW = '70%';
+		$params = array("id" => $id, "itemV" => $itemV, "fieldW" => $fieldW);
+		$str = $this->render_view("slideshowFields.php", $params, "backend");
+		$this->tab_order += 5;
 
-		$str = "<tr>
-				<td style='width:auto'>Slideshow title: 
-				</td>
-				<td style='width:auto;'> 
-				<input type='text' tabindex='".($GLOBALS["tab_order"]+1)."' id='slideshowItem[$id][title]' name='slideshowItem[$id][title]' style='width:$fieldW' value='" . $itemV['title'] . "' class='".$this->plugin_prefix."required' />
-				</td>
-				<td style='vertical-align:top;width:auto;' rowspan='3'>
-				Slideshow description:<br />
-				<textarea tabindex='".($GLOBALS["tab_order"]+4)."' id='slideshowItem[$id][description]' name='slideshowItem[$id][description]' style='width:100%;height:100%;' class='".$this->plugin_prefix."required' >".$itemV['description']."</textarea>
-				</td>
-			</tr>
-			<tr>
-				<td>Slideshow photo credit:
-				</td>
-				<td>
-				<input type='text' tabindex='".($GLOBALS["tab_order"]+2)."' name='slideshowItem[$id][photo_credit]' style='width:$fieldW' value='" . $itemV['photo_credit'] . "' />
-				</td>
-			</tr>
-			<tr>
-				<td class='topalign'>Slideshow geo location:
-				</td>
-				<td>
-				<input type='text' tabindex='".($GLOBALS["tab_order"]+3)."' name='slideshowItem[$id][geo_location]' id='slideshowItem[$id][geo_location]' style='width:50%' value='" . $itemV['geo_location'] . "' onkeyup='slideshow_getCoords(this.id);' onblur='slideshow_getCoords(this.id);' /><img onClick='showMap(this.previousSibling.value,this.nextSibling.id, this.nextSibling.nextSibling.id, this);' class='map_icon centervertical' src='".$this->plugin_url()."images/map_icon.jpg' /><input type='hidden' id='slideshowItem[$id][latitude]' name='slideshowItem[$id][latitude]' ReadOnly size='4' value='" . $itemV['latitude'] . "' /><input type='hidden' id='slideshowItem[$id][longitude]' name='slideshowItem[$id][longitude]' ReadOnly size='4' value='" . $itemV['longitude'] . "' /><!--&#176; latitude--><!--&#176; longitude-->
-				</td>
-
-			</tr>
-
-			</table>
-				<ul class='sortable' style='margin-bottom: 10px;' id='".$this->plugin_prefix."slideshow_photos_ul_${id}'></ul><span id='addphoto_button_$id' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(this.previousSibling.id);' tip='Add Media'>Add photo</span>
-
-";
-$GLOBALS["tab_order"]+=5;
-		$str .= "</li>";			//$notes = str_replace(array("\r", "\n", "\0"), array('\r', '\n', '\0'), $notes);
-		
 		return $str;
 	}
 
@@ -1504,109 +1474,20 @@ jQuery(document).ready(function() {
 		return $field;
 	}
 
-/*// get an image to represent an attachment - a mime icon for files, thumbnail or intermediate size for images
-// returns an array (url, width, height), or false if no image is available
-function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = false) {
-	
-	// get a thumbnail or intermediate image if there is one
-	if ( $image = image_downsize($attachment_id, $size) )
-		return $image;
-
-	if ( $icon && $src = wp_mime_type_icon($attachment_id) ) {
-		$icon_dir = apply_filters( 'icon_dir', includes_url('images/crystal') );
-		$src_file = $icon_dir . '/' . basename($src);
-		@list($width, $height) = getimagesize($src_file);
-	}
-	if ( $src && $width && $height )
-		return array( $src, $width, $height );
-	return false;
-}*/
-
-
 	function photoItemHTML_simple($id, $itemV = array(), $doJS=false){
 		global $wpdb;
-
 		$itemV = $this->utils->convertquotes($itemV);
 		if(!$id){
 			$id = "insert_id";
 		}
-		$ret = array();
-		$ret[] = array('escape'=>true,'text'=>"<li  class='".$this->plugin_prefix."photo_container' id='photoContainer_$id'>");
-
-		if($itemV['update']){
-			$ret[] = array('escape'=>true, 'text'=>"<input type='hidden' id='slideshowItem[s_id][photos][$id][update]' name='slideshowItem[s_id][photos][$id][update]' value='".$itemV['update']."' />");
-			if(!$this->utils->wp_exist_post($this->get_wp_photo_id($id))){
-				$ret[] = array('escape'=>true, 'text'=>"<div id='transparency_s_id_$id' class='missing_photo_transparency' ><div style='margin-bottom:50px;'>Photo is missing</div><span class='button' style='padding:10px;' onclick='chooseNewPhoto(s_id, $id);'>Set new photo</span></div>");
-			}
-		}
-
-		$ret[] = array('escape'=>true,'text'=>" <span id='deletePhotoButton_${id}_s_id' class='button' style='float:right' onclick='if ( this.parentNode.parentNode && this.parentNode.parentNode.removeChild ) {this.parentNode.parentNode.removeChild(this.parentNode);removePhotoItem(this.id);}'><img class='adjustIcon' src='".$this->plugin_url()."images/delete.gif' /></span>");
-
-		$ret[] = array('escape'=>true,'text'=>"<input type='hidden' id='slideshowItem[s_id][photos][$id][cover]' class='photo_in_slideshow_s_id' name='slideshowItem[s_id][photos][$id][cover]' value='".$itemV['cover']."' /> 
-			<table>
-			<tr>
-				<td>Title: 
-				</td>
-				<td>
-				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 1)."' id='slideshowItem[s_id][photos][$id][title]' name='slideshowItem[s_id][photos][$id][title]' size='20' value='");
-		if($itemV['title']){
-			$ret[] = array('escape'=>true, 'text'=>$itemV['title']);
-		}else if($doJS){
-			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(document.getElementById('${id}[title]').value) +'");
-		}
-		$ret[] = array('escape'=>true, 'text'=>"' class='".$this->plugin_prefix."required photo_title' />
-				</td>
-				<td rowspan='5' style='text-align:center;width: 100%'>
-					<img id='img_s_id_$id' class='wpss_photo_thumb' title='Click to replace image' onclick='confirmChooseNewPhoto(s_id, $id);' src='". $itemV['url'] ."' /><br />
-					<span onclick='setCoverImage(s_id, $id);' id='cover_button_s_id_${id}' class='button set_cover_button_s_id' style='text-align:center;margin-top:5px;' >Slideshow Thumbnail</span>
-				</td>
-			</tr>
-			<tr>
-				<td>Photo credit:
-				</td>
-				<td>
-				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 2)."' id='slideshowItem[s_id][photos][$id][photo_credit]' name='slideshowItem[s_id][photos][$id][photo_credit]' size='20' ReadOnly value='" . $itemV['photo_credit'] . "'  title='Click to edit' class='editable ".$this->plugin_prefix."required' /> <span class='button' style='display:none' >Update</span>
-				</td>
-			</tr>
-			<tr>
-				<td>Geo location:
-				</td>
-				<td>
-				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 3)."' name='slideshowItem[s_id][photos][$id][geo_location]' id='slideshowItem[s_id][photos][$id][geo_location]' size='20' ReadOnly value='" . $itemV['geo_location'] . "' class='editable' title='Click to edit' /><span class='button' style='display:none' >Update</span><img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='".$this->plugin_url()."images/map_icon.jpg' />
-				</td>
-
-			</tr>
-			<tr>
-				<td>Original URL:
-				</td>
-				<td>
-				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 4)."' id='slideshowItem[s_id][photos][$id][original_url]' name='slideshowItem[s_id][photos][$id][original_url]' size='20' ReadOnly value='" . $itemV['original_url'] . "'  title='Click to edit' class='editable' /> <span class='button' style='display:none' >Update</span>
-				</td>
-			</tr>
-			<tr>
-				<td>Alt text:
-				</td>
-				<td>
-				<input type='text'  tabindex='".($GLOBALS['tab_order'] + 5)."'  name='slideshowItem[s_id][photos][$id][alt]' size='20' value='".$itemV['alt']."' />
-				<small>Specific to this Slideshow</small>
-				</td>
-			</tr>
-
-
-			<tr>
-				<td>Caption:
-				</td>
-				<td style='width:auto'>
-					<textarea  tabindex='".($GLOBALS['tab_order'] + 6)."' name='slideshowItem[s_id][photos][$id][caption]' id='slideshowItem[s_id][photos][$id][caption]' rows='2' style='width:300px' class='".$this->plugin_prefix."required' >".$itemV['caption']."</textarea>
-				</td>
-
-			</tr>
-
-			</table>
-		</li>");
-		//print_r($ret);
-		$GLOBALS['tab_order'] += 7; 
-		$dhtml = $this->utils->prepareDHTML($ret);
+		
+		$params = array();
+		$params["id"] = $id;
+		$params["itemV"] = $itemV;
+		
+		$this->tab_order += 7; 
+		
+		$dhtml = addslashes( $this->render_view("photoItemHTML_simple.php", $params, "backend") );
 		return str_replace(array("\r", "\n", "\0"),array('\r', '\n', '\0'), $dhtml);
 	}
 
@@ -1616,109 +1497,12 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 		if(!$id){
 			$id = "insert_id";
 		}
-		$ret = array();
-		$ret[] = array('escape'=>true,'text'=>"<li  class='".$this->plugin_prefix."photo_container' id='photoContainer_$id'>");
-		$ret[] = array('escape'=>true,'text'=>"<span id='deletePhotoButton_${id}_s_id' class='button' style='float:right' onclick='if ( this.parentNode.parentNode && this.parentNode.parentNode.removeChild ) {this.parentNode.parentNode.removeChild(this.parentNode);}'><img class='adjustIcon' src='".$this->plugin_url()."images/delete.gif' /></span>");//maybeShowPhotoButton(this.id);
-		if($itemV['update']){
-			$ret[] = array('escape'=>true, 'text'=>"<input type='hidden' id='slideshowItem[s_id][photos][$id][update]' name='slideshowItem[s_id][photos][$id][update]' value='".$itemV['update']."' /> ");
-		}
-
-		$ret[] = array('escape'=>true,'text'=>"<input type='hidden' id='slideshowItem[s_id][photos][$id][cover]' class='photo_in_slideshow_s_id' name='slideshowItem[s_id][photos][$id][cover]' value='".$itemV['cover']."' /> 
-		<table>
-			<tr>
-				<td>Title: 
-				</td>
-				<td>
-				<input tabindex='".($GLOBALS['tab_order'] + 1)."' type='text' id='slideshowItem[s_id][photos][$id][title]' name='slideshowItem[s_id][photos][$id][title]' size='20' value='");
-		if($itemV['title']){
-			$ret[] = array('escape'=>true, 'text'=>$itemV['title']);
-		}else{
-			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(document.getElementById('attachments[${id}][post_title]').value) +'");
-		}
+		$params = array();
+		$params["id"] = $id;
+		$params["itemV"] = $itemV;
 		
-		$ret[] = array('escape'=>true, 'text'=>"' class='".$this->plugin_prefix."required photo_title' />
-				</td>
-				<td rowspan='5' style='width:100%; text-align:center;'>
-					<img id='img_s_id_$id' class='wpss_photo_thumb' title='Click to replace image' onclick='confirmChooseNewPhoto(s_id, $id);' src='". $itemV['url'] ."' /><div onclick='setCoverImage(s_id, $id);' id='cover_button_s_id_${id}' class='button set_cover_button_s_id' style='text-align:center;margin-top:5px;' >Slideshow Thumbnail</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td>Photo credit:
-				</td>
-				<td>
-				<input tabindex='".($GLOBALS['tab_order'] + 2)."' type='text' name='slideshowItem[s_id][photos][$id][photo_credit]' id='slideshowItem[s_id][photos][$id][photo_credit]' size='20' ReadOnly value='");
-
-		if($itemV['photo_credit']){
-			$ret[] = array('escape'=>true, 'text'=>$itemV['photo_credit']);
-		}else{
-			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(document.getElementById('attachments[${id}][photo_credit]').value) +'");
-		}
-		$ret[] = array('escape'=>true, 'text'=>"' title='Click to edit' class='editable ".$this->plugin_prefix."required' /> <span class='button' style='display:none' >Update</span>
-				</td>
-			</tr>
-			<tr>
-				<td>Geo location:
-				</td>
-				<td>
-				<input tabindex='".($GLOBALS['tab_order'] + 3)."'type='text' name='slideshowItem[s_id][photos][$id][geo_location]' id='slideshowItem[s_id][photos][$id][geo_location]' size='20' ReadOnly value='");
-		if($itemV['geo_location']){
-			$ret[] = array('escape'=>true, 'text'=>$itemV['geo_location']);
-		}else{
-			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(document.getElementById('attachments[${id}][geo_location]').value) +'");
-		}
-
-		$ret[] = array('escape'=>true, 'text'=>"' class='editable' title='Click to edit' /> <span class='button' style='display:none' >Update</span>
-				</td>
-
-			</tr>
-			<tr>
-				<td>Original URL:
-				</td>
-				<td>
-				<input tabindex='".($GLOBALS['tab_order'] + 4)."'type='text' id='slideshowItem[s_id][photos][$id][original_url]' name='slideshowItem[s_id][photos][$id][original_url]' size='20' ReadOnly value='");
-		if($itemV['original_url']){
-			$ret[] = array('escape'=>true, 'text'=>$itemV['original_url']);
-		}else{
-			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(document.getElementById('attachments[${id}][original_url]').value) +'");
-		}
-	 	$ret[] = array('escape'=>true, 'text'=>"'  title='Click to edit' class='editable' /> <span class='button' style='display:none' >Update</span>
-				</td>
-			</tr>
-			<tr>
-				<td>Alt text:
-				</td>
-				<td>
-				<input type='text' tabindex='".($GLOBALS['tab_order'] + 5)."'name='slideshowItem[s_id][photos][$id][alt]' size='20' value='");
-		if($itemV['alt']){
-			$ret[] = array('escape'=>true, 'text'=>$itemV['alt']);
-		}else{
-			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(removeHTMLTags(document.getElementById('attachments[${id}][post_excerpt]').value)) +'");
-		}
-		$ret[] = array('escape'=>true, 'text'=>"' /><small>Specific to this Slideshow</small>
-				
-				</td>
-			</tr>
-			<tr>
-				<td>Caption:
-				</td>
-				<td style='width:auto;'>
-					<textarea name='slideshowItem[s_id][photos][$id][caption]' id='slideshowItem[s_id][photos][$id][caption]' tabindex='".($GLOBALS['tab_order'] + 6)."' rows='2' style='width:300px' class='".$this->plugin_prefix."required' >");
-		if($itemV['caption']){
-			$ret[] = array('escape'=>true, 'text'=>$itemV['caption']);
-		}else{
-			$ret[] = array('escape'=>false, 'text'=>"'+ convertquotes(document.getElementById('attachments[${id}][post_content]').value) +'");
-		}
-		$ret[] = array('escape'=>true, 'text'=>"</textarea>
-				</td>
-
-			</tr>
-
-			</table>
-		</li>");
-		//print_r($ret);
-		$GLOBALS['tab_order'] += 7;
-		$dhtml = $this->utils->prepareDHTML($ret);
+		$this->tab_order += 7; 
+		$dhtml = addslashes( $this->render_view("photoItemHTML_javascript.php", $params, "backend") );
 		return str_replace(array("\r", "\n", "\0"),array('\r', '\n', '\0'), $dhtml);
 	}
 
@@ -1762,77 +1546,22 @@ function wp_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = 
 		wp_enqueue_style( 'media' );
 		wp_iframe(array(&$this, 'simple_image_chooser_content'));
 	}
-/*
 
-<style type="text/css">
 
-	.select_column{
-		color: #FFFFFF;
-		background-color: #000000;
-		text-align:center;
-		height:50px;
-		font-family: serif;
-		font-style: italic;
-		font-size: 13px;
-		padding-bottom:0px;
-	}
-	img {
-		height:50px;
-	}
-
-	.title_column{
-		background-color: #C4AEAE;
-	}
-
-	.credit_column{
-		background-color: #D0BF87;
-	}
-
-	.date_column{
-		background-color: #A4B6B2;
-	}
-	
-	.button {
-		background-color:#E5E5E5;
-		border:solid 1px #333333;
-		padding:5px;
-		cursor: pointer;
-	}
-
-	th, td {
-		width: 25%;
-	}
-	.caption {
-		margin:0px;
-	}
-</style> 
-*/
 	function wpss_media_upload_form(){
 		$post_id = 0;
 		$type='image';
 		$form_action_url = admin_url("media-upload.php?type=$type&tab=type&post_id=0&flash=0");
 		//$form_action_url = apply_filters('media_upload_form_url', $form_action_url, $type);
-
+			
 		$callback = "type_form_$type";
-
-?>
-<form enctype="multipart/form-data" method="post" action="<?php echo attribute_escape($form_action_url); ?>" class="media-upload-form type-form validate" id="<?php echo $type; ?>-form">
-<input type="hidden" name="post_id" id="post_id" value="<?php echo (int) $post_id; ?>" />
-<?php wp_nonce_field('media-form'); ?>
-
-
-<script type="text/javascript">
-<!--
-jQuery(function($){
-	var preloaded = $(".media-item.preloaded");
-	if ( preloaded.length > 0 ) {
-		preloaded.each(function(){prepareMediaItem({id:this.id.replace(/[^0-9]/g, '')},'');});
-	}
-	updateMediaForm();
-});
--->
-</script>
-<?php
+		
+		$params = array("post_id" => $post_id, 
+					"type"=>$type, 
+					"form_action_url"=>$form_action_url, 
+					"callback" => $callback);
+		
+		echo $this->render_view("wpss_media_upload_form.php", $params, "backend");
 
 	}
 
