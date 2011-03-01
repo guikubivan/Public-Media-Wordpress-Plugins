@@ -17,19 +17,15 @@
 				<td>Title: 
 				</td>
 				<td>
-				<input type='text'  tabindex='<?=($this->tab_order + 1)?>' id='slideshowItem[s_id][photos][<?=$id?>][title]' name='slideshowItem[s_id][photos][<?=$id?>][title]' size='20' value='
-		<? 
+				<input type='text'  tabindex='<?=($this->tab_order + 1)?>' id='slideshowItem[s_id][photos][<?= $id ?>][title]' name='slideshowItem[s_id][photos][<?= $id ?>][title]' size='20' value='<? 
 			if($itemV['title']){ 
-		?>
-			<?= $itemV['title']?>
-		<?
-		}else if($doJS){
-		?>
-			'+ convertquotes(document.getElementById('<?= $id ?>[title]').value) +'
-		<?
-		}
-		?>
-		' class='<?= $this->plugin_prefix ?>required photo_title' />
+				?><?= $itemV['title']?><?
+		
+			}else if($doJS){
+			
+				?><!-- UNESCAPE ['+ convertquotes(document.getElementById('<?= $id ?>[title]').value) +'] --><?
+			}
+				?>' class='<?= $this->plugin_prefix ?>required photo_title' />
 				</td>
 				<td rowspan='5' style='text-align:center;width: 100%'>
 					<img id='img_s_id_<?=$id?>' class='wpss_photo_thumb' title='Click to replace image' onclick='confirmChooseNewPhoto(s_id, <?=$id?>);' src='<?= $itemV['url'] ?>' /><br />

@@ -26,6 +26,9 @@ if(!class_exists ('wordpress_slideshow')) {
 if(!class_exists ('IPM_Photo')) {
 	require_once(dirname(__FILE__).'/models/photo.model.php');
 }
+if(!class_exists ('IPM_Slideshow')) {
+	require_once(dirname(__FILE__).'/models/slideshow.model.php');
+}
 
 //*********************ADMIN STUFF*********************************
 //activate plugin

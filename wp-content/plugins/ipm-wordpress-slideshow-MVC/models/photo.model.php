@@ -5,7 +5,7 @@ class IPM_Photo
 	public $photo_id = "";
 	public $post_id = "";
 	
-	public $wp_photo_id = "";
+	//public $wp_photo_id = ""; //this and post_id are the same thing
 	public $title = "";
 	public $alt = "";
 	public $caption = "";
@@ -38,9 +38,10 @@ class IPM_Photo
 		
 	}
 	
-	public function get_photo($photo_id)
+	public function get_photo($photo_id = "")
 	{
-		$this->photo_id = $photo_id;
+		if(!empty($photo_id))		
+			$this->photo_id = $photo_id;
 		
 		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
 		$slideshow_photos = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
@@ -80,7 +81,7 @@ class IPM_Photo
 		$photo['url']=current(wp_get_attachment_image_src( $post_id, 'full'));
 		
 		
-		$this->post_id = $this->wp_photo_id = $photo['wp_photo_id'];
+		$this->post_id = $this->post_id = $photo['wp_photo_id'];
 		$this->title = $photo['title'];
 		$this->alt = $photo['alt'];
 		$this->caption = $photo['caption'];
@@ -96,30 +97,60 @@ class IPM_Photo
 		$this->update = $photo['update'];
 		
 		//echo "<pre>".print_r($this, true)."</pre>";
-		
 		return true;
 	}
 
-	/*public function delete()
+	public function get_photo_by_post_id($post_id = "")
 	{
-		if(!$photo_id){
-			return;
+		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
+			
+		$query = "SELECT `photo_id` FROM `".$photo_table."` WHERE `wp_photo_id` = '".$this->post_id."';";
+		$result = $this->wpdb->get_results($query);
+		
+		if($result===false)
+			return false;
+		else
+		{
+			echo $this->photo_id = $result['photo_id'];
+			if(!empty($this->photo_id))
+				$this->get_photo();
+				
+			return true;
 		}
-		$msg ='';
+		
+	}
+	
+	public function insert()
+	{
+		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
+			
+		$query = "INSERT INTO ".$photo_table." (wp_photo_id) VALUES (".$this->post_id.");";//INSERT PHOTO
+		$result = $this->wpdb->query($query);
+		
+		if($result===false)
+			return false;
+		else
+			$this->photo_id = $this->wpdb->get_var('SELECT LAST_INSERT_ID();');
+			$this->get_photo($this->photo_id);
+		return true;
+	}
 
-		$result = $wpdb->query("DELETE FROM $this->t_pmr WHERE photo_id=$photo_id;");
-		$msg .= ($result!==false) ? '' : "<p>Could not delete photo meta for photo $photo_id</p>";
+	public function link_to_slideshow($slideshow, $order)
+	{
+		$relation_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations";
+		
+		$result = $this->wpdb->query("REPLACE INTO ".$relation_table." VALUES( '".$slideshow."', '".$this->photo_id."', '".$order."' );");//LINK PHOTO TO SLIDESHOW
+		
+		if($result === false)
+			return false;
+		else
+			return true;
+					
+	}
+		
 
-		if($sid){
-			$result = $wpdb->query("DELETE FROM $this->t_spr WHERE photo_id=$photo_id AND slideshow_id=$sid;");
-			$msg .= ($result!==false) ? '' : "<p>Could not delete slideshow relationship between slideshow $sid and photo $photo_id</p>";
-		}
-		$result = $wpdb->query("DELETE FROM $this->t_p WHERE photo_id=$photo_id;");
-		$msg .= ($result!==false) ? '' : "<p>Could not delete photo $photo_id</p>";
-		return $msg;
-	}*/
 
-
+	
 
 
 	//this gets stuck into the getPhoto method of the wpss class to return an array
@@ -128,7 +159,7 @@ class IPM_Photo
 	public function getPhoto_emulator()
 	{
 		$tmp = array(
-			"wp_photo_id" => $this->wp_photo_id,
+			"wp_photo_id" => $this->post_id,
 			"title" => $this->title,
 			"alt" => $this->alt,
 			"caption" => $this->caption,

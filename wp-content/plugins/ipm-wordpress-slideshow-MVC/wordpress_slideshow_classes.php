@@ -48,7 +48,8 @@ class wordpress_slideshow{
 		$this->utils = new IPM_Utils();
 	}
 
-	public function render_view( $view_name, $parameter = array(), $end = "frontend")
+	// use <!-- UNESCAPE [ some text ] --> to remove slashes from that section of the view
+	public function render_view( $view_name, $parameter = array(), $end = "frontend", $addslashes = false)
 	{
 		ob_start();
 		if(is_array($parameter))
@@ -60,7 +61,17 @@ class wordpress_slideshow{
 		$output = ob_get_contents();
 		ob_end_clean();
 		
+		if($addslashes)
+		{
+			$output = addslashes($output);
+			$output = preg_replace_callback("<<!-- UNESCAPE \[(.*)\] -->>", "wordpress_slideshow::render_view_unescape_callback",  $output);
+		}
+		
 		return $output;
+	}
+	public static function render_view_unescape_callback($matches)
+	{
+		return stripslashes($matches[1]);
 	}
 	
 	function add_column($defaults){//add column when listing posts
@@ -1456,20 +1467,9 @@ jQuery(document).ready(function() {
 
 
 	function makeField($pid, $fieldlable, $fieldname, $req=false){
-		$field = "</td></tr>\n\t\t<tr>
-			<th class='label'>
-				<label for='attachments[$pid][$fieldname]'>
-				<span class='alignleft'>$fieldlable</span>";
-		if($req){
-			$field .= "<span class='alignright'>
-					<abbr class='required' title='required'>*</abbr>
-					</span>";
-		}
-		$field .=" <br class='clear'/>
-				</label>
-				</th><td class='field'>";
-		$field .= "<input type=\"text\" name=\"attachments[$pid][$fieldname]\" id=\"attachments[$pid][$fieldname]\"/>";
-
+		$params = array("pid"=>$pid, "fieldlable"=>$fieldlable, "fieldname"=>$fieldname, "req"=>$req);	
+			
+		$field = $this->render_view("makeField.php", $params, "backend");
 			
 		return $field;
 	}
@@ -1484,10 +1484,11 @@ jQuery(document).ready(function() {
 		$params = array();
 		$params["id"] = $id;
 		$params["itemV"] = $itemV;
+		$params["doJS"] = $doJS;
 		
 		$this->tab_order += 7; 
 		
-		$dhtml = addslashes( $this->render_view("photoItemHTML_simple.php", $params, "backend") );
+		$dhtml = $this->render_view("photoItemHTML_simple.php", $params, "backend", true) ;
 		return str_replace(array("\r", "\n", "\0"),array('\r', '\n', '\0'), $dhtml);
 	}
 
@@ -1502,7 +1503,7 @@ jQuery(document).ready(function() {
 		$params["itemV"] = $itemV;
 		
 		$this->tab_order += 7; 
-		$dhtml = addslashes( $this->render_view("photoItemHTML_javascript.php", $params, "backend") );
+		$dhtml = ( $this->render_view("photoItemHTML_javascript.php", $params, "backend", true) );
 		return str_replace(array("\r", "\n", "\0"),array('\r', '\n', '\0'), $dhtml);
 	}
 
@@ -2106,6 +2107,8 @@ jQuery(document).ready(function() {
 		if(!$sid && !$photo_only){
 			return "<p>No slideshow id provided to link with photos</p>";
 		}
+		$slideshow = new IPM_Slideshow($this, $sid);
+		
 		$old_order = $lost_photos = $wpdb->get_col("SELECT photo_id FROM ".$sprtable ." WHERE slideshow_id=".$sid .  " ORDER BY photo_id ASC");
 		//print_r($old_order);
 		$thumb_id = '';
@@ -2114,52 +2117,60 @@ jQuery(document).ready(function() {
 			//$maxUpdates = sizeof($existing_photos);
 			$count = 0;
 
-			foreach($photos as $pid => $photo){
+			foreach($photos as $pid => $photo){ //for every photo in the array,
+					
+				$photo_object = new IPM_Photo($this);
+				$photo_object->post_id = $pid;	
+				$photo_object->get_photo_by_post_id();
 				
 				$sphoto_id = $pid;
-				if(!$photo['update']){
-					$query = "INSERT INTO $sptable (wp_photo_id) VALUES($pid);";//INSERT PHOTO
-					$result = $wpdb->query($query);
+				if(!$photo['update']){ //if we're only trying to insert'
+					$result = $photo_object->insert();
 				
 					$msg .= ($result!==false) ? '' : "<p>Could not insert photo into slideshow photos table</p>";
-					if($result===false)break;
-					$sphoto_id = $wpdb->get_var('SELECT LAST_INSERT_ID();');
-					if(!$photo_only){
-						$result = $wpdb->query("INSERT INTO $sprtable VALUES($sid, $sphoto_id, $count);");//LINK PHOTO TO SLIDESHOW
+					if($result===false)
+						break;
+					$sphoto_id = $photo_object->photo_id;
+					if(!$photo_only){  //if we want to link'
+						$result = $photo_object->link_to_slideshow($sid, $count);
 						$msg .= ($result!==false) ? '' : "<p>Could not link slideshow $sid with photo $sphoto_id</p>";
-						if($result===false)break;
+						if($result===false)
+							break;
 					}
-				}else{
-					//echo "$pid and result " . array_search($pid, $lost_photos). "<br />";
-					//$oldindex = array_search($pid, $old_photos);
-					//$old
-					$result = $wpdb->query("INSERT INTO $sprtable VALUES($sid, $pid, $count);");//LINK PHOTO TO SLIDESHOW
-					//$msg .= ($result!==false) ? '' : "<p>Could not link slideshow $sid with previously single photo $pid.</p>";
-					//if($result===false)break;
-
+				}else{  //if we're trying to update'
+					$result = $photo_object->link_to_slideshow($sid, $count);
+					
 					unset($photo['update']);
-					if(!$photo_only){
+					if(!$photo_only){ //if we want to link
 						unset($lost_photos[array_search($pid, $lost_photos)]);
-						$result = $wpdb->query("UPDATE $sprtable SET photo_order=$count WHERE photo_id=$pid AND slideshow_id=$sid;");//LINK PHOTO TO SLIDESHOW
+						$photo_object->link_to_slideshow($sid, $count);
 						$msg .= ($result!==false) ? '' : "<p>Could not update photo order for photo $pid</p>";
-						if($result===false)break;
+						if($result===false)
+							break;
 					}
 				}
-				$this->photo_id_translation[$pid] = $sphoto_id;
-				if($photo['cover'] && $sid){
-					$result = $wpdb->query("UPDATE ".$this->t_s." SET thumb_id=$sphoto_id WHERE ID=$sid;");//LINK PHOTO TO SLIDESHOW
-					$msg .= ($result!==false) ? '' : "<p>Could not set thumb id $sphoto_id for slideshow $sid</p>";
-					if($result===false)break;
+				$photo_object->get_photo_by_post_id();
+				
+				$this->photo_id_translation[$pid] = $photo_object->photo_id; //insert the photo id into the translation table
+				
+				if($photo['cover'] && $sid){  //if this photo is going to be the 'cover' of the slideshow
+					$result = $slideshow->set_thumbnail($photo_object);
+					$msg .= ($result!==false) ? '' : "<p>1Could not set thumb id $sphoto_id for slideshow $sid</p>";
+					if($result===false)
+						break;
 					$thumb_id = $pid;
-				}else if($count==0 && $sid && !$thumb_id){
-					$result = $wpdb->query("UPDATE ".$this->t_s." SET thumb_id=$sphoto_id WHERE ID=$sid;");//LINK PHOTO TO SLIDESHOW
+				}else if($count==0 && $sid && !$thumb_id){ //if this is the first photo and there isn't yet a thumbnail id
+					$result = $slideshow->set_thumbnail($photo_object);
+					
 					$msg .= ($result!==false) ? '' : "<p>Could not set default thumb id $sphoto_id for slideshow $sid</p>";
-					if($result===false)break;
+					if($result===false)
+						break;
 				}
+				
+			print_r($slideshow);
 
 				if($photo['cover']){unset($photo['cover']);}
-				//else{
-				//	$sphoto_id = $wpdb->get_var('SELECT wp_photo_id FROM '.$sptable ." WHERE photo_id=$pid;");
+				
 				$msg .= $this->insert_photo_meta($sphoto_id, $pid, $photo);
 				if(!$msg && $photo_only){
 					$prev_photo_id = get_post_meta($post_id, $this->plugin_prefix."photo_id", true);
@@ -2352,37 +2363,6 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 
 
 	function get_photo_clip($pid, $stylesheet='wpss_simple.xsl'){
-		/*echo $pid;
-		//create the XML document	
-		$str = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		$str .= '<?xml-stylesheet type="text/xsl" href="'.$this->plugin_url().'/stylesheets/'.$stylesheet.'" version="1.0"?>' . "\n";
-
-		$str .= $this->get_photo_xml($pid);
-		//echo $str;
-		//echo nl2br(htmlentities($str));
-		$xml = new DOMDocument;
-		if(!$xml->loadXML($str)){
-			return '';
-		}
-		//echo "<pre>".htmlentities($str)."</pre>";
-		//create the stylesheet
-		$xsl = new DOMDocument;
-		@$xsl->load(dirname(__FILE__).'/stylesheets/'.$stylesheet);
-		
-		// Configure the transformer
-		$proc = new XSLTProcessor;
-		@$proc->importStyleSheet($xsl); // attach the xsl rules
-		$output = @$proc->transformToXML($xml);
-		echo "<pre style='z-index: 100; background: white; width: 100%'>".htmlentities($str)."</pre>";
-		
-		if($output){
-			return $output;
-		}else{
-			return "error";
-		}
-		/*
-		 * 
-		 */
 		
 		$photo = new IPM_Photo($this, $pid);
 		echo "<pre style='z-index: 100; background: white; width: 100%'>".htmlentities(print_r($photo,true))."</pre>";

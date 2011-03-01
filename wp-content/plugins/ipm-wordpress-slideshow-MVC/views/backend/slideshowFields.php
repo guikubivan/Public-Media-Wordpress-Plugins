@@ -29,9 +29,4 @@
 			</tr>
 
 			</table>
-				<ul class='sortable' style='margin-bottom: 10px;' id='<?= $this->plugin_prefix ?>slideshow_photos_ul_<?= $id ?>'>
-					
-				</ul>
-				<span id='addphoto_button_<?= $id ?>' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(this.previousSibling.id);' tip='Add Media'>
-					Add photo
-				</span></li>
+				<ul class='sortable' style='margin-bottom: 10px;' id='<?= $this->plugin_prefix ?>slideshow_photos_ul_<?= $id ?>'></ul><span id='addphoto_button_<?= $id ?>' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(this.previousSibling.id);' tip='Add Media'>Add photo</span></li>

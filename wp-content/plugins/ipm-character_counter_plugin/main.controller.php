@@ -1,12 +1,20 @@
 <?php
 /* 
-Plugin Name: Excerpt Character Count
+Plugin Name: IPM - Character Count
 Plugin URI: http://wfiu.org
-Version: 1.0
+Version: 1.1
 Description: Checks for max character count of 160
-Author: Pablo Vanwoerkom
+Author: Pablo Vanwoerkom, Ben Serrette
 Author URI: http://www.wfiu.org
 */
+
+
+character_counter_initialize();
+$path = $_SERVER['SCRIPT_NAME'];
+$pattern = get_option('char_count_in_pages') ?  '(post|page)' : 'post';
+if(preg_match("/wp-admin\/$pattern/",$path)){
+	add_action( "admin_print_scripts", 'character_count_js');
+}
 
 
 
@@ -55,24 +63,11 @@ function character_counter_initialize(){
 	}	
 }
 
-character_counter_initialize();
-//add_action('activate_'.__FILE__,'character_counter_initialize');
-//register_activation_hook(__FILE__, 'character_counter_initialize');
-
-
-$path = $_SERVER['SCRIPT_NAME'];
-
-$pattern = get_option('char_count_in_pages') ?  '(post|page)' : 'post';
-if(preg_match("/wp-admin\/$pattern/",$path)){
-	add_action( "admin_print_scripts", 'character_count_js');
-}
 
 
 if(!function_exists('character_count_js')){
 	function character_count_js(){
-
-		
-		wp_register_script('fields_character_count', get_bloginfo('url').'/wp-content/plugins/wfiu_utils/character_counter.js', array('jquery'));
+		wp_register_script('fields_character_count', get_bloginfo('url').'/wp-content/plugins/ipm-character_counter_plugin/character_counter.js', array('jquery'));
 		$fields= array('title','teaser', 'excerpt');
 		$props = array('min', 'max', 'optional');
 		$prefix='char_count_';
@@ -101,18 +96,18 @@ if(!function_exists('character_count_js')){
 	}
 }
 
-if(!class_exists('box_custom_field_plugin')) {
-	require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/plugin_classes.php');
+if(!class_exists('box_custom_field_plugin')) 
+{
+	require_once('plugin_classes.php');
 	//element, position, box title, post meta key, inputfield name
 	$teaser_box = new box_custom_field_plugin(array('settings'=> "style='width: 100%;'", 'element' =>'textarea'), 'normal','Teaser', 'teaser_text', 'teaser' );
 }
 
-if(!function_exists('the_teaser')){
-	function the_teaser(){
-
-
+if(!function_exists('cc_the_teaser'))
+{
+	function cc_the_teaser()
+	{
 		global $post, $drop_caps_plugin;
-
 		$teaser = get_post_meta($post->ID, 'teaser_text', false);
 		$teaser = "<p>".stripslashes($teaser[0]). "</p>";
 
@@ -133,8 +128,9 @@ if(!function_exists('the_teaser')){
 	}
 }
 
-add_action('save_post', 'copy_teaser2excerpt', 1);
-function copy_teaser2excerpt($post_id){
+add_action('save_post', 'cc_copy_teaser2excerpt', 1);
+function cc_copy_teaser2excerpt($post_id)
+{
 	global $teaser_box, $wpdb;
 	if ( !wp_verify_nonce( $_POST['teasernoncename'], plugin_basename('teasernonce') )) {
 		return $post_id;
@@ -149,21 +145,73 @@ function copy_teaser2excerpt($post_id){
 	}
 	return;
 }
+ 
 
-
-add_action('admin_menu', 'character_count_menu');
-function character_count_menu(){
+add_action('admin_menu', 'cc_character_count_menu');
+function cc_character_count_menu()
+{
 	if(current_user_can('edit_plugins')){
-		require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/plugin_functions.php');
 		if(get_bloginfo('version')>= 2.7 ){
-			wfiu_do_main_page();
-			add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'Character Counter', 'Character Counter', 7, ABSPATH.PLUGINDIR.'/wfiu_utils/char_count_settings.php');
+			cc_do_main_page();
+			//$myutils = new IPM_Utils();
+		//	add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'Character Counter', 'Character Counter', 7, ABSPATH.PLUGINDIR.'/wfiu_utils/char_count_settings.php');
+			add_submenu_page(cc_main_page_path(), 'Char', 'Character Counter', 7, ABSPATH.PLUGINDIR.'/ipm-character_counter_plugin/settings.php');
 		}else{
 			add_menu_page('Character Counter', 'Character Counter', 7, ABSPATH.PLUGINDIR.'/wfiu_utils/char_count_settings.php');
 		}		
 	}
 }
 
+
+if(!function_exists('cc_main_page_path'))
+{
+	function cc_main_page_path()
+	{
+		global $menu;
+		$exists = false;
+		$found = -1;
+		foreach($menu as $key => $m){
+			if($m[0] == "IPM Plugins"){
+				$exists = true;
+				$found = $key;
+			}
+		}
+		if($exists){
+			return $menu[$key][2];
+		}
+	
+		return  __FILE__;
+	}
+}
+
+if(!function_exists('cc_do_main_page'))
+{
+	function cc_do_main_page()
+	{
+		global $menu;
+		$exists = false;
+		$found = -1;
+		foreach($menu as $key => $m){
+			if($m[0] == 'IPM Plugins'){
+				$exists = true;
+				$found = $key;
+			}
+		}
+		if(!$exists){
+			add_menu_page('IPM Plugins', 'IPM Plugins', 7, ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php');
+		}
+		/******************************/
+		global $submenu;
+	
+		if($submenu['wfiu_utils/wfiu_plugins_homepage.php'][0][0] == 'IPM Plugins'){
+			unset($submenu['wfiu_utils/wfiu_plugins_homepage.php'][0]);
+		}
+		/*else{
+			unset($menu[$found]);
+	
+		}*/
+	}
+}
 
 
 ?>
