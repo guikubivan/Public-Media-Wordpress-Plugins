@@ -33,6 +33,7 @@ class category_bin {
 		$this->id = $id;
 	}
 
+
 	function set_parent_id($id){
 		$this->parent_id = $id;
 	}
@@ -117,6 +118,18 @@ class category_manager{
 
 	}
 
+	public function render_view($view, $parameters)
+	{
+		ob_start();
+		if(is_array($parameters) )
+			extract($parameters);
+		
+		include("views/".$view);
+		$output = ob_get_contents();
+		ob_end_clean();
+		
+		return output;			
+	}
 	function config_form_masschange(){
 		global $wpdb;
 
@@ -1162,11 +1175,7 @@ my_cars["big"]="SUV";*/
 	}
 
 	function main_config_form(){
-/*
-			 <li><a href="<?php echo get_bloginfo('url').'/wp-admin/admin.php?page=Category Manager Config';?>"><span>Main</span></a></li>
-			 <li><a href="<?php echo get_bloginfo('url').'/wp-admin/admin.php?page=Relationships';?>"><span>Relationships</span></a></li>
-			 <li><a href="<?php echo get_bloginfo('url').'/wp-admin/admin.php?page=Mass Change';?>"><span>Mass Change</span></a></li>
-*/
+
 ?>
 		<div id="catman_tabs">
 		     <ul>
