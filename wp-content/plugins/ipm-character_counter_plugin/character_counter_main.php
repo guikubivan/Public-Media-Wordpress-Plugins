@@ -3,7 +3,7 @@
 Plugin Name: IPM - Character Count
 Plugin URI: http://wfiu.org
 Version: 1.1
-Description: Checks for max character count of 160
+Description: Checks for min and max character counts on various fields.  Requires the the_teaser plugin.
 Author: Pablo Vanwoerkom, Ben Serrette
 Author URI: http://www.wfiu.org
 */
@@ -103,9 +103,9 @@ if(!class_exists('box_custom_field_plugin'))
 	$teaser_box = new box_custom_field_plugin(array('settings'=> "style='width: 100%;'", 'element' =>'textarea'), 'normal','Teaser', 'teaser_text', 'teaser' );
 }
 
-if(!function_exists('cc_the_teaser'))
+if(!function_exists('the_teaser'))
 {
-	function cc_the_teaser()
+	function the_teaser()
 	{
 		global $post, $drop_caps_plugin;
 		$teaser = get_post_meta($post->ID, 'teaser_text', false);
@@ -128,8 +128,8 @@ if(!function_exists('cc_the_teaser'))
 	}
 }
 
-add_action('save_post', 'cc_copy_teaser2excerpt', 1);
-function cc_copy_teaser2excerpt($post_id)
+add_action('save_post', 'copy_teaser2excerpt', 1);
+function copy_teaser2excerpt($post_id)
 {
 	global $teaser_box, $wpdb;
 	if ( !wp_verify_nonce( $_POST['teasernoncename'], plugin_basename('teasernonce') )) {
