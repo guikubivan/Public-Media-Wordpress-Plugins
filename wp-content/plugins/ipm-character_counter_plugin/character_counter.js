@@ -70,15 +70,10 @@ function check_title_char_count(title_obj, do_message){
 
 }
 
-
-
-
-
 jQuery(document).ready(function($){
 	if(isAdmin){
-		$("#title").parent().prepend("<div class='updated'><p><strong>You are an admin and can <a href='admin.php?page=ipm_character_counter'>override the character count limits</a>.</strong></p></div>");
+		$("#title").parent().prepend("<div style='text-align: right;'><span style='background-color: #D6FFD8;'>You are an admin and can override the character count limits.</span></div>");
 	}
-	$("#title").before("<div style='display: none' id='char_counter_message'></div>");
 
 	var minText = '';
 	if(CharCountSettings.char_count_excerpt_min > 0 ){

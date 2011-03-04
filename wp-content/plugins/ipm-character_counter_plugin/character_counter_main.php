@@ -102,6 +102,7 @@ if(!class_exists('box_custom_field_plugin'))
 	//element, position, box title, post meta key, inputfield name
 	$teaser_box = new box_custom_field_plugin(array('settings'=> "style='width: 100%;'", 'element' =>'textarea'), 'normal','Teaser', 'teaser_text', 'teaser' );
 }
+$teaser_box = new box_custom_field_plugin(array('settings'=> "style='width: 100%;'", 'element' =>'textarea'), 'normal','Teaser', 'teaser_text', 'teaser' );
 
 if(!function_exists('the_teaser'))
 {
@@ -155,7 +156,7 @@ function cc_character_count_menu()
 			cc_do_main_page();
 			//$myutils = new IPM_Utils();
 		//	add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'Character Counter', 'Character Counter', 7, ABSPATH.PLUGINDIR.'/wfiu_utils/char_count_settings.php');
-			add_submenu_page(cc_main_page_path(), 'Character Counter Settings', 'Character Counter', 7, "ipm_character_counter", "cc_show_settings");  //ABSPATH.PLUGINDIR.'/ipm-character_counter_plugin/settings.php');
+			add_submenu_page(cc_main_page_path(), 'Char', 'Character Counter', 7, ABSPATH.PLUGINDIR.'/ipm-character_counter_plugin/settings.php');
 		}else{
 			add_menu_page('Character Counter', 'Character Counter', 7, ABSPATH.PLUGINDIR.'/wfiu_utils/char_count_settings.php');
 		}		
@@ -213,11 +214,5 @@ if(!function_exists('cc_do_main_page'))
 	}
 }
 
-
-function cc_show_settings()
-{
-	include_once("settings.controller.php");
-	
-}
 
 ?>
