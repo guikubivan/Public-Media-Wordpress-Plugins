@@ -44,6 +44,7 @@ function category_manager_menu() {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			cm_add_page_main($title);
 			add_submenu_page(cm_main_page_path($title), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
 =======
@@ -54,6 +55,10 @@ function category_manager_menu() {
 			cm_add_page_main($title);
 			add_submenu_page(cm_main_page_path($title), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
 >>>>>>> 5213b929f178ef8304e86bbae967fc44ee0a593a
+=======
+			cm_do_main_page();
+			add_submenu_page(cm_main_page_path(), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
+>>>>>>> parent of 5213b92... Category Manager works in 3.1 and should be stand-alone, no longer relying in the ipm utilities.
 =======
 			cm_do_main_page();
 			add_submenu_page(cm_main_page_path(), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
@@ -125,11 +130,16 @@ if(!function_exists('cm_do_main_page'))
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 add_action('admin_menu', 'category_manager_menu');
 >>>>>>> parent of b8b69b7... Character Counter is fixed to be independent and work with WP3
 =======
 >>>>>>> 5213b929f178ef8304e86bbae967fc44ee0a593a
+=======
+
+
+>>>>>>> parent of 5213b92... Category Manager works in 3.1 and should be stand-alone, no longer relying in the ipm utilities.
 =======
 
 
