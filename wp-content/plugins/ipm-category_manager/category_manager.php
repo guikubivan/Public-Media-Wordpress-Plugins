@@ -47,12 +47,17 @@ function category_manager_menu() {
 	if(current_user_can('edit_plugins')){
 		if(get_bloginfo('version')>= 2.7 ){
 <<<<<<< HEAD
+<<<<<<< HEAD
 			cm_add_page_main($title);
 			add_submenu_page(cm_main_page_path($title), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
 =======
 			wfiu_do_main_page();
 			add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'WFIU Category Manager', 'WFIU Category Manager', 7, 'ipm-category_manager/category_manager.php',   array($category_manager, 'main_config_form'));
 >>>>>>> parent of b8b69b7... Character Counter is fixed to be independent and work with WP3
+=======
+			cm_add_page_main($title);
+			add_submenu_page(cm_main_page_path($title), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
+>>>>>>> 5213b929f178ef8304e86bbae967fc44ee0a593a
 		}else{
 
 			add_menu_page('IPM Category Manager', 'IPM Category Manager', 7, __FILE__ , array($category_manager, 'config_form'));
@@ -112,9 +117,12 @@ if(!function_exists('cm_add_page_main'))
 }
 
 
+<<<<<<< HEAD
 =======
 add_action('admin_menu', 'category_manager_menu');
 >>>>>>> parent of b8b69b7... Character Counter is fixed to be independent and work with WP3
+=======
+>>>>>>> 5213b929f178ef8304e86bbae967fc44ee0a593a
 add_action('admin_menu', array(&$category_manager, 'postBox'), 1);
 
 //add_action('admin_head', array(&$category_manager,'admin_head'));
