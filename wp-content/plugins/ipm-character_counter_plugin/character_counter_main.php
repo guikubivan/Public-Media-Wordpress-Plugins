@@ -103,9 +103,9 @@ if(!class_exists('box_custom_field_plugin'))
 	$teaser_box = new box_custom_field_plugin(array('settings'=> "style='width: 100%;'", 'element' =>'textarea'), 'normal','Teaser', 'teaser_text', 'teaser' );
 }
 
-if(!function_exists('cc_the_teaser'))
+if(!function_exists('the_teaser'))
 {
-	function cc_the_teaser()
+	function the_teaser()
 	{
 		global $post, $drop_caps_plugin;
 		$teaser = get_post_meta($post->ID, 'teaser_text', false);
@@ -211,7 +211,7 @@ if(!function_exists('cc_do_main_page'))
 	
 		}*/
 	}
-}
+} 
 
 
 function cc_show_settings()
