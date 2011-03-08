@@ -8,9 +8,11 @@ Author: Pablo Vanwoerkom
 Author URI: http://www.wfiu.org
 */
 
-
+ 
 if(!class_exists('category_manager')) {
-	require_once(ABSPATH.PLUGINDIR.'/ipm-category_manager/category_manager_classes.php');
+	require_once(ABSPATH.PLUGINDIR.'/ipm-category_manager/classes/category_bin.class.php');
+	require_once(ABSPATH.PLUGINDIR.'/ipm-category_manager/classes/category_manager.class.php');
+	
 	//echo "<h1>sdklfj</h1>";
 	//print_r(get_declared_classes());
 	$category_manager  =  new category_manager("Top Categories");	
@@ -36,38 +38,20 @@ if(!class_exists('category_manager')) {
 	//=============================================
 }
 
+add_action('admin_menu', 'category_manager_menu');
 function category_manager_menu() {
 	global $category_manager;
+	
+	$title = "";			//Change the top level menu here
+	
 	// Add a new top-level menu:
 	if(current_user_can('edit_plugins')){
 		if(get_bloginfo('version')>= 2.7 ){
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 			cm_add_page_main($title);
 			add_submenu_page(cm_main_page_path($title), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
-=======
-			wfiu_do_main_page();
-			add_submenu_page(ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php', 'WFIU Category Manager', 'WFIU Category Manager', 7, 'ipm-category_manager/category_manager.php',   array($category_manager, 'main_config_form'));
->>>>>>> parent of b8b69b7... Character Counter is fixed to be independent and work with WP3
-=======
-			cm_add_page_main($title);
-			add_submenu_page(cm_main_page_path($title), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
->>>>>>> 5213b929f178ef8304e86bbae967fc44ee0a593a
-=======
-			cm_do_main_page();
-			add_submenu_page(cm_main_page_path(), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
->>>>>>> parent of 5213b92... Category Manager works in 3.1 and should be stand-alone, no longer relying in the ipm utilities.
-=======
-			cm_do_main_page();
-			add_submenu_page(cm_main_page_path(), 'IPM Category Manager', 'IPM Category Manager', 7, 'ipm-category_manager',   array($category_manager, 'main_config_form'));
->>>>>>> parent of 5213b92... Category Manager works in 3.1 and should be stand-alone, no longer relying in the ipm utilities.
 		}else{
 
-			add_menu_page('WFIU Category Manager', 'WFIU Category Manager', 7, __FILE__ , array($category_manager, 'config_form'));
-
-			//add_submenu_page( __FILE__ , 'Category Manager Config', 'Category Manager Config', 7, 'Category Manager Config', array($category_manager, 'config_form'));
+			add_menu_page('IPM Category Manager', 'IPM Category Manager', 7, __FILE__ , array($category_manager, 'config_form'));
 			add_submenu_page( __FILE__ , 'Relationships', 'Relationships', 7, 'Relationships', array($category_manager, 'config_form_relationships'));
 			add_submenu_page( __FILE__ , 'Mass Change', 'Mass Change', 7, 'Mass Change', array($category_manager, 'config_form_masschange'));
 		}
@@ -75,17 +59,16 @@ function category_manager_menu() {
 
 }
 
-<<<<<<< HEAD
 
 if(!function_exists('cm_main_page_path'))
 {
-	function cm_main_page_path()
+	function cm_main_page_path($title)
 	{
 		global $menu;
 		$exists = false;
 		$found = -1;
 		foreach($menu as $key => $m){
-			if($m[0] == "IPM Plugins"){
+			if($m[0] == $title){
 				$exists = true;
 				$found = $key;
 			}
@@ -98,58 +81,41 @@ if(!function_exists('cm_main_page_path'))
 	}
 }
 
-if(!function_exists('cm_do_main_page'))
+if(!function_exists('cm_add_page_main'))
 {
-	function cm_do_main_page()
+	function cm_add_page_main($title)
 	{
-		global $menu;
+		global $menu, $category_manager;
 		$exists = false;
 		$found = -1;
 		foreach($menu as $key => $m){
-			if($m[0] == 'IPM Plugins'){
+			if($m[0] == $title){
 				$exists = true;
 				$found = $key;
 			}
 		}
 		if(!$exists){
-			add_menu_page('IPM Plugins', 'IPM Plugins', 7, ABSPATH.PLUGINDIR.'/wfiu_utils/wfiu_plugins_homepage.php');
+			add_menu_page($title, $title, 7, "ipm-category_manager", array($category_manager, 'main_config_form'));
 		}
-		/******************************/
+		/*********SUBMENU***************/
 		global $submenu;
-	
-		if($submenu['wfiu_utils/wfiu_plugins_homepage.php'][0][0] == 'IPM Plugins'){
-			unset($submenu['wfiu_utils/wfiu_plugins_homepage.php'][0]);
+
+		if($submenu[cm_main_page_path($title)][0][0] == $title){
+			unset($submenu[cm_main_page_path($title)][0]);
 		}
-		/*else{
-			unset($menu[$found]);
-	
-		}*/
 	}
 }
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-add_action('admin_menu', 'category_manager_menu');
->>>>>>> parent of b8b69b7... Character Counter is fixed to be independent and work with WP3
-=======
->>>>>>> 5213b929f178ef8304e86bbae967fc44ee0a593a
-=======
-
-
->>>>>>> parent of 5213b92... Category Manager works in 3.1 and should be stand-alone, no longer relying in the ipm utilities.
-=======
-
-
->>>>>>> parent of 5213b92... Category Manager works in 3.1 and should be stand-alone, no longer relying in the ipm utilities.
 add_action('admin_menu', array(&$category_manager, 'postBox'), 1);
 
 //add_action('admin_head', array(&$category_manager,'admin_head'));
 
 //activate plugin
-add_action('activate_category_manager/category_manager.php', array(&$category_manager, 'activate'));
+//add_action('activate_category_manager/category_manager.php', array(&$category_manager, 'activate'));
+register_activation_hook( __FILE__, array(&$category_manager, 'activate') );
+
+
 /*
 add_action('admin_head', array(&$map_item_class,'admin_head'));
 */

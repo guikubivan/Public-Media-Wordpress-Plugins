@@ -33,18 +33,6 @@ class category_bin {
 		$this->id = $id;
 	}
 
-	public function render_view($view, $parameters)
-	{
-		ob_start();
-		if(is_array($parameters) )
-			extract($parameters);
-		
-		include("views/".$view);
-		$output = ob_get_contents();
-		ob_end_clean();
-		
-		return output;			
-	}
 
 	function set_parent_id($id){
 		$this->parent_id = $id;
@@ -130,6 +118,18 @@ class category_manager{
 
 	}
 
+	public function render_view($view, $parameters)
+	{
+		ob_start();
+		if(is_array($parameters) )
+			extract($parameters);
+		
+		include("views/".$view);
+		$output = ob_get_contents();
+		ob_end_clean();
+		
+		return output;			
+	}
 	function config_form_masschange(){
 		global $wpdb;
 

@@ -1,80 +1,6 @@
 <?php
-/*category_bin - category bin
-
-PROPERTIES
-@prop string name
-@prop bool multiple_cats
-@prop bool required
-@prop number_array category_ids
-
-METHODS
-
-add_cats(ids): add categories from ids array given 
-@param number_array ids
-
-replace_cats(ids): replace all categories from ids array given
-@param number_array ids
-
-*/
-
-class category_bin {
-	public $name;
-	public $id;//id of category that is the head of the group of categories
-	public $multiple_cats;
-	public $required;
-	public $category_ids = array();
-	public $children = array();
-	public $parent = null;
-	public function __construct($name, $allowmultiple, $req, $parent_id=null, $id = null){
-		$this->name = $name;
-		$this->multiple_cats = $allowmultiple;
-		$this->required = $req;
-		$this->parent_id = $parent_id;
-		$this->id = $id;
-	}
-
-	public function render_view($view, $parameters)
-	{
-		ob_start();
-		if(is_array($parameters) )
-			extract($parameters);
-		
-		include("views/".$view);
-		$output = ob_get_contents();
-		ob_end_clean();
-		
-		return output;			
-	}
-
-	function set_parent_id($id){
-		$this->parent_id = $id;
-	}
-
-	function set_id($id){
-		$this->id = $id;
-	}
-
-	function add_child($name){
-		$this->children[] = $name;
-	}
-
-	function add_cats($ids){
-		$this->category_ids = array_merge($this->category_ids, $ids);
-	}
-
-	function replace_cats($ids){
-		$this->category_ids = $ids;
-	}
-
-	function get_cat_ids(){
-		return $this->category_ids;
-	}
-	function get_short_name(){
-		return strtolower(str_replace(' ', '_', $this->name));
-	}
 
 
-}
 
 /*
 category_manager - represents a category bin type
@@ -130,50 +56,53 @@ class category_manager{
 
 	}
 
+	public function render_view($view, $parameters = array())
+	{
+		ob_start();
+		if(is_array($parameters) )
+			extract($parameters);
+		
+		include(ABSPATH.PLUGINDIR."/ipm-category_manager/views/".$view);
+		$output = ob_get_contents();
+		ob_end_clean();
+		
+		return $output;			
+	}
+	
 	function config_form_masschange(){
 		global $wpdb;
+		ob_start();
+		if($_GET['categories_choose'])
+		{
 
-		if($_GET['categories_choose']){
-			$catQ = "hierarchical=1&hide_empty=0";
+			//$catQ = "hierarchical=1&hide_empty=0";
+			
+		//	$catQ = "hierarchical=1&hide_empty=0&orderby=group";
+			$catQ = array(
+						"hierarchical" => true,
+						"hide_empty" => 0
+						);
+						
 			$categories = get_categories($catQ);
-
 			$chosen_cat = $_POST['cat'];
 			$cobj = get_category($chosen_cat);
-			echo "Select categories to assign to all posts of category <b>".$cobj->name."</b> :\n<br/>";
-
-			$buttonsDiv = '<table style="text-align:center"><tr><td>&nbsp;</td><td>Set |</td><td>Unset |</td><td>Omit</td></tr>';
-			foreach ($categories as $cat) {
-				$style='';
-				//print_r($categories);
-				if($cat->parent != 0){
-					$style='padding-left:13px;';
-				}
-				$buttonsDiv .= "<tr><td style='text-align:left;$style'><b>".$cat->name."</b></td>
-						<td><input type=\"radio\" name=\"".$cat->term_id."\" value=\"set\"> </td>
-						<td><input type=\"radio\" name=\"".$cat->term_id."\" value=\"unset\"></td>
-						<td><input type=\"radio\" name=\"".$cat->term_id."\" value=\"donothing\" checked></td></tr>";
-			}
-			$buttonsDiv .="</table>";
-
-			echo "<form action='?page=" . $_GET['page'] . "&categories_set=true#catman_mass_change' method='post'>";
-			echo $buttonsDiv;
-			echo "<div style=\"width:500px;clear:both;text-align:center\"><input type=\"submit\" value=\"Mass change categories\" /></div>";
-			echo '<INPUT TYPE="hidden" NAME="chosen_category" VALUE="'.$_POST['cat'].'">';	
-			echo "</form>";
-		}else if($_GET['categories_set']){
+			echo $this->render_view("masschange_categories_choose.php", array(
+					"cobj" => $cobj,
+					"categories" => $categories,
+			) );
+			
+		}
+		else if($_GET['categories_set']){
 			//$checkboxes = array();
+			
 			$catQ = "fields=ids&hierarchical=1&hide_empty=0";
 			$categories = get_categories($catQ);
 			$set = array();
 			$unset = array();
 			foreach ($categories as $cat_id){
-
-				//echo $_POST["$cat->id"];
-				//$checkboxes[$cat_id] = $_POST[$cat_id];
 				if($_POST[$cat_id]=='set'){
 					$set[] = $cat_id;
 				}
-
 				if($_POST[$cat_id]=='unset'){
 					$unset[] = $cat_id;
 				}
@@ -190,6 +119,7 @@ class category_manager{
 
 			$rows = $wpdb->get_results($request);
 			$i=1;
+			echo "<h3>Posts that have been modified: </h3>";
 			foreach($rows as $row){
 				$post_id = $row->ID;
 				$post_title = $row->post_title;
@@ -202,8 +132,6 @@ class category_manager{
 						$new_cats[] = $cid;
 					}
 				}
-				//echo "<br />AFter: ";
-				//print_r($new_cats);
 				++$i;
 				wp_set_post_categories($post_id, $new_cats);
 		
@@ -212,21 +140,21 @@ class category_manager{
 			
 
 		}else{
-			$catQ = "show_count=1&hierarchical=1&hide_empty=0";
-			echo "Select which group of posts to change category:\n<br/>";
-			echo "<form action='?page=" . $_GET['page'] . "&categories_choose=true#catman_mass_change' method='post'>";
-			wp_dropdown_categories($catQ);
-			echo "<div style=\"width:500px;clear:both;text-align:center\"><input type=\"submit\" value=\"Continue\" /></div>";
-			echo "</form>";
-		
+			$catQ = "show_count=1&hierarchical=1&hide_empty=0&echo=0";
+			$drop_down = wp_dropdown_categories($catQ);
+			
+			echo $this->render_view("masschange.php", array("category_dropdown"=>$drop_down) );
 
 		}
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
 
 	}
-
+	
+	//parent, children
 	function add_relationship($cat_id, $cat_ids){
-		//echo $cat_id . ' ';
-		//print_r($cat_ids);
+		
 		if(!is_array($cat_ids)){
 			$cat_ids = array($cat_ids);
 		}
@@ -616,6 +544,8 @@ class category_manager{
 		  mysack.encVar( "cookie", document.cookie, false );
 		  //mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
 		  //mysack.onCompletion = whenImportCompleted;
+		  if(document.getElementById('cat_man_loading') != null)
+			  document.getElementById('cat_man_loading').display = "block";
 		  mysack.runAJAX();
 		  return true;
 		}
@@ -634,6 +564,9 @@ class category_manager{
 		  mysack.encVar( "cookie", document.cookie, false );
 		  //mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
 		  //mysack.onCompletion = whenImportCompleted;
+		  
+		  if(document.getElementById('cat_man_loading') != null)
+			  document.getElementById('cat_man_loading').display = "block";
 		  mysack.runAJAX();
 		  return true;
 		}
@@ -877,7 +810,7 @@ my_cars["big"]="SUV";*/
 
 		$retStr = "<table>\n<tr>\n";
 		foreach($arg_list[0] as $title) {
-			$retStr .= "<th style='border-bottom: solid 3px;'>$title</th>\n";
+			$retStr .= "<th style='border-bottom: solid 3px;' class='cat_man_".strtolower(str_replace(" ", "_", $title))."'>$title</th>\n";
 		}
 		$retStr .= "</tr>\n";
 		return $retStr;
@@ -906,11 +839,6 @@ my_cars["big"]="SUV";*/
 		$curID = -9999;
 
 
-		/*print_r($cat_ids);
-
-		echo "<br />";
-		print_r($selected);
-		echo "<br /> <hr />";*/
 		$radio_selected = false;
 		foreach($cat_ids as $id){
 			//echo "|$id|";
@@ -989,7 +917,7 @@ my_cars["big"]="SUV";*/
 			}else if($format=='single'){
 				$outStr .= $categoryObj->cat_name;
 			}else{
-				$outStr .= '<span class="'.$this->prefix().'cat_name" style="border: 1px solid;" >'.$categoryObj->cat_name . '</span> ';
+				$outStr .= '<span class="'.$this->prefix().'cat_name" style="white-space: nowrap; border: 1px solid; line-height: 2em; padding: 1px;" >&nbsp;'.$categoryObj->cat_name . '&nbsp;</span> ';
 					//print_r($categoryObj);
 			}
 		}
@@ -1055,9 +983,21 @@ my_cars["big"]="SUV";*/
 
 		//echo $mult . ' ' . $req;
 		//print_r($groups);
+		
+		if(is_array($groups)){
+			foreach($groups as $group_id => $group_props){
+				$mult = $group_props['multiple'] ? true: false;
+				$req = $group_props['required'] ? true : false;
+				$parent_id = intval($group_props['parent_id']) > 0 ? intval($group_props['parent_id']) : null;
+				$this->add_category_group($group_id, $mult, $req, $parent_id);
+			}
+
+		}
 		$groups = serialize($groups);
 
 		update_option($this->prefix().'groups', $groups);
+		
+		
 		echo $message;
 
 	}
@@ -1107,6 +1047,16 @@ my_cars["big"]="SUV";*/
 			$message = "<div id='message' class='updated fade'><b>".$categoryObj->name."</b> category group does not exist, nothing done.</div>";
 		}
 
+		if(is_array($groups)){
+			foreach($groups as $group_id => $group_props){
+				$mult = $group_props['multiple'] ? true: false;
+				$req = $group_props['required'] ? true : false;
+				$parent_id = intval($group_props['parent_id']) > 0 ? intval($group_props['parent_id']) : null;
+				$this->add_category_group($group_id, $mult, $req, $parent_id);
+			}
+
+		}
+
 		$groups = serialize($groups);
 		update_option($this->prefix().'groups', $groups);
 		echo $message;
@@ -1119,9 +1069,6 @@ my_cars["big"]="SUV";*/
 		$groups = stripslashes(get_option($this->prefix().'groups'));
 		//echo "groups:" .$groups;
 		$groups = unserialize($groups);
-		//echo sizeof($groups);
-		//print_r($groups);
-		//echo "<h1>sldkfsdkjf</h1>";
 		if(is_array($groups)){
 			foreach($groups as $group_id => $group_props){
 				$mult = $group_props['multiple'] ? true: false;
@@ -1134,8 +1081,8 @@ my_cars["big"]="SUV";*/
 
 	}
 
-	function print_item_table_row($catbin, $format='parent'){//($name, $mult, $req, $cat_ids, $format='parent'){
-		echo "<tr >\n";
+	function print_item_table_row($catbin, $format='parent', $alt = ""){//($name, $mult, $req, $cat_ids, $format='parent'){
+		echo "<tr class='$alt'>\n";
 		//echo "<td>$i.</td>";
 		$itemid = $catbin->id;
 		if(!$itemid){
@@ -1160,98 +1107,66 @@ my_cars["big"]="SUV";*/
 		echo "<td style='text-align: center'>";
 			echo $catbin->required ? 'Yes' : 'No';
 		echo "</td>";
-		echo "<td style='text-align: center'>";
+		echo "<td style='text-align: left'>";
 			echo $this->print_categories($catbin->get_cat_ids());
 		echo "</td>";
-
-		/*echo "<td style='width:50px'>";
-		echo "<input type='button'  value='&uarr;' />";
-		echo "<input type='button'  value='&darr;' />";
-		echo "</td>";
-*/
 
 		echo "</tr>\n";
 
 	}
 
-	function main_config_form(){
-
-?>
-		<div id="catman_tabs">
-		     <ul>
-			 <li><a href="#catman_main"><span>Main</span></a></li>
-			 <li><a href="#catman_relationships"><span>Relationships</span></a></li>
-			 <li><a href="#catman_mass_change"><span>Mass Change</span></a></li>
-		     </ul>
-		</div>
-
-		<div id='catman_main'>
-			<?php $this->config_form();?>
-		</div>
-		<div id='catman_relationships'>
-			<?php $this->config_form_relationships();?>
-		</div>
-		<div id='catman_mass_change'>
-			<?php $this->config_form_masschange();?>
-		</div>
-		<script type='text/javascript'>
-		 jQuery(document).ready(function(){
-			jQuery('#catman_tabs').tabs({ remote: true });
-		});
-		</script>
-<?php
-		//$this->config_form();
+	function main_config_form()
+	{
+			
+		$output = $this->render_view("main_config_form.php", array(	
+			"styles" => $this->render_view("ui.tabs.css"),
+			"config_form" => $this->config_form(),	
+			"relationships" => $this->config_form_relationships(),
+			"masschange" => $this->config_form_masschange()
+			));
+		echo $output;
 	}
 
 
 	function config_form(){
-
-		if($_GET['add_group']){
-			$this->process_add_group();
-
-		}else if($_GET['editdelete_group']){
-			if($_POST['group_edit']){
-				$this->load_category_groups();
-				$this->config_form_edit_group();
-				return;
-			}else if ($_POST['group_delete']){
-				$this->config_form_delete_group();
-			}
-		}
-		$this->load_category_groups();
+		ob_start();
+		
 
 		echo "<div class='wrap'>";
 
 		echo "<h2>IPM Category Manager Configuration</h2>";
 
+		if($_GET['editdelete_group'] && ($_POST['group_edit']) ){
+			$this->load_category_groups();
+			$this->config_form_edit_group();
+		}
+		else
+		{
+			if($_GET['add_group']){
+				$this->process_add_group();
+			} else if($_GET['editdelete_group'] && $_POST['group_delete']){
+				$this->config_form_delete_group();
+			}
+		
+		$this->load_category_groups();
 		echo $this->table_headers(array('&nbsp;', 'Name', 'Allow Multiple', 'Required', 'Categories'));
 		echo "<form action='?page=" . $_GET['page'] . "&editdelete_group=true#catman_main' method='post'>";
+		$alt = "alt_row";
 			foreach($this->category_bins as $catbin){
-
-				/*if($catbin->parent_id == null){
-					echo $catbin->name. " is null <br />";
-				}else{
-					echo "Parent id for " . $catbin->name . " is " . $catbin->parent_id . "<br />";
-
-				}
-				print_r($catbin->children);
-				echo "<br />";*/
+				$alt = empty($alt)?"alt_row":"";
 				if($catbin->parent_id != null){
-					//echo $catbin->parent_id . $catbin->name ."%<br />";
 					continue;
 				}
 
-				$this->print_item_table_row($catbin);//->name, $catbin->multiple_cats, $catbin->required, $catbin->get_cat_ids());
+				$this->print_item_table_row($catbin, 'parent', $alt);//->name, $catbin->multiple_cats, $catbin->required, $catbin->get_cat_ids());
 
 				if($catbin->children !=null){
-					//echo $catbin->parent_id . $catbin->name ."!<br />";
 					foreach($catbin->children as $childname){
-
+						$alt = empty($alt)?"alt_row":"";
+					
 						$child = $this->get_category_bin($childname);
-						//echo $child->parent_id . $child->name ."*<br />";
-						//echo $child->parent_id . ' -> ' . $child->name . ' |' ;
 						
-						$this->print_item_table_row($child, 'child');//->name, $child->multiple_cats, $child->required, $child->get_cat_ids(), 'child');
+						$this->print_item_table_row($child, 'child', $alt);
 					}
 				}
 
@@ -1267,12 +1182,21 @@ my_cars["big"]="SUV";*/
 
 		$this->print_add_group_form();	
 		echo "<br /><br />";
-
-
+		
+		
+		}
+		
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
 	}
 	
 	function config_form_relationships(){
+		ob_start();	
 		$this->print_relationships();
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
 	}
 
 
@@ -1290,7 +1214,7 @@ my_cars["big"]="SUV";*/
 	function print_item_form_fields($catbin = null){
 		//echo $catbin->name;
 
-		echo "<b>Category Parent</b>: ";
+		echo "<b>Group name</b>: ";
 		$catQ = "hide_empty=0&show_count=1&hierarchical=1";
 		if($catbin != null){
 			//echo ' id ' .$catbin->id;
@@ -1380,34 +1304,43 @@ my_cars["big"]="SUV";*/
 	}
 
 	function print_relationships(){
-		if($_GET['add_relationship']){
+		
+		if($_GET['add_relationship'])
+		{
 			$this->load_category_groups();
 			$this->process_add_relationship();
 
-		}else if($_GET['editdelete_relationship']){
+		}
+		else if($_GET['editdelete_relationship'])
+		{
 			if ($_POST['relationship_delete']){
 				$this->process_delete_relationship();
 			}
-		}else{
-			$this->load_category_groups();
 		}
-
+		else
+		{
+			
+		}
+		$this->load_category_groups();
 		$this->load_relationships();
 		
 		echo "<div class='wrap'>";
 		echo "<h2>Relationships</h2>";
 
 		echo "<form action='?page=" . $_GET['page'] . "&editdelete_relationship=true#catman_relationships' method='post'>";
-		echo $this->table_headers(array('&nbsp;', 'Category', 'Must Have'));
+		echo $this->table_headers(array('&nbsp;', 'Key', 'Mapped Categories'));
+		$alt = "alt_row";
 		foreach($this->relationships as $key=>$cats){
-				echo "<tr >\n";
+			
+				$alt = empty($alt)?"alt_row":"";
+				echo "<tr class='$alt' >\n";
 				echo "<td>";
 				echo "<input type='radio' onclick='javascript:changeSelectedCategory(this.value);' name='".$this->prefix()."relationship_key' value='" . $key . "' />";
 				echo "</td>";
-				echo "<td style='text-align: center'>";
+				echo "<td style=''>";
 				echo $this->print_categories($key, 'single');
 				echo "</td>";
-				echo "<td style='text-align: center'>";
+				echo "<td style=''>";
 				echo $this->print_categories($cats);
 				echo "</td>";
 				echo "</tr>\n";
@@ -1439,9 +1372,12 @@ my_cars["big"]="SUV";*/
 	function load_relationships(){
 		if(sizeof($this->relationships)>0){
 			return;
+		//	$this->relationships = array();
 		}
-		$rels =stripslashes(get_option($this->prefix().'relationships'));
+		$rels = stripslashes(get_option($this->prefix().'relationships'));
 		$rels = unserialize($rels);
+		
+		//print_r($rels);
 		if(is_array($rels)){
 			foreach($rels as $key => $targets){
 				$this->add_relationship(intval($key), $targets);
@@ -1471,6 +1407,11 @@ my_cars["big"]="SUV";*/
 			$message = "<div id='message' class='updated fade'>Relationship with <b>".$cObj->name."</b> does not exist, nothing done.</div>";
 		}
 
+		$this->relationships = array();
+		foreach($rels as $key => $targets){
+				$this->add_relationship(intval($key), $targets);
+		}
+
 		$out = serialize($rels);
 		update_option($this->prefix().'relationships', $out);
 		echo $message;
@@ -1484,12 +1425,11 @@ my_cars["big"]="SUV";*/
 			return;
 		}
 		$cObj = get_category($rel_id);
-		$message = "<div id='message' class='updated fade'>Relationship with <b>".$cObj->name."</b> added.</div>\n";
+		$message = "<div id='message' class='updated fade'><p>Relationship with <b>".$cObj->name."</b> added.</p></div>\n";
 
 		//$targets = $_POST[$this->prefix()."relationship_targets"];
 		$targets = $this->get_post_variables(false);//don't force parent id
 
-		//print_r($targets);
 		$rels = stripslashes(get_option($this->prefix().'relationships'));
 		$rels = unserialize($rels);
 		if(!$rels){
@@ -1497,6 +1437,11 @@ my_cars["big"]="SUV";*/
 		}
 
 		$rels[$rel_id] = $targets;
+		
+		$this->relationships = array();
+		foreach($rels as $key => $targets){
+				$this->add_relationship(intval($key), $targets);
+		}
 	
 		//print_r($rels);
 		$out = serialize($rels);
@@ -1513,9 +1458,11 @@ my_cars["big"]="SUV";*/
 		/*if(!$key_id){
 			return "Error from get_categories_panel: No category id passed.<br />";
 		}*/
+		//echo "<div style='display: none' id='cat_man_loading'>Loading...</div>";
 		$this->load_category_groups();
 		$this->load_relationships();
 		$retStr = '';
+		$retStr .= "<div style='display: none' id='cat_man_loading'>Loading...</div>";
 		$targets = $this->relationships[$key_id];
 		if(!is_array($targets)){
 			$targets = array();
@@ -1572,24 +1519,19 @@ my_cars["big"]="SUV";*/
 
 	function print_relationship_fields($key_id = null){//only one relationship
 
-		echo "<br <b>Key</b>: <select name='".$this->prefix()."relationship_key' id='".$this->prefix()."relationship_key' class='postform' onChange='category_manager_js_get_panel_generic();' >\n";
+		echo '<span class="question" title="';
+		echo "When editing the categories of a post, if you check the Key category, the Mapped categories will automatically get checked.";
+		echo '"	>&#10082;</span> ';
+		echo "<b>Key</b>: <select name='".$this->prefix()."relationship_key' id='".$this->prefix()."relationship_key' class='postform' onChange='category_manager_js_get_panel_generic();' >\n";
 
-		//echo "<option value='none'>None</option>\n";
-
-		//$existing_keys = array_keys($this->relationships);
-		/*$all_cats= array();
-		foreach($this->category_bins as $catbin){
-			$all_cats = array_merge($all_cats, $catbin->get_cat_ids());
-		}*/
-
-
+		
 		$catQ = "fields=ids&hierarchical=1&hide_empty=0";
 		$exclude .= '1';
 		$catQ .= '&exclude='.$exclude;
 		$all_cats = get_categories($catQ);
 
 
-		echo "<option value=''> </option>\n";
+		echo "<option value='' disabled selected>-- Select a key --</option>\n";
 		foreach($this->sort_cids_alphabet($all_cats) as $cid){
 			if(in_array($cid, $this->group_ids))continue;
 			//if($this->category_bins[$i]->parent_id == null && ($this->category_bins[$i]->id != $catbin->id)){
@@ -1608,7 +1550,7 @@ my_cars["big"]="SUV";*/
 		$count = 0;
 		echo "</select>\n";
 
-		echo '<input style="margin-left:5px;height:30px;" type="submit" class="button" name="submit" value="Add/Update relationship" />';
+		echo '<input style="margin-left:5px;" type="submit" class="button" name="submit" value="Add/Update relationship" />';
 
 		echo "<br /><b>Map to</b>: \n";
 		//echo "<option value='none'>None</option>\n";
@@ -1636,6 +1578,4 @@ my_cars["big"]="SUV";*/
 
 
 }
-
-
- ?>
+?>
