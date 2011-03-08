@@ -315,7 +315,7 @@ class category_manager{
 			document.getElementById('station_longitude').value = '". $long . "';";
 	*/
 
-		$start .= "<h3>WFIU CATEGORIES</h3><div class='inside'><div id='postWFIUCATCONTENT'>";
+		$start .= "<h3>IPM CATEGORIES</h3><div class='inside'><div id='postWFIUCATCONTENT'>";
 		$end .= "</div></div>";
 
 		$retString = 'jQuery("#categorydiv").html("'.$start . str_replace("\n",' ',addslashes($this->post_form( $_POST['post_id'] ) ) ).$end.'");';
@@ -716,8 +716,8 @@ my_cars["big"]="SUV";*/
 	}
 
 	function postBox(){
-		add_meta_box('wfiu_categories-box-div', __('WFIU Categories', 'wfiu_categories'), array(&$this, 'echo_post_form'), 'post', 'normal', 'high');
-		add_meta_box('wfiu_categories-box-div', __('WFIU Categories', 'wfiu_categories'), array(&$this, 'echo_post_form'), 'page', 'normal', 'high');
+		add_meta_box('ipm_categories-box-div', __('IPM Categories', 'ipm_categories'), array(&$this, 'echo_post_form'), 'post', 'normal', 'high');
+		//add_meta_box('wfiu_categories-box-div', __('WFIU Categories', 'wfiu_categories'), array(&$this, 'echo_post_form'), 'page', 'normal', 'high');
 	}
 
 	function echo_post_form(){
@@ -736,7 +736,7 @@ my_cars["big"]="SUV";*/
 		//		<div id="postWFIUCATCONTENT">';
 
 		$i=0;
-		$outStr .= "<table><tr>\n";
+		$outStr .= "<table width='100%'><tr>\n";
 
 		if($post_id == null){
 			$post_id = $post->ID;
@@ -754,13 +754,17 @@ my_cars["big"]="SUV";*/
 			}else{
 				echo "<div style='float:left'>\n";
 			}*/
-			$outStr .= "<td style='vertical-align:top' >\n";
+			$outStr .= "<td style='vertical-align:top;  padding: 10px;' >\n";
 			$required = '';
 			if($catbin->required){
-				$required = "<br />(required)";
+				$required = "(required)";
+			}
+			else
+			{
+				$required = "&nbsp;";
 			}
 
-			$outStr .= "<div style='text-align:center;font-weight:bold;height:40px;'>".$catbin->name."$required</div>\n";
+			$outStr .= "<div style='text-align:center;font-weight:bold; margin: -4px; border-bottom: solid 2px; margin-bottom: 5px; padding: 5px;'>".$catbin->name."<br /><small style='font-weight: normal'>$required</small></div>\n";
 
 			if($catbin->multiple_cats){//print checkboxes
 				$outStr .= $this->print_categories($catbin->get_cat_ids(), 'checkbox', null, $selected, true, $catbin->get_short_name());
@@ -817,10 +821,13 @@ my_cars["big"]="SUV";*/
 	}
 
 	function get_relationships($cat_id){
-		if($this->relationships[$cat_id]){
-			return $this->relationships[$cat_id];
-		}else{
-			return false;
+		if(count($this->relationships) > 0)	
+		{
+			if($this->relationships[$cat_id]){
+				return $this->relationships[$cat_id];
+			}else{
+				return false;
+			}
 		}
 	}
 	

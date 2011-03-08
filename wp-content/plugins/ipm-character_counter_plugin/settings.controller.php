@@ -15,6 +15,7 @@ $defaults['excerpt']['max']=350;
 $defaults['excerpt']['optional']='on';
 
 $defaults['in_pages']='off';
+$defaults['teaser_activated'] = 'off';
 
 $prefix='char_count_';
 if ($_POST) {
@@ -73,6 +74,9 @@ if ($_POST) {
 	}
 	if(!isset($_POST[field][in_pages]) ){
 		$option_name = $prefix . 'in_pages';
+		delete_option($option_name);
+	}if(!isset($_POST[field][teaser_activated]) ){
+		$option_name = $prefix . 'teaser_activated';
 		delete_option($option_name);
 	}
 	$messages .= "<div class='updated fade'><p><strong>Succesful update</strong></p></div> <!--meta http-equiv='refresh' content='0'-->";

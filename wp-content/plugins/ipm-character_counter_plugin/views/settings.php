@@ -10,6 +10,11 @@
 		<label>Use in pages: <input type='checkbox' name='field[in_pages]' <?= $fields[in_pages] ? 'checked' : '' ?> /> </label>
 	</p>
 </div>
+<div>
+	<p>
+		<label>Activate Teaser: <input type='checkbox' name='field[teaser_activated]' <?= $fields[teaser_activated] ? 'checked' : '' ?> /> </label>
+	</p>
+</div>
 
 <table style='width: 400px ?>' class='widefat'>
 	<thead><tr> 
