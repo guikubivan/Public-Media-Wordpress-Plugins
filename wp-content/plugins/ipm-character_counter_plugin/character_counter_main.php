@@ -3,7 +3,7 @@
 Plugin Name: IPM - Character Count
 Plugin URI: http://wfiu.org
 Version: 1.1
-Description: Checks for max character count of 160
+Description: Checks Title and Excerpt for the set number of characters.  Optionally adds a Teaser field.
 Author: Pablo Vanwoerkom, Ben Serrette
 Author URI: http://www.wfiu.org
 */
@@ -96,7 +96,6 @@ if(!function_exists('character_count_js')){
 	}
 }
 
-if(!class_exists('box_custom_field_plugin')) 
 {
 	//element, position, box title, post meta key, inputfield name
 	$prefix='char_count_';

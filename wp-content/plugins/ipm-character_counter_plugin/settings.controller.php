@@ -47,6 +47,7 @@ if ($_POST) {
 				if(isset($val) && $val){
 					$option_val = $val;
 				}
+				
 				//echo $option_name  . ': ' . $option_val .  "<br />";
 				if ( get_option($option_name) !== false) {
 					update_option($option_name, $option_val);
@@ -56,7 +57,8 @@ if ($_POST) {
 			}
 			if(!isset($props['optional']) ){
 				$option_name = $prefix . $name . '_optional';
-				delete_option($option_name);
+				//delete_option($option_name);
+				update_option($option_name, "off");
 			}
 		}else{
 			$option_name = $prefix . $name;
@@ -75,7 +77,8 @@ if ($_POST) {
 	if(!isset($_POST[field][in_pages]) ){
 		$option_name = $prefix . 'in_pages';
 		delete_option($option_name);
-	}if(!isset($_POST[field][teaser_activated]) ){
+	}
+	if(!isset($_POST[field][teaser_activated]) ){
 		$option_name = $prefix . 'teaser_activated';
 		delete_option($option_name);
 	}

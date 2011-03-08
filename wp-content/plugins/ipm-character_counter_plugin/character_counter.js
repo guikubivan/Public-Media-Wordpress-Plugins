@@ -94,6 +94,9 @@ jQuery(document).ready(function($){
 	});
 	
 	/**********************************************/
+	if(CharCountSettings.char_count_teaser_activated != 'off')
+	{
+				
 	if(CharCountSettings.char_count_teaser_min > 0 ){
 			minText = " / Min of " + CharCountSettings.char_count_teaser_min + " characters";
 	}
@@ -104,7 +107,9 @@ jQuery(document).ready(function($){
 	});
 	$("#teaser").keyup(function(event){
 		check_teaser_char_count(this, false);
-	});
+	}); 
+	
+	}
 	
 	/**********************************************/
 	minText = '';
@@ -122,11 +127,13 @@ jQuery(document).ready(function($){
 	/**********************************************/
 	if( window.location.toString().match(/(post|page)-new.php/) ){
 		check_excerpt_char_count($("#excerpt"), false);
-		check_teaser_char_count($("#teaser"), false);
+		if(CharCountSettings.char_count_teaser_activated != 'off')
+			check_teaser_char_count($("#teaser"), false);
 		check_title_char_count($("#title"), false);
 	}else{
 		check_excerpt_char_count($("#excerpt"), true);
-		check_teaser_char_count($("#teaser"), true);
+		if(CharCountSettings.char_count_teaser_activated != 'off')
+			check_teaser_char_count($("#teaser"), true);
 		check_title_char_count($("#title"), true);
 	}
 	
@@ -147,15 +154,18 @@ jQuery(document).ready(function($){
 				}
 			}
 			
-			if(CharCountSettings.char_count_teaser_optional =='off'){
-				if($("#teaser").val().length > CharCountSettings.char_count_teaser_max){
-					alert("Please shorten the teaser to " + CharCountSettings.char_count_teaser_max + " characters or less");
-					return false;
-				}
-				
-				if($("#teaser").val().length < CharCountSettings.char_count_teaser_min){
-					alert("Please make the teaser between " + CharCountSettings.char_count_teaser_min + " and " + CharCountSettings.char_count_teaser_max + " characters");
-					return false;
+			if(CharCountSettings.char_count_teaser_activated != 'off')
+			{
+				if(CharCountSettings.char_count_teaser_optional =='off'){
+					if($("#teaser").val().length > CharCountSettings.char_count_teaser_max){
+						alert("Please shorten the teaser to " + CharCountSettings.char_count_teaser_max + " characters or less");
+						return false;
+					}
+					
+					if($("#teaser").val().length < CharCountSettings.char_count_teaser_min){
+						alert("Please make the teaser between " + CharCountSettings.char_count_teaser_min + " and " + CharCountSettings.char_count_teaser_max + " characters");
+						return false;
+					}
 				}
 			}
 
