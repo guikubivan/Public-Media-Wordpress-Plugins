@@ -26,39 +26,9 @@
 	}
 	
 ?>
-/******* TEXT FIELDS CHARACTER COUNT CHECKER FUNCTION *********/
-var optionalColor = '#FFD7D7';
-var requiredColor = '#FF9A8D';
 
-function check_object_char_count(obj, min, max, enforce, do_message){
+<?php MoreFieldsCharacterCounter::text_fields_character_counter_checker_function(); ?>
 
-	var fieldName = jQuery(obj).prev().text();
-	fieldName = fieldName.substr(0, fieldName.length-1);
-	
-	if(jQuery(obj).val() == undefined){
-		return;
-	}
-	
-	jQuery(obj).next().val(jQuery(obj).val().length);
-
-	if(jQuery(obj).val().length < min){
-		jQuery(obj).css('background-color', enforce ? requiredColor : optionalColor);
-		if(do_message){
-			alert("Please make the field labeled \"" + fieldName + "\" between " + min + " and " + max + " characters");
-		}
-		return false;
-	}else if(jQuery(obj).val().length > max){
-		jQuery(obj).css('background-color', enforce ? requiredColor : optionalColor);
-		if(do_message){
-			alert("Please shorten the field labeled \"" + fieldName + "\" to " + max + " characters or less");
-		}
-		return false;
-	}else{
-		jQuery(obj).css('background-color', '');
-	}
-	return true;
-}
-/**************************************************************/
 jQuery(document).ready(function(){	
 	if (jQuery("#titlediv")) {
 
@@ -239,59 +209,8 @@ jQuery(document).ready(function(){
 	<?php endif; ?>
 		}	
 
-	/******Initialize charater count checking for all 'more-fields-plugin' text fields**********/	
-	var minText='';
-	var mfFields = [];
-	var myfield;
-	<?php $boxes = (array) $mf0->get_boxes(true); ?>
-	<?php foreach($boxes as $box) : ?>
-		<?php foreach((array)$box['field'] as $index => $f) : ?>
-			<?php  if($f['max']!='' && $f['min']=='')$f['min']=0;
-				if ( ( ($f['type'] == 'textarea') || ($f['type'] == 'text') ) && ($f['min']!='' && $f['max']!='') ) : ?>
-	if(<?php echo $f['min']; ?> > 0 ){
-			minText = " / Min of <?php echo $f['min']; ?> characters";
-	}
 	
-	myfield = [];
-	myfield['obj'] = jQuery('<?php echo $f['type'] == 'text' ? 'input' : $f['type']; ?>[name="<?php echo sanitize_title($f['key']); ?>"]');
-	myfield['min'] =  <?php echo $f['min']; ?>;
-	myfield['max'] =  <?php echo $f['max']; ?>;
-	myfield['enforce'] =  <?php echo $f['enforce'] ? 'true': 'false'; ?>;
-	mfFields.push(myfield);	
+<?php MoreFieldsCharacterCounter::character_count_checking($mf0->get_boxes(true)); ?>
 
-	jQuery(mfFields[mfFields.length -1]['obj']).after('<input type="text" value="0" maxlength="3" size="3" name="<?php echo $f['key']; ?>_char_count" readonly="" /> Max of <?php echo $f['max']; ?> characters' + minText);
-	jQuery(mfFields[mfFields.length -1]['obj']).bind("keydown", function(e){
-		check_object_char_count(this, <?php echo $f['min']; ?>, <?php echo $f['max']; ?>, <?php echo $f['enforce'] ? 'true': 'false'; ?>, false);
-	});
-	jQuery(mfFields[mfFields.length -1]['obj']).bind("keyup", function(e){
-		check_object_char_count(this, <?php echo $f['min']; ?>, <?php echo $f['max']; ?>, <?php echo $f['enforce'] ? 'true': 'false'; ?>, false);
-	});
-			<?php endif; ?>
-		<?php endforeach; ?>
-	<?php endforeach; ?>
-
-	/****** Check field's character count and [!]show message for old posts, otherwise, just highlight********/
-	//if(window.location.toString().indexOf("post-new.php") != -1){
-		for (i in mfFields) { 
-			check_object_char_count(mfFields[i]['obj'], mfFields[i]['min'], mfFields[i]['max'], mfFields[i]['enforce'], false);
-		}
-	//}else{
-	//	for (i in mfFields) { 
-	//		check_object_char_count(mfFields[i]['obj'], mfFields[i]['min'], mfFields[i]['max'], mfFields[i]['enforce'], false);
-	//	}
-	//}
-	/*******Force user to input a certain number of characters for fields which require */
-	/************* a certain range of charaters*******/
-	/*******Will not allow you to save until you fix it ********************/
-	<?php if(!current_user_can('edit_plugins')) : ?>
-	jQuery("#post").submit(function() {//for post.php
-		for (i in mfFields) {
-			if(mfFields[i]['enforce']){
-				return check_object_char_count(mfFields[i]['obj'], mfFields[i]['min'], mfFields[i]['max'], mfFields[i]['enforce'], true);
-			}
-		}
-
-	});
-	<?php endif; ?>
 	
 });

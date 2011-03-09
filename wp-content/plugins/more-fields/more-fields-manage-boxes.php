@@ -144,12 +144,8 @@
 			$boxes[$box]['field'][$index]['type'] = attribute_escape($_POST['type']);
 			$boxes[$box]['field'][$index]['select_values'] = attribute_escape($_POST['select_values']);
 			
-			//New fields for character count limits on text and textarea fields
-			$boxes[$box]['field'][$index]['min'] = isset($_POST['min']) ? attribute_escape($_POST['min']) : 0;
-			$boxes[$box]['field'][$index]['max'] = isset($_POST['max']) ? attribute_escape($_POST['max']) : 350;
-			//enforce the limits or just show a message?
-			$boxes[$box]['field'][$index]['enforce'] = isset($_POST['enforce']) ? true : false;
-
+			MoreFieldsCharacterCounter::save_character_counter_fields($boxes[$box]['field'][$index], $_POST);
+			
 			update_option('more_fields_boxes', $boxes);
 			
 			// Generate the rewrite rules for this field
@@ -423,19 +419,7 @@
 						<br><em>Separate values with comma (,). Preceed default value by a *. E.g: red, *green, blue
  					</td>
  				</tr>
-				 <tr id="charcount_container">
- 					<th scope="row" valign="top"><?php _e('Max/Min Characters', 'more-fields'); ?></th>
- 					<td>
- 						<input type="text" name="min" value="<?php echo $field['min']; ?>" style='width: 50px' /> Min
- 						<input type="text" name="max" value="<?php echo $field['max']; ?>" style='width: 50px' /> Max
- 					</td>
- 				</tr>
-				 <tr id="enforce_limits_container">
- 					<th scope="row" valign="top"><?php _e('Enforce limits?', 'more-fields'); ?></th>
- 					<td>
- 						<input type="checkbox" name="enforce" <?php echo $field['enforce'] ? 'checked="checked"' : ''; ?> />
- 					</td>
- 				</tr>
+				<? MoreFieldsCharacterCounter::edit_field_character_counter_fields($field); ?>
 		</table>
 		<input type="hidden" name="box" value="<?php echo $_GET['box']; ?>">
 		<input type="hidden" name="index" value="<?php echo $_GET['field']; ?>">

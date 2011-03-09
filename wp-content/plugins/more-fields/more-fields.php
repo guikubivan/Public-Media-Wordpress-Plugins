@@ -34,6 +34,9 @@ Author: Henrik Melin, Kal Ström, Pablo Vanwoerkom
 include('more-fields-template-functions.php');
 include('more-fields-object.php');
 
+//functions to be used for character counting
+include_once("character_counter_functions.php");
+
 $mf0 = new more_fields_object;
 $mf0->init();
 $mf0->init_field_types();

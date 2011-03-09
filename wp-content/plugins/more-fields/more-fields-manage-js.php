@@ -45,12 +45,5 @@ function more_fields_show_values_fields() {
 		<?php endif; ?>
 	<?php endforeach; ?>
 	
-	/** Show/Hide character count limits and enforce checkbox **/
-	if(jQuery('#type').val() == 'textarea'  | jQuery('#type').val() == 'text' ){
-		jQuery('#charcount_container').show();
-		jQuery('#enforce_limits_container').show();
-	}else{
-		jQuery('#charcount_container').hide();
-		jQuery('#enforce_limits_container').hide();
-	}
+	<?php MoreFieldsCharacterCounter::manage_js_show_char_count(); ?>
 }
