@@ -1,3 +1,5 @@
+
+
 #new_slideshow_button {
 	margin-bottom:10px;
 
@@ -125,5 +127,19 @@ img.adjustIcon{
 #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
 #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
 
-
+.slideshow_wrapper .slideshow_fields label, .photo_fields label
+{
+	display: block;
+	font-size: 90%;
+}
+.slideshow_wrapper .slideshow_fields input, .slideshow_wrapper .slideshow_fields textarea,
+.photo_fields input, .photo_fields textarea
+{
+	display: block;
+	margin-bottom: 10px;
+}
+.slideshow_wrapper
+{
+	padding: 10px;
+}
 /*----------------------------*/

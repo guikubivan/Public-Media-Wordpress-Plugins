@@ -116,7 +116,7 @@ jQuery(document).ready(function($){
 	if(CharCountSettings.char_count_title_min > 0 ){
 			minText = " / Min of " + CharCountSettings.char_count_title_min + " characters";
 	}
-	$("#title").after('<input type="text" value="0" maxlength="2" size="2" name="title_char_count" readonly="" /> Max of 66 characters' + minText);
+	$("#title").after('<input type="text" value="0" maxlength="2" size="2" name="title_char_count" readonly="" /> Max of ' + CharCountSettings.char_count_title_max + ' characters' + minText);
 
 	$("#title").keydown(function(event){
 		check_title_char_count(this, false);

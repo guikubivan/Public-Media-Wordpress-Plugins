@@ -1,21 +1,4 @@
 
-function simplifyUploadInterface(){
-	jQuery("#tab-gallery").hide();
-	jQuery("#tab-library").hide();
-	jQuery("#media-buttons").hide();
-
-
-	
-	if(jQuery(".post_title").length == 0){
-		jQuery("#html-upload-ui").next().nextAll().hide();
-	}else{
-		//alert("must hide svae button");
-		jQuery("#media-items").nextAll().hide();
-		jQuery("input[name='save']").hide();
-	}
-}
-
-
 jQuery(document).ready(function(){
 
 	jQuery("#library-form, #image-form").submit(function() { //for media-upload.php
@@ -23,17 +6,18 @@ jQuery(document).ready(function(){
 
 	});
 
-
-
 	jQuery("#post").submit(function() {//for post.php//, #edit_slideshow_form
 		valid=true;
-		jQuery("input.wpss_required, textarea.wpss_required").each(function(index){
-			//alert(this);
+		jQuery("input.wpss_required, textarea.wpss_required, select.wpss_required").each(function(index){
+
 			this.style.backgroundColor = '';
 			this_id = this.id;
+		
 			slideshow_id = this_id.substring(14,this_id.indexOf(']',14));
 			
 			if(slideshowOrganizer.isSingle(slideshow_id) && this_id.search('photos')==-1){
+				return;
+			}else if((this_id == 'wpss_post_photo') && !jQuery('.photo_title').length){
 				return;
 			}
 
@@ -52,11 +36,9 @@ jQuery(document).ready(function(){
 		}
 		return valid;
 	});
-
-	simplifyUploadInterface();
 });
 
-
+/*
 function check_required(elementClass, showAlert){
 	valid=true;
 	jQuery("."+elementClass).each(function(index){
@@ -91,14 +73,14 @@ function setCoverImage(sid, pid){
 		//alert(sid + ' ' +pid);
 	if(!slideshowOrganizer.isSingle(sid)){
 		jQuery(".photo_in_slideshow_"+sid).val('');	
-/*		document.getElementById('slideshowItem['+sid+'][photos]['+pid+'][cover]').value='yes';
+		document.getElementById('slideshowItem['+sid+'][photos]['+pid+'][cover]').value='yes';
 		//jQuery(".wpss_photo_container").css({'background-color' : ''});	
 		//jQuery('#photoContainer_'+pid).css({'background-color' : '#A09C42'});
-		jQuery(".set_cover_button_"+sid).css({'background-color' : ''});
+		/*jQuery(".set_cover_button_"+sid).css({'background-color' : ''});
 		jQuery(".set_cover_button_"+sid).prev().css({'border-color' : '', 'border-size': ''});
 
 		jQuery('#cover_button_'+sid+'_'+pid).css({'background-color' : '#A09C42'});
-		jQuery('#cover_button_'+sid+'_'+pid).prev().css({'border-color' : '#A09C42', 'border-width': '3px'});*/
+		jQuery('#cover_button_'+sid+'_'+pid).prev().css({'border-color' : '#A09C42', 'border-width': '3px'});*//*/*
 		jQuery(".set_cover_button_"+sid).removeClass('wpss_cover_highlight');
 		jQuery(".set_cover_button_"+sid).siblings('img').removeClass('wpss_cover_highlight');
 		jQuery(".set_cover_button_"+sid).siblings('img').addClass('wpss_photo_thumb');
@@ -139,13 +121,12 @@ function loadMap(id, location, lat, long) {
  
 	}/*else{
 		div.style.display='none';
-	}*/
+	}*//*/*
 
 }
 
 window.onunload = GUnload;
 //*********************END OF GOOGLE MAPS STUFF**********************
-
 function resetPhotoJS(){
 
 
@@ -173,19 +154,43 @@ function resetPhotoJS(){
 
 	jQuery(".editable").blur(function () {
 		jQuery(this).attr("readonly", true);
-		jQuery(this).next().hide();
+		
+		if(updateClicked == false)
+		{
+			jQuery(this).next().hide();
+		}
+		else
+		{
+			jQuery(this).focus();
+		}
+			
 		jQuery(this).nextAll('img').show();
 		jQuery(this).css({'background-color' : '', 'text-decoration': ''});
 		jQuery(this).val(currentFieldValue);
 	});
-
+	
+	jQuery(".editable").parent().mousedown(function(){
+		
+		if( jQuery(this).children(".button").is(':visible') )
+			updateClicked = true;		
+	});
+	jQuery(".editable").parent().mouseup(function(){
+		updateClicked = false;
+	});
+	
+	
 	jQuery(".editable").next().click(function () {
 		elementID = jQuery(this).prev().attr("id");
 		prop = elementID.substring(elementID.lastIndexOf('[')+1,elementID.lastIndexOf(']'));
 		photo_id = elementID.substring(elementID.lastIndexOf('[', elementID.lastIndexOf('[')-1)+1,elementID.lastIndexOf(']', elementID.lastIndexOf(']')-1));
 		slideshow_id = elementID.substring(14,elementID.indexOf(']',14));
 		updateID = elementID.replace(prop,'update');
-		update = '';
+		if(typeof update == "undefined")
+		{
+			var update = "";
+		}		
+		//alert(update);
+		//update = '';
 		if(document.getElementById(updateID) != null){
 			update = document.getElementById(updateID).value;
 		}
@@ -201,14 +206,49 @@ function resetPhotoJS(){
 		//jQuery(this).hide();
 
 		//jQuery(this).prev().val(currentFieldValue);
+		
+		jQuery(this).prev().focus();
 	});
 }
 jQuery(document).ready(function(){
 	resetPhotoJS();
 });
 
+function reloadPostImageSelect(setval){
+	var slideshow_ids = slideshowOrganizer.getIDs();
+	var stitle = '';
+	var ptitle = '';
+	var select = jQuery('#wpss_post_photo');
+	var val = select.val();
+	select.html("<option value=''>Choose post image</option>");
+	var photos = 0;
+	for(var i=0; i<slideshow_ids.length;++i){
+		stitle = jQuery("#slideshowItem\\["+ slideshow_ids[i] + "\\]\\[title\\]").val();
+		ptitles = jQuery("#slideshowContainer_"+slideshow_ids[i]).find("input.photo_title");
+		for(j=0;j<ptitles.length;++j){
+			pid = jQuery(ptitles[j]).attr('id').match(/\[photos\]\[([0-9]+)\]\[title\]/)[1];
+			ptitle = jQuery(ptitles[j]).val();
+			text = stitle + ' - ' + ptitle;
+			select.append("<option value='"+slideshow_ids[i]+"_"+pid+"'>"+text+"</option>");
+			++photos;
+		}
+	}
+	if(setval != null){
+		select.val(setval);
+	}else{
+		select.val(val);
+	}
+	if(photos){
+		select.show('slow');
+	}else{
+		select.hide('fast');
+	}
+}
+
+
 var currentSlideshowID = '';
 var currentFieldValue = '';
+var updateClicked = false;
 
 function removeHTMLTags(strInputCode){
  	 strInputCode = strInputCode.replace(/&(lt|gt);/g, function (strMatch, p1){
@@ -220,13 +260,26 @@ function removeHTMLTags(strInputCode){
 
 
 function showSlideshowMenu(checkValue,show){
-	//alert(checkValue);
-	if(show ==true){
+	if(show==true){
+		jQuery("#single_photo_button").show();
+		jQuery("#wpss_or").show();
+		jQuery("#slideshow_button").show();
 		jQuery("#slideshow_options").show();
 		jQuery("#wpss_save").hide();
-	}else if(checkValue!='none'){
+	}else if(checkValue == 'slideshow_button'){
+		jQuery("#single_photo_button").hide();
+		jQuery("#wpss_save").show();
+		jQuery("#wpss_or").hide();
+	}else if(checkValue=='single_photo_button'){
 		jQuery("#slideshow_options").hide();
 		jQuery("#wpss_save").show();
+	}else if(checkValue!='none'){
+    jQuery("#slideshow_options").hide();
+
+		/*jQuery("#single_photo_button").hide();
+		jQuery("#wpss_or").hide();
+		jQuery("#slideshow_button").hide();
+		jQuery("#wpss_save").show();*//*/*
 	}
 }
 
@@ -236,15 +289,16 @@ function removePhotoItem(deletePhotoButtonID){
 	/*if(slideshowOrganizer.isSingle(sid) ){
 		jQuery("#addphoto_button_"+sid).show();
 
-	}*/
+	}*//*/*
 }
 
 function confirmChooseNewPhoto(sid, imgID){
-	val = window.confirm("Do you want to replace this image, but maintain the meta information?");
-	if(val==true){
-		chooseNewPhoto(sid,imgID);
+	if(document.getElementById("slideshowItem["+sid+"][photos]["+imgID+ "][update]") != null){
+		if(window.confirm("Do you want to replace this image, but maintain the meta information?")){
+			chooseNewPhoto(sid,imgID);
+		}
 	}else{
-		return;
+			alert("Please save the post first before replacing this image.");
 	}
 }
 
@@ -381,7 +435,7 @@ function send_to_slideshow(photo_id, html){
    					
    			 }	
 
-		}*/);
+		}*//*/*);
 		slideshow_id = currentSlideshowID.substring(currentSlideshowID.lastIndexOf('_')+1,currentSlideshowID.length);
 		html = html.replace( /s_id/g, slideshow_id);
 		var photoOrganizer = new itemOrganizer(currentSlideshowID);
@@ -390,7 +444,7 @@ function send_to_slideshow(photo_id, html){
 		/*if(slideshowOrganizer.subItems(slideshow_id)==1){
 			document.getElementById('slideshowItem['+sid+'][photos]['+pid+'][cover]').value='yes';
 			setCoverImage(slideshow_id, pid);
-		}*/
+		}*//*
 		if(slideshowOrganizer.isSingle(slideshow_id) ){
 			if(slideshowOrganizer.subItems(slideshow_id)==1){
 				jQuery("#addphoto_button_"+slideshow_id).html('Add more photos');
@@ -400,13 +454,14 @@ function send_to_slideshow(photo_id, html){
 		//slideshowOrganizer.items[slideshow_id];
 		/*if(slideshowOrganizer.isSingle(slideshow_id) ){
 			jQuery("#addphoto_button_"+slideshow_id).hide();
-		}*/
+		}*//*
 	}else{alert('No slideshow currently selected.');
 		return;
 	}
 	//currentSlideshowID ='';
 	tb_remove();
 	resetPhotoJS();
+	reloadPostImageSelect();
 }
 
 function slideshow_getCoords(field_id){
@@ -427,6 +482,14 @@ function itemOrganizer(parent_div){
 	var dataChanged = false;
 	var deleteIndex = 0; 
 
+	this.getIDs = function(){
+		var ids=Array();
+		for(i=0;i<items.length;++i){
+			ids.push(items[i]['id']);
+		}
+		return ids;
+	}
+
 	this.getLastID = function() {
 		return items[items.length-1]['id'];
 	}
@@ -434,12 +497,11 @@ function itemOrganizer(parent_div){
 	this.getIndex = function(sid){
 		index=-1;
 		for(i=0;i<items.length;++i){
-			if(items[i]['id']==slideshow_id)index=i;		
+			if(items[i]['id']==sid)index=i;		
 		}
-		if(index==-1){
-			alert("Slideshow not found");
-			return;
-		}
+		/*if(index==-1){
+			console.log("Slideshow not found.");
+		}*//*
 
 		return index;
 	}
@@ -447,9 +509,11 @@ function itemOrganizer(parent_div){
 		index=this.getIndex(sid);
 		return items[index]['sub_items'];
 	}
-	this.isSingle = function(sid){
+	this.isSingle = function(){
+		return items[0]['single'];
+		/*
 		index=this.getIndex(sid);
-		return items[index]['single'];
+		return items[index]['single'];*//*
 	}
 	this.setSingle = function (sid, value){
 		index=this.getIndex(sid);
@@ -464,6 +528,7 @@ function itemOrganizer(parent_div){
 	this.removeSubItem = function(sid){
 		index=this.getIndex(sid);
 		--items[index]['sub_items'];
+		reloadPostImageSelect();
 	}
 
 	this.organizerRemoveItem = function (idtext){
@@ -481,13 +546,18 @@ function itemOrganizer(parent_div){
 			alert("Slideshow not found");
 			return;
 		}
-		items.splice(index-1,1);
+		items.splice(index,1);
 
 		if(items.length==0){
-			//alert('true');
-			showSlideshowMenu('', true);
+			//alert(idtext);
+			if(idtext.match(/slideshowContainer/)){
+				showSlideshowMenu('slideshow_button', true);
+			}else{
+				showSlideshowMenu('', true);
+			}
 		}
 		this.nItems = items.length;
+		reloadPostImageSelect();
 	}
 	this.clearOrganizer = function() {
 		items = []; 
@@ -508,10 +578,10 @@ function itemOrganizer(parent_div){
 		if(itemID.length == 0){
 			itemID = this.nItems;
 			counter =0;
-			while(jQuery.inArray(itemID, items)>-1){
+			while(this.getIndex(itemID)>-1){
 				itemID += 1;
 				++counter;
-				if(counter ==100){alert("infinite");break;}
+				if(counter ==100){alert("Oops, there is an en error: Infinite loop when adding slideshow, please report this error.");break;}
 			}
 			//alert(itemHTML.replace( /insert_id/g, itemID));
 			itemHTML = itemHTML.replace( /insert_id/g, itemID);
@@ -523,20 +593,45 @@ function itemOrganizer(parent_div){
 		if(single==undefined){
 			newItem['single'] = false;
 		}else{
-			//alert(single);
-			newItem['single'] = single;
+			newItem['single'] = true;
 		}
 		
 		items.push(newItem);
 
 		jQuery('#'+parent_div).append(itemHTML);
 		this.nItems+=1;
+		if(parent_div.match(/wpss_slideshows_ul/)){
+			jQuery("#slideshowContainer_" + itemID).find("span.slideshow_collapse_button").click(function(e) { //for media-upload.php
+				if(jQuery(e.target).text()=='Collapse'){
+					jQuery(e.target).text('Expand');
+					jQuery(e.target).nextAll('div:first').hide('fast');
+				}else{
+					jQuery(e.target).nextAll('div:first').show('fast');
+					jQuery(e.target).text('Collapse');
+				}
+			});
 
+			jQuery("#slideshowItem\\["+ itemID + "\\]\\[title\\]").blur(function () {
+				reloadPostImageSelect();
+			});
+		}else{
+			sid = parent_div.match(/wpss_slideshow_photos_ul_([0-9]+)/)[1];
+			jQuery("#slideshowItem\\["+ sid + "\\]\\[photos\\]\\[" + itemID + "\\]\\[title\\]").blur(function () {
+				reloadPostImageSelect();
+			});
 
-
+		}
 	}
-*/
+	this.replaceSubItem = function(sid, pid, src, photo_credit, geo_location, original_url){
+		document.getElementById('img_'+sid+'_'+pid).src=src;
+		document.getElementById('slideshowItem['+sid+'][photos][pid][photo_credit]').value = photo_credit;
+		document.getElementById('slideshowItem['+sid+'][photos][pid][geo_location]').value = geo_location;
+		document.getElementById('slideshowItem['+sid+'][photos][pid][original_url]').value = original_url;
 
-
-}
-
+		if(document.getElementById('transparency_'+sid+'_'+pid) != null){
+			document.getElementById('transparency_'+sid+'_'+pid).style.display='none';
+		}
+		alert('Photo updated');
+		reloadPostImageSelect();
+	}
+}*/

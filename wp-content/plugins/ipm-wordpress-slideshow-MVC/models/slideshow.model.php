@@ -19,10 +19,10 @@ class IPM_Slideshow
 	private $wpss;
 	private $wpdb;
 	
-	public function __construct($wordpress_slideshow, $slideshow_id = "")
+	public function __construct($plugin, $slideshow_id = "")
 	{
-		$this->wpss = $wordpress_slideshow;
-		$this->wpdb = $wordpress_slideshow->wpdb;
+		$this->wpss = $plugin;
+		$this->wpdb = $plugin->wpdb;
 		
 		if(!empty($slideshow_id))
 		{
@@ -42,7 +42,7 @@ class IPM_Slideshow
 		$query = "SELECT DISTINCT * FROM `".$this->wpdb->prefix.$this->wpss->plugin_prefix."slideshows`
 					WHERE `ID` = '".$this->slideshow_id."'";
 					
-		$result = $this->wpdb->get_results($query);
+		$result = $this->wpdb->get_row($query, ARRAY_A);
 		
 		$this->title = $result['title'];
 		$this->photo_credit = $result['photo_credit'];
@@ -52,6 +52,19 @@ class IPM_Slideshow
 		$this->latitude = $result['latitude'];
 		$this->thumb_id = $result['thumb_id'];
 		
+		$this->get_photos();
+	}
+	
+	public function get_photos()
+	{
+		$query = "SELECT DISTINCT *  
+			FROM `".$this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations`
+			WHERE `slideshow_id` = '".$this->slideshow_id."' ";
+		$result = $this->wpdb->get_results($query);
+		//$this->photos = $result;
+		foreach($result as $key=>$row){
+			$this->photos[] = new IPM_Photo($this->wpss, $row->photo_id);
+		}
 	}
 	
 	public function update()

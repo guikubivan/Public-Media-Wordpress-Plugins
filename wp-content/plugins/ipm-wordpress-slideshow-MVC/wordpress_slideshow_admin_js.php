@@ -1,7 +1,7 @@
 <?php
-	header("Content-Type: text/javascript");
+//	header("Content-Type: text/javascript");
 ?>
-
+<script type="text/javascript">
 jQuery(document).ready(function(){
 
 	jQuery("#library-form, #image-form").submit(function() { //for media-upload.php
@@ -638,4 +638,4 @@ function itemOrganizer(parent_div){
 		reloadPostImageSelect();
 	}
 }
-
+</script>

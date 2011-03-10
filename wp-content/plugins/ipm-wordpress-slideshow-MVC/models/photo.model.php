@@ -68,19 +68,6 @@ class IPM_Photo
 
 		//NOTE:  $pid and $post_id are different
 
-		$thumb = wp_get_attachment_image_src( $post_id, 'thumbnail');
-		$photo['url'] = $thumb[0];
-		$photo['url'] = $this->wpss->process_thumb_url($photo['url'], $post_id);
-		$large = wp_get_attachment_image_src( $post_id, 'large');
-		$photo['large_url'] =  $large[0] ? $large[0] : current(wp_get_attachment_image_src( $post_id, 'full'));
-		$photo['large_url'] = $this->wpss->process_large_url($photo['large_url'], $post_id);
-				
-		$photo['thumb_url']=$this->wpss->process_thumb_url($photo['url'], $post_id);
-		$photo['medium_url']=$this->wpss->process_medium_url(current(wp_get_attachment_image_src( $post_id, $image_size)), $post_id);
-		$photo['large_url']=$this->wpss->process_large_url(current(wp_get_attachment_image_src( $post_id, 'large')), $post_id);
-		$photo['url']=current(wp_get_attachment_image_src( $post_id, 'full'));
-		
-		
 		$this->post_id = $this->post_id = $photo['wp_photo_id'];
 		$this->title = $photo['title'];
 		$this->alt = $photo['alt'];
@@ -90,15 +77,118 @@ class IPM_Photo
 		$this->latitude = stripslashes(get_post_meta($this->post_id, "latitude", true));
 		$this->longitude = stripslashes(get_post_meta($this->post_id, "longitude", true));
 		$this->original_url = stripslashes(get_post_meta($this->post_id, "original_url", true));
+		$this->update = $photo['update'];
+		
+		
+		$photo['url'] = $thumb[0];
+
+		$thumb = wp_get_attachment_image_src( $this->post_id, 'thumbnail');
+		$photo['url'] = $this->process_thumb_url($photo['url']);
+
+		$large = wp_get_attachment_image_src( $post_id, 'large');
+		$photo['large_url'] =  $large[0] ? $large[0] : current(wp_get_attachment_image_src( $post_id, 'full'));
+		$photo['large_url'] = $this->process_large_url($photo['large_url']);
+				
+		$photo['thumb_url']=$this->process_thumb_url($photo['url']);
+		$photo['medium_url']=$this->process_medium_url(current(wp_get_attachment_image_src( $post_id, $image_size)));
+		$photo['large_url']=$this->process_large_url(current(wp_get_attachment_image_src( $post_id, 'large')));
+		$photo['url']=current(wp_get_attachment_image_src( $post_id, 'full'));
+		
+		
 		$this->url = $photo['url'];
 		$this->large_url = $photo['large_url'];
 		$this->medium_url = $photo['medium_url'];
 		$this->thumb_url = $photo['thumb_url'];
-		$this->update = $photo['update'];
+		
 		
 		//echo "<pre>".print_r($this, true)."</pre>";
 		return true;
 	}
+
+	private function process_thumb_url($url)
+	{
+		$id = $this->post_id;
+		$pic =  get_post_meta($id, '_wp_attachment_metadata');
+		if(!is_array($pic))return $url;
+		if(isset($pic[0]['sizes']['thumbnail'])){
+			return str_replace(basename($url), $pic[0]['sizes']['thumbnail']['file'], $url);
+	
+		}
+		else if(!isset($pic[0]['sizes']['thumbnail']['width']) || !isset($pic[0]['sizes']['thumbnail']['height'])){
+			return $url;
+		}
+		
+		$tw = $pic[0]['sizes']['thumbnail']['width'];//get_option('thumbnail_size_w');
+		$th = $pic[0]['sizes']['thumbnail']['height'];
+		if(!preg_match("/\-${tw}x${th}\./", $url)){
+			$base = basename($url);
+			$dot = strrpos($base, '.');
+			$name = substr($base, 0, $dot);
+			$new_name = $name . "-${tw}x${th}";
+			$new_url = str_replace($name, $new_name, $url);
+			return $new_url;
+		}
+		return $url;	
+	}
+
+	private function process_large_url($url)
+	{
+		$id= $this->post_id;
+		$pic =  get_post_meta($id, '_wp_attachment_metadata');
+		if(!is_array($pic))return $url;
+		if(isset($pic[0]['sizes']['large'])){
+			return str_replace(basename($url), $pic[0]['sizes']['large']['file'], $url);
+	
+		}else if(!isset($pic[0]['sizes']['large']['width']) || !isset($pic[0]['sizes']['large']['height'])){
+			return $url;
+		}
+
+
+		$tw = $pic[0]['sizes']['large']['width'];//get_option('thumbnail_size_w');
+		$th = $pic[0]['sizes']['large']['height'];
+		if(!preg_match("/\-${tw}x${th}\./", $url)){
+		//if(false){
+			$base = basename($url);
+			$dot = strrpos($base, '.');
+			$name = substr($base, 0, $dot);
+			$new_name = $name . "-${tw}x${th}";
+			$new_url = str_replace($name, $new_name, $url);
+			//if(@fopen($new_url,'r')!== false){
+			return $new_url;
+			//}
+		}
+		return $url;
+	}
+
+	private function process_medium_url($url)
+	{
+		$id = $this->post_id;
+		$pic =  get_post_meta($id, '_wp_attachment_metadata');
+		if(!is_array($pic))return $url;
+		if(isset($pic[0]['sizes']['medium'])){
+			return str_replace(basename($url), $pic[0]['sizes']['medium']['file'], $url);
+	
+		}
+		else if(!isset($pic[0]['sizes']['medium']['width']) || !isset($pic[0]['sizes']['medium']['height'])){
+			return $url;
+		}
+
+		$w = $pic[0]['sizes']['medium']['width'];//get_option('thumbnail_size_w');
+		$h = $pic[0]['sizes']['medium']['height'];
+
+		if(!preg_match("/\-${w}x${h}\./", $url)){
+			$base = basename($url);
+			$dot = strrpos($base, '.');
+			$name = substr($base, 0, $dot);
+			$new_name = $name . "-${w}x${h}";
+
+			return str_replace($name, $new_name, $url);
+		}
+		return $url;
+	}
+
+
+
 
 	public function get_photo_by_post_id($post_id = "")
 	{
