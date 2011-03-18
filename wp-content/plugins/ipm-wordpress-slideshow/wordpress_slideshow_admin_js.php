@@ -1,3 +1,25 @@
+<?php
+	require_once(dirname(__FILE__).'/../../../wp-load.php');
+	require_once(dirname(__FILE__).'/../../../wp-admin/admin.php');
+	header("Content-Type: text/javascript");
+?>
+//<script type="text/javascript"> //this is just to make my editor pick up on the color scheme
+function simplifyUploadInterface(){
+	jQuery("#tab-gallery").hide();
+	jQuery("#tab-library").hide();
+	jQuery("#media-buttons").hide();
+
+
+	
+	if(jQuery(".post_title").length == 0){
+		jQuery("#html-upload-ui").next().nextAll().hide();
+	}else{
+		//alert("must hide svae button");
+		jQuery("#media-items").nextAll().hide();
+		jQuery("input[name='save']").hide();
+	}
+}
+
 
 jQuery(document).ready(function(){
 
@@ -36,11 +58,11 @@ jQuery(document).ready(function(){
 		}
 		return valid;
 	});
-	wpss_start_loading();
-	setTimeout("wpss_stop_loading()", 1000);
+	<?php if(!current_user_can('edit_plugins')){ echo "simplifyUploadInterface();"; }?>
+	
 });
 
-/*
+
 function check_required(elementClass, showAlert){
 	valid=true;
 	jQuery("."+elementClass).each(function(index){
@@ -82,7 +104,7 @@ function setCoverImage(sid, pid){
 		jQuery(".set_cover_button_"+sid).prev().css({'border-color' : '', 'border-size': ''});
 
 		jQuery('#cover_button_'+sid+'_'+pid).css({'background-color' : '#A09C42'});
-		jQuery('#cover_button_'+sid+'_'+pid).prev().css({'border-color' : '#A09C42', 'border-width': '3px'});*//*/*
+		jQuery('#cover_button_'+sid+'_'+pid).prev().css({'border-color' : '#A09C42', 'border-width': '3px'});*/
 		jQuery(".set_cover_button_"+sid).removeClass('wpss_cover_highlight');
 		jQuery(".set_cover_button_"+sid).siblings('img').removeClass('wpss_cover_highlight');
 		jQuery(".set_cover_button_"+sid).siblings('img').addClass('wpss_photo_thumb');
@@ -123,7 +145,7 @@ function loadMap(id, location, lat, long) {
  
 	}/*else{
 		div.style.display='none';
-	}*//*/*
+	}*/
 
 }
 
@@ -281,7 +303,7 @@ function showSlideshowMenu(checkValue,show){
 		/*jQuery("#single_photo_button").hide();
 		jQuery("#wpss_or").hide();
 		jQuery("#slideshow_button").hide();
-		jQuery("#wpss_save").show();*//*/*
+		jQuery("#wpss_save").show();*/
 	}
 }
 
@@ -291,7 +313,7 @@ function removePhotoItem(deletePhotoButtonID){
 	/*if(slideshowOrganizer.isSingle(sid) ){
 		jQuery("#addphoto_button_"+sid).show();
 
-	}*//*/*
+	}*/
 }
 
 function confirmChooseNewPhoto(sid, imgID){
@@ -437,7 +459,7 @@ function send_to_slideshow(photo_id, html){
    					
    			 }	
 
-		}*//*/*);
+		}*/);
 		slideshow_id = currentSlideshowID.substring(currentSlideshowID.lastIndexOf('_')+1,currentSlideshowID.length);
 		html = html.replace( /s_id/g, slideshow_id);
 		var photoOrganizer = new itemOrganizer(currentSlideshowID);
@@ -446,7 +468,7 @@ function send_to_slideshow(photo_id, html){
 		/*if(slideshowOrganizer.subItems(slideshow_id)==1){
 			document.getElementById('slideshowItem['+sid+'][photos]['+pid+'][cover]').value='yes';
 			setCoverImage(slideshow_id, pid);
-		}*//*
+		}*/
 		if(slideshowOrganizer.isSingle(slideshow_id) ){
 			if(slideshowOrganizer.subItems(slideshow_id)==1){
 				jQuery("#addphoto_button_"+slideshow_id).html('Add more photos');
@@ -456,7 +478,7 @@ function send_to_slideshow(photo_id, html){
 		//slideshowOrganizer.items[slideshow_id];
 		/*if(slideshowOrganizer.isSingle(slideshow_id) ){
 			jQuery("#addphoto_button_"+slideshow_id).hide();
-		}*//*
+		}*/
 	}else{alert('No slideshow currently selected.');
 		return;
 	}
@@ -503,7 +525,7 @@ function itemOrganizer(parent_div){
 		}
 		/*if(index==-1){
 			console.log("Slideshow not found.");
-		}*//*
+		}*/
 
 		return index;
 	}
@@ -515,7 +537,7 @@ function itemOrganizer(parent_div){
 		return items[0]['single'];
 		/*
 		index=this.getIndex(sid);
-		return items[index]['single'];*//*
+		return items[index]['single'];*/
 	}
 	this.setSingle = function (sid, value){
 		index=this.getIndex(sid);
@@ -636,4 +658,5 @@ function itemOrganizer(parent_div){
 		alert('Photo updated');
 		reloadPostImageSelect();
 	}
-}*/
+}
+

@@ -1,17 +1,13 @@
 <?php
 /*
-Plugin Name: IPM - Wordpress slideshow - MVC
+Plugin Name: IPM - Wordpress slideshow
 Plugin URI: http://www.wfiu.org
 Description: Let's you make a slideshow using wordpress' native way of storing photos.
 Version: 1.0
-Author: Pablo Vanwoerkom, Ben Serrette
+Author: Pablo Vanwoerkom
 Author URI: http://www.wfiu.org
 */
 define('WPINC', 'wp-includes');
-define('WPSSDIR', dirname(__FILE__));
-define('WPSSCONTROLLERS', WPSSDIR."/controllers/");
-define('WPSSVIEWS', WPSSDIR."/views/");
-define('WPSSMODELS', WPSSDIR."/models/");
 
 require_once(ABSPATH. WPINC . '/post.php');
 if(file_exists(ABSPATH.PLUGINDIR.'/wfiu_utils/ipm-utils-class.php')){
@@ -27,24 +23,6 @@ if(!class_exists ('wordpress_slideshow')) {
 	$wp_slideshow = new wordpress_slideshow;
 }
 
-if(!class_exists ('IPM_Photo')) {
-	require_once(dirname(__FILE__).'/models/photo.model.php');
-}
-if(!class_exists ('IPM_Slideshow')) {
-	require_once(dirname(__FILE__).'/models/slideshow.model.php');
-}
-
-if(!class_exists ('IPM_PostSlideshows')) {
-	require_once(dirname(__FILE__).'/models/post_slideshows.model.php');
-}
-
-if(!class_exists ('IPM_Ajax')) {
-	require_once(dirname(__FILE__).'/controllers/ajax.controller.php');
-}
-if(!class_exists ('wpss_actions')) {
-	require_once(dirname(__FILE__).'/controllers/main.controller.php');
-	$slideshow_plugin = new wpss_main($wpdb);
-}
 
 //*********************ADMIN STUFF*********************************
 //activate plugin
@@ -54,11 +32,9 @@ add_action('media_upload_replace_wp_image', array(&$wp_slideshow,'new_image_choo
 add_action('media_upload_map', array(&$wp_slideshow,'show_map'));
 
 //admin javacript, css, etc..
- 
-add_action( "admin_print_scripts", array(&$slideshow_plugin, 'admin_print_scripts') );
-add_action( "admin_head", array(&$slideshow_plugin, 'admin_head_scripts') );
-//add_action('admin_menu', array(&$wp_slideshow, 'slideshowBox'), 1);//add slideshow box
-add_action('admin_menu', array(&$slideshow_plugin, 'show_editor_box'), 1);//add slideshow box
+
+add_action( "admin_print_scripts", array(&$wp_slideshow, 'plugin_head') );
+add_action('admin_menu', array(&$wp_slideshow, 'slideshowBox'), 1);//add slideshow box
 
 //save and delete post hook
 add_action('save_post', array(&$wp_slideshow,'save_slideshow'), 1, 2);
@@ -77,7 +53,8 @@ function slideshow_manager_menu(){
 
 	if(current_user_can('edit_plugins')){
 		$myutils->add_page_main();
-		add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, $wp_slideshow->plugin_path.basename(__FILE__), array(&$wp_slideshow, 'manage_slideshows'));
+		//add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, 'Slideshow Manager',  array(&$wp_slideshow, 'manage_slideshows'));
+		add_submenu_page($myutils->main_page_path(), 'Slideshow Manager', 'Slideshow Manager', 7, ABSPATH.PLUGINDIR.'/ipm-wordpress-slideshow/wordpress_slideshow.php',  array(&$wp_slideshow, 'manage_slideshows'));
 		$myutils->add_page_google_api_key();
 	}
 }
@@ -176,9 +153,4 @@ function wp_slideshow_menu(){
 	echo "<input type='submit' />";
 	echo "</form>";
 }
-
-
-
-
-
 ?>

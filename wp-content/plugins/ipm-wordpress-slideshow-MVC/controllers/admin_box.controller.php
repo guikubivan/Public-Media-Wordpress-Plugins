@@ -48,6 +48,11 @@ class WPSSAdminBox
 		
 		echo $this->plugin->render_backend_view("admin_box.php", array("slideshow_editors"=>$slideshow_editors) );
 	}
+	
+	
+		
+		
+	
 }
 
 ?>

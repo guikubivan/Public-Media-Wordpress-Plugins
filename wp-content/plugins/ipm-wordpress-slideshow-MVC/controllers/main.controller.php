@@ -10,6 +10,7 @@ class wpss_main{
 	public $_get;
 	
 	public $tab_order = 200;
+	public $ajax;
 	
 	public $plugin_prefix = 'wpss_';
 	public $plugin_url;
@@ -26,6 +27,10 @@ class wpss_main{
 		
 		$this->plugin_url = get_bloginfo('url').'/wp-content/plugins/ipm-wordpress-slideshow-MVC/';
 		
+		$this->ajax = new IPM_Ajax($this);
+		
+		
+		
 	}	
 	
 	//function for the admin_menu action	
@@ -34,8 +39,11 @@ class wpss_main{
 		require_once(WPSSCONTROLLERS."admin_box.controller.php");
 		$slideshow_box = new WPSSAdminBox($this);
 		
+		
+		
 		add_meta_box('slideshow-box-div', __('Slideshows', 'slideshowbox'), array(&$slideshow_box, 'post_form'), 'post', 'normal', 'high');
 		add_meta_box('slideshow-box-div', __('Slideshows', 'slideshowbox'), array(&$slideshow_box, 'page_form'), 'page', 'normal', 'high');
+		
 	}	
 	
 	//must be called during runtime functions 
@@ -47,7 +55,7 @@ class wpss_main{
 		
 	public function admin_head_scripts()
 	{
-		 $this->render_backend_view("admin_head_javascript.php");
+		 echo $this->render_backend_view("admin_head_javascript.php", array());
 		
 	}
 		

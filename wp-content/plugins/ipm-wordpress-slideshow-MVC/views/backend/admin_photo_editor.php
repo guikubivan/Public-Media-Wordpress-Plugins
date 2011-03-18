@@ -11,6 +11,9 @@
 					<span onclick='setCoverImage(s_id, <?=$photo->photo_id?>);' id='cover_button_s_id_<?=$photo->photo_id?>' class='button set_cover_button_s_id' style='text-align:center;margin-top:5px;' >Slideshow Thumbnail</span>
 				</div>
 				
+				<div style="float: right;">
+					<span onclick='ajax_update_photo(<?=$photo->photo_id?>);' id='save_photo_button_<?=$photo->photo_id?>' class='button save_photo_button_s_id' style='text-align:center;margin-top:5px;' >Update This Photo</span>
+				</div>
 				
 				<div>
 					<label >Title:</label>
@@ -18,15 +21,15 @@
 				</div>
 				<div>	
 					<label >Photo credit</label>
-					<input type='text'  tabindex='<?= ($tab_order + 2) ?>' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][photo_credit]' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][photo_credit]' size='20' ReadOnly value='<?= $photo->photo_credit ?>'  title='Click to edit' class='editable <?= $this->plugin_prefix ?>required' /> <span class='button' style='display:none' >Update</span>
+					<input type='text'  tabindex='<?= ($tab_order + 2) ?>' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][photo_credit]' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][photo_credit]' size='20' value='<?= $photo->photo_credit ?>'  title='Click to edit' class='editable <?= $this->plugin_prefix ?>required' />
 				</div>
 				<div>
 					<label >Geo location</label>
-					<input type='text'  tabindex='<?= ($tab_order + 3) ?>' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][geo_location]' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][geo_location]' size='20' ReadOnly value='<?= $photo->geo_location ?>' class='editable' title='Click to edit' /><span class='button' style='display:none' >Update</span><img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
+					<input type='text'  tabindex='<?= ($tab_order + 3) ?>' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][geo_location]' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][geo_location]' size='20' value='<?= $photo->geo_location ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
 				</div>
 				<div>
 					<label >Original URL</label>
-					<input type='text'  tabindex='<?= ($tab_order + 4) ?>' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][original_url]' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][original_url]' size='20' ReadOnly value='<?= $photo->original_url ?>'  title='Click to edit' class='editable' /> <span class='button' style='display:none' >Update</span>
+					<input type='text'  tabindex='<?= ($tab_order + 4) ?>' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][original_url]' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][original_url]' size='20' value='<?= $photo->original_url ?>'  title='Click to edit' class='editable' />
 				</div>
 				<div>
 					<label >Alt text <small>Specific to this Slideshow</small></label>

@@ -71,7 +71,7 @@ class IPM_Photo
 		$this->post_id = $this->post_id = $photo['wp_photo_id'];
 		$this->title = $photo['title'];
 		$this->alt = $photo['alt'];
-		$this->caption = $photo['caption'];
+		$this->caption = stripslashes($photo['caption']);
 		$this->geo_location = stripslashes(get_post_meta($this->post_id, "geo_location", true));
 		$this->photo_credit = stripslashes(get_post_meta($this->post_id, "photo_credit", true));
 		$this->latitude = stripslashes(get_post_meta($this->post_id, "latitude", true));
@@ -187,9 +187,6 @@ class IPM_Photo
 		return $url;
 	}
 
-
-
-
 	public function get_photo_by_post_id($post_id = "")
 	{
 		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
@@ -223,6 +220,56 @@ class IPM_Photo
 			$this->photo_id = $this->wpdb->get_var('SELECT LAST_INSERT_ID();');
 			$this->get_photo($this->photo_id);
 		return true;
+	}
+
+	public function update()
+	{
+		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
+		echo $query = "UPDATE `".$photo_meta_rels."`
+					SET
+						`meta_value` = '". addslashes($this->title) ."'
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+						AND `meta_id` = '1'
+					";
+					
+		$success  = $this->wpdb->get_results($query);
+		
+		$success  = "UPDATE `".$photo_meta_rels."`
+					SET
+						`meta_value` = '". addslashes($this->alt) ."'
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+						AND `meta_id` = '2'
+					";			
+		
+		if($success !== false)
+			$success  = $this->wpdb->get_results($query);
+		$query = "UPDATE `".$photo_meta_rels."`
+					SET
+						`meta_value` = '". addslashes($this->caption) ."'
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+						AND `meta_id` = '3'
+					";				
+		if($success !== false)
+			$success  = $this->wpdb->get_results($query);
+		
+		
+		if($success !== false)
+			$success  = update_post_meta($this->post_id, "geo_location", addslashes($this->geo_location) );
+		if($success !== false)
+			$success  = update_post_meta($this->post_id, "photo_credit", addslashes($this->photo_credit) );
+		if($success !== false)
+			$success  = update_post_meta($this->post_id, "latitude", addslashes($this->latitude) );
+		if($success !== false)
+			$success  = update_post_meta($this->post_id, "longitude", addslashes($this->longitude) );
+		if($success !== false)
+			$success  = update_post_meta($this->post_id, "original_url", addslashes($this->original_url) );
+		
+		return $success;
+		
+		
 	}
 
 	public function link_to_slideshow($slideshow, $order)

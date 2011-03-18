@@ -3,8 +3,25 @@
 
 
 <style type="text/css">
-
+#hourglass
+{
+	/*font-size: 300%;*/ 
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	background: white;
+	color: black;
+	border: solid 2px black;
+	/*padding: 1ex;*/
+	vertical-align: sub;
+	display: none;
+	z-index: 1000;
+	width: 100%;
+	max-height: 100%;
+	overflow: auto;
+}
 </style>
+<div id="hourglass">&#8987;</div>
 <ul>
 	<? foreach($slideshow_editors as $key => $slideshow_editor)
 	{
