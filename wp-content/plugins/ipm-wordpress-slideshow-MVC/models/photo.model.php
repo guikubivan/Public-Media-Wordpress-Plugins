@@ -69,8 +69,8 @@ class IPM_Photo
 		//NOTE:  $pid and $post_id are different
 
 		$this->post_id = $this->post_id = $photo['wp_photo_id'];
-		$this->title = $photo['title'];
-		$this->alt = $photo['alt'];
+		$this->title = stripslashes($photo['title']);
+		$this->alt = stripslashes($photo['alt']);
 		$this->caption = stripslashes($photo['caption']);
 		$this->geo_location = stripslashes(get_post_meta($this->post_id, "geo_location", true));
 		$this->photo_credit = stripslashes(get_post_meta($this->post_id, "photo_credit", true));
@@ -225,7 +225,7 @@ class IPM_Photo
 	public function update()
 	{
 		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
-		echo $query = "UPDATE `".$photo_meta_rels."`
+		$query = "UPDATE `".$photo_meta_rels."`
 					SET
 						`meta_value` = '". addslashes($this->title) ."'
 					WHERE
@@ -235,7 +235,7 @@ class IPM_Photo
 					
 		$success  = $this->wpdb->get_results($query);
 		
-		$success  = "UPDATE `".$photo_meta_rels."`
+		$query  = "UPDATE `".$photo_meta_rels."`
 					SET
 						`meta_value` = '". addslashes($this->alt) ."'
 					WHERE

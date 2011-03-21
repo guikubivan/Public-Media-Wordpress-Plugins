@@ -37,7 +37,7 @@ class IPM_Ajax
 		
 		$photo->update();
 		
-		echo "<pre>".print_r($this->plugin->_post)."</pre>"; //urlencode(print_r($photo, true));
+		echo "<pre>".print_r($this->plugin->_post, true)."</pre>"; //urlencode(print_r($photo, true));
 		
 		die();
 		

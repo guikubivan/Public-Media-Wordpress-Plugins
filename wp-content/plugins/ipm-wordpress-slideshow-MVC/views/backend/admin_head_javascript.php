@@ -106,17 +106,17 @@
 		
 			   var mysack = new sack( 
 			       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
-
+			
 			 // mysack.execute = 1;
 			  mysack.method = 'POST';
 			  mysack.setVar( "action", "action_update_photo" );
 			  mysack.setVar( "photo_id", photo_id );
-			  mysack.setVar( "title", jQuery("#slideshowItem[s_id][photos]["+photo_id+"][title]").val() );
-			  mysack.setVar( "photo_credit", jQuery("#slideshowItem[s_id][photos]["+photo_id+"][photo_credit]").val() );
-			  mysack.setVar( "geo_location", jQuery("#slideshowItem[s_id][photos]["+photo_id+"][geo_location]").val() );
-			  mysack.setVar( "original_url", jQuery("#slideshowItem[s_id][photos]["+photo_id+"][original_url]").val() );
-			  mysack.setVar( "alt", jQuery("#slideshowItem[s_id][photos]["+photo_id+"][alt]").val() );
-			  mysack.setVar( "caption", jQuery("#slideshowItem[s_id][photos]["+photo_id+"][caption]").val() );
+			  mysack.setVar( "title", jQuery("#slideshowItem_s_id_photos_"+photo_id+"_title").val() );
+			  mysack.setVar( "photo_credit", jQuery("#slideshowItem_s_id_photos_"+photo_id+"_photo_credit").val() );
+			  mysack.setVar( "geo_location", jQuery("#slideshowItem_s_id_photos_"+photo_id+"_geo_location").val() );
+			  mysack.setVar( "original_url", jQuery("#slideshowItem_s_id_photos_"+photo_id+"_original_url").val() );
+			  mysack.setVar( "alt", jQuery("#slideshowItem_s_id_photos_"+photo_id+"_alt").val() );
+			  mysack.setVar( "caption", jQuery("#slideshowItem_s_id_photos_"+photo_id+"_caption").val() );
 			//  mysack.element = "hourglass";
 			//  mysack.setVar( "property_name", property_name );
 			//  mysack.setVar( "property_value", property_value );

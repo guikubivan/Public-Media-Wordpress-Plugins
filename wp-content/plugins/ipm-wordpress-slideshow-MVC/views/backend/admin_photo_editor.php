@@ -2,7 +2,7 @@
 
 		<span id='deletePhotoButton_<?= $photo->photo_id ?>_s_id' title="Delete Photo" class='button' style='float:right; font-size: 200%;' onclick='if ( this.parentNode.parentNode && this.parentNode.parentNode.removeChild ) {this.parentNode.parentNode.removeChild(this.parentNode);removePhotoItem(this.id);}'>&#10008;</span>
 
-		<input type='hidden' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][cover]' class='photo_in_slideshow_s_id' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][cover]' value='<?=$photo->cover?>' /> 
+		<input type='hidden' id='slideshowItem_s_id_photos_<?=$photo->photo_id?>_cover' class='photo_in_slideshow_s_id' name='slideshowItem_s_id_photos_<?=$photo->photo_id?>_cover' value='<?=$photo->cover?>' /> 
 			
 			<div class='photo_fields'>
 				
@@ -17,29 +17,29 @@
 				
 				<div>
 					<label >Title:</label>
-					<input type='text'  tabindex='<?=($tab_order + 1)?>' id='slideshowItem[s_id][photos][<?= $photo->photo_id ?>][title]' name='slideshowItem[s_id][photos][<?= $photo->photo_id ?>][title]' size='20' value='<?= $photo->title?>' class='<?= $this->plugin_prefix ?>required photo_title' />
+					<input type='text' tabindex='<?=($tab_order + 1)?>' id='slideshowItem_s_id_photos_<?= $photo->photo_id ?>_title' name='slideshowItem_s_id_photos_<?= $photo->photo_id ?>_title' size='20' value='<?= htmlentities($photo->title)?>' class='<?= $this->plugin_prefix ?>required photo_title' />
 				</div>
 				<div>	
 					<label >Photo credit</label>
-					<input type='text'  tabindex='<?= ($tab_order + 2) ?>' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][photo_credit]' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][photo_credit]' size='20' value='<?= $photo->photo_credit ?>'  title='Click to edit' class='editable <?= $this->plugin_prefix ?>required' />
+					<input type='text'  tabindex='<?= ($tab_order + 2) ?>' id='slideshowItem_s_id_photos_<?=$photo->photo_id?>_photo_credit' name='slideshowItem_s_id_photos_<?=$photo->photo_id?>_photo_credit' size='20' value='<?= htmlentities($photo->photo_credit) ?>'  title='Click to edit' class='editable <?= $this->plugin_prefix ?>required' />
 				</div>
 				<div>
 					<label >Geo location</label>
-					<input type='text'  tabindex='<?= ($tab_order + 3) ?>' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][geo_location]' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][geo_location]' size='20' value='<?= $photo->geo_location ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
+					<input type='text'  tabindex='<?= ($tab_order + 3) ?>' name='slideshowItem_s_id_photos_<?=$photo->photo_id?>_geo_location' id='slideshowItem_s_id_photos_<?=$photo->photo_id?>_geo_location' size='20' value='<?= htmlentities($photo->geo_location) ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
 				</div>
 				<div>
 					<label >Original URL</label>
-					<input type='text'  tabindex='<?= ($tab_order + 4) ?>' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][original_url]' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][original_url]' size='20' value='<?= $photo->original_url ?>'  title='Click to edit' class='editable' />
+					<input type='text'  tabindex='<?= ($tab_order + 4) ?>' id='slideshowItem_s_id_photos_<?=$photo->photo_id?>_original_url' name='slideshowItem_s_id_photos_<?=$photo->photo_id?>_original_url' size='20' value='<?= htmlentities($photo->original_url) ?>'  title='Click to edit' class='editable' />
 				</div>
 				<div>
 					<label >Alt text <small>Specific to this Slideshow</small></label>
-					<input type='text'  tabindex='<?= ($tab_order + 5) ?>'  name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][alt]' size='20' value='<?= $photo->alt ?>' />
+					<input type='text'  tabindex='<?= ($tab_order + 5) ?>'  id='slideshowItem_s_id_photos_<?=$photo->photo_id?>_alt' name='slideshowItem_s_id_photos_<?=$photo->photo_id?>_alt' size='20' value='<?= htmlentities($photo->alt) ?>' />
 					
 				</div>
 			
 				<div>
 					<label >Caption</label>
-					<textarea  tabindex='<?= ($tab_order + 6) ?>' name='slideshowItem[s_id][photos][<?=$photo->photo_id?>][caption]' id='slideshowItem[s_id][photos][<?=$photo->photo_id?>][caption]' rows='2' style='width:300px' class='<?= $this->plugin_prefix ?>required' ><?= $photo->caption?></textarea>
+					<textarea  tabindex='<?= ($tab_order + 6) ?>' name='slideshowItem_s_id_photos_<?=$photo->photo_id?>_caption' id='slideshowItem_s_id_photos_<?=$photo->photo_id?>_caption' rows='2' style='width:300px' class='<?= $this->plugin_prefix ?>required' ><?= htmlentities($photo->caption) ?></textarea>
 				</div>
 	
 			</div>
