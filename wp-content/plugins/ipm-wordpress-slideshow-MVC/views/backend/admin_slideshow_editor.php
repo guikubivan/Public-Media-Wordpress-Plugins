@@ -35,30 +35,18 @@
 			<input type='hidden' id='slideshowItem[<?= $slideshow->slideshow_id ?>][longitude]' name='slideshowItem[<?= $slideshow->slideshow_id ?>][longitude]' ReadOnly size='4' value='<?=  $slideshow->longitude ?>' /><!--&#176; latitude--><!--&#176; longitude-->
 		</div>
 	
-	<ul>
-		<? foreach($photo_editors as $key => $photo_editor)
-		{
-		?>
-		<li>
-			<?=$photo_editor?>
-		</li>		
-		<?	
-		}?>
-		<li>
-			<span id='addphoto_button_<?= $slideshow->slideshow_id ?>' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(this.previousSibling.id);' tip='Add Media'>Add photo</span>
-		</li>
-	</ul>
-	
-	
-		<table style="width: 100%" >
-			this->slideshowFields($slideshow->slideshow_id, $itemV);
-	
-	This is a slideshow.<br />
-	These are the photos:<br />
-
-
-	
-	
-		</table>
+		<ul>
+			<? foreach($photo_editors as $key => $photo_editor)
+			{
+			?>
+			<li>
+				<?=$photo_editor?>
+			</li>		
+			<?	
+			}?>
+			<li>
+				<span id='addphoto_button_<?= $slideshow->slideshow_id ?>' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(<?= $slideshow->slideshow_id ?>);' tip='Add Media'>Add photo</span>
+			</li>
+		</ul>
 	</div>
 </div>

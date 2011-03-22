@@ -272,17 +272,23 @@ class IPM_Photo
 		
 	}
 
-	public function link_to_slideshow($slideshow, $order)
+	public function add_to_slideshow($slideshow, $order)
 	{
 		$relation_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations";
-		
 		$result = $this->wpdb->query("REPLACE INTO ".$relation_table." VALUES( '".$slideshow."', '".$this->photo_id."', '".$order."' );");//LINK PHOTO TO SLIDESHOW
-		
 		if($result === false)
 			return false;
 		else
-			return true;
-					
+			return true;			
+	}
+	public function remove_from_slideshow($slideshow_id)
+	{
+		$relation_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations";
+		$result = $this->wpdb->query("DELETE FROM ".$relation_table." WHERE `slideshow_id` = '".$slideshow_id."' AND `photo_id` = '".$this->photo_id."' ");//REMOVE FROM SLIDESHOW
+		if($result === false)
+			return false;
+		else
+			return true;			
 	}
 		
 

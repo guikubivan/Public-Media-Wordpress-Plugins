@@ -1,0 +1,191 @@
+<style type="text/css">
+
+	.select_column{
+		color: #FFFFFF;
+		background-color: #000000;
+		text-align:center;
+		height:50px;
+		font-family: serif;
+		font-style: italic;
+		font-size: 13px;
+		padding-bottom:0px;
+	}
+	img {
+		height:50px;
+	}
+
+	.title_column{
+		background-color: #C4AEAE;
+	}
+
+	.credit_column{
+		background-color: #D0BF87;
+	}
+
+	.date_column{
+		background-color: #A4B6B2;
+	}
+	
+	.button {
+		background-color:#E5E5E5;
+		border:solid 1px #333333;
+		padding:5px;
+		cursor: pointer;
+	}
+
+	th, td {
+		width: 25%;
+	}
+	.caption {
+		margin:0px;
+	}
+</style> 
+
+	<h2>Upload new photo</h2>
+			<form enctype="multipart/form-data" method="post" action="<?= attribute_escape($form_action_url) ?>" class="media-upload-form type-form validate" id="<?= $type ?>-form">
+				<input type="hidden" name="post_id" id="post_id" value="<?= (int) $post_id ?>" />
+				<?= wp_nonce_field('media-form') ?>
+				
+				<script type="text/javascript">
+				<!--
+				jQuery(function($){
+					var preloaded = $(".media-item.preloaded");
+					if ( preloaded.length > 0 ) {
+						preloaded.each(function(){prepareMediaItem({id:this.id.replace(/[^0-9]/g, '')},'');});
+					}
+					updateMediaForm();
+				});
+				-->
+				</script>
+				
+				<?= $media_upload_form() ?>
+				
+				<? if($img_id) { ?>
+					<input type='hidden' name='img_id' value='<?= $img_id ?>' />
+				<? } ?>
+			</form>
+
+	<hr />
+
+	<h2 style='margin-bottom:50px'>Choose picture</h2>
+	<div>
+	
+	<form method='post' name='search_form' action='?type=slideshow_image<?php echo $img_id_var;?>' >
+	
+	
+	<input id="post-search-input" type="text" value="<?php $search = $_POST['s'] ? $_POST['s'] : $_GET['s']; echo $_POST['see_all'] ? '' : $search; ?>" name="s"/>
+	<input type="submit" value="Search Photos"/> <input type="submit" name='see_all' value="See all"/>
+	
+	</form>
+	</div>
+	<?php
+
+		if(!isset($_GET['order_by']) && !isset($_REQUEST['s']) && !isset($_POST['see_all'])){
+			echo '<hr />';
+			return;
+		}
+		if(!$msg){
+	?>
+	
+	<div style='position:relative;text-align: left'>
+	
+		<? if($start > 0){ ?>
+			<a href="?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$pstart <?=$search . $img_id_var?>"  > << </a>
+		<? } ?>
+	
+		<span style='position: absolute;top:0;right:0;'>
+		Showing <?=($start+1) ?> -$end of <?= sizeof($posts) ?>
+		<? if($nstart < sizeof($posts)){ ?>
+			<a href=\"?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$nstart<?= $search . $img_id_var ?>"  > >> </a>
+		<? } ?>
+		</span>
+		
+	</div>
+
+
+	<form method="POST" name="edit_form" action="?type=image&flash=0" >
+
+	<input type='hidden' id='post_id' name='post_id' value=''>
+	<table>
+		<tr>
+			<th>Select</th>
+			<th class='title_column' >
+				<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=title&direction=<?=$direction?>&porder_by=<?=$orderby?>&start=<?=$start?><?=$search?><?=$img_id_var?>" >Title</a>
+			</th>
+			<th class='credit_column' >
+				<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=photo_credit&direction=<?=$direction?>&porder_by=<?=$orderby?>&start=<?=$start?><?=$search?><?=$img_id_var?>" >Photo Credit</a>
+			</th>
+			<th class='date_column' >
+				<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=date&direction=<?=$direction?>&porder_by=<?=$orderby?>&start=<?=$start?><?=$search?><?=$img_id_var?>" >Upload Date</a>
+			</th>
+		</tr>
+	</form>
+	
+	<?php
+		$count = 0;
+		foreach($posts as $img_post){
+			if($count >= $end)break;
+			if($count < $start){ 
+				++$count;
+				continue;
+			}
+			if(!preg_match("/image/",$img_post->post_mime_type)) continue;
+			
+			$id = $img_post->ID;
+			$titles = array($img_post->post_title);
+			$this->getExtraTitles($id, $titles);
+
+			$alt =htmlentities( strip_tags($img_post->post_excerpt), ENT_QUOTES);
+			$caption =  htmlentities( strip_tags($img_post->post_content), ENT_QUOTES);
+			$photo_date = $img_post->post_modified;
+			$thumb = wp_get_attachment_image_src( $id, 'thumbnail');
+
+			$photo_props = $this->getPhotoFixedProps($id);
+
+			$thumb = $photo_props['url'];
+
+			$photo_credit =  htmlentities(stripslashes($photo_props['photo_credit']), ENT_QUOTES);
+
+			//$items['title'] = $titles[0];
+			$items['alt'] = $alt;
+			$items['caption'] = $caption;
+
+			$items['url'] = $thumb;
+			$items['photo_credit'] = $photo_credit;
+			$items['geo_location'] = $photo_props['geo_location'];
+			$items['original_url'] = $photo_props['original_url'];
+			$titles = array_unique($titles);
+			$titles = $this->utils->convertquotes($titles);
+			if($img_id){
+				$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_replace_photo($img_id,$id,'".$items['url']."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
+			}else{
+				$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_send_and_return('$id','".$this->photoItemHTML_simple($id, $items, true)."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
+			}
+			$titleCol = sizeof($titles)>1 ? $this->utils->makeSelectBox("${id}[title]",$titles) : "<input type='hidden' id='${id}[title]' value='$titles[0]'/>". $this->utils->shorten_name($titles[0], 10);
+			?>
+			<tr>
+				<td class="select_column">
+					<?=$select_value?>
+				</td>
+				<td class="title_column">
+					<?=$titleCol?>
+				</td>
+				<td class="credit_column">
+					<?=$photo_credit?>
+				</td>
+				<td class="date_column">
+					<?=date("Y-m-d", strtotime($photo_date) ) ?>
+				</td>
+				<td>
+					<a href="?type=slideshow_image&post_id=<?=$id . $img_id_var?>" class="button" >Edit</a>
+				</td>
+			
+			</tr>
+			<?
+			++$count;
+			}
+		?>
+		</table>
+		</form>
+		
+		<div ><?=$msg?></div>

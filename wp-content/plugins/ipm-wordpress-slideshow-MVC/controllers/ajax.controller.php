@@ -14,6 +14,7 @@ class IPM_Ajax
 		add_action('wp_ajax_action_get_slideshow', array(&$this, 'php_get_slideshow'));
 		//add_action('wp_ajax_action_update_photo_property', array(&$slideshow_box, 'php_update_photo_property'));
 		add_action('wp_ajax_action_update_photo', array(&$this, 'php_update_photo'));
+		add_action('wp_ajax_action_remove_photo_from_slideshow', array(&$this, 'php_remove_photo_from_slideshow'));
 		add_action('wp_ajax_action_replace_wp_photo', array(&$this, 'php_replace_wp_photo'));
 	
 		
@@ -41,6 +42,22 @@ class IPM_Ajax
 		
 		die();
 		
+	}
+	function php_remove_photo_from_slideshow()
+	{
+		$photo = new IPM_Photo($this->plugin, $this->plugin->_post['photo_id']);
+		$success = $photo->remove_from_slideshow($this->plugin->_post['slideshow_id']);
+		
+		if($success)
+		{
+			die("Successfully Removed Photo");
+		}
+		else
+		{
+			die("Could not remove photo");
+		}
+		
+		die();
 	}
 	public function php_replace_wp_photo()
 	{}

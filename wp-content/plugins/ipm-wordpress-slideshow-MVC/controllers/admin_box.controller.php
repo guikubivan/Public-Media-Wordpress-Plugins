@@ -37,7 +37,7 @@ class WPSSAdminBox
 			$photo_editors = array();
 			foreach($slideshow->photos as $key => $photo)
 			{
-				$photo_editors[] = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$photo, "tab_order"=>$tab_order) );
+				$photo_editors[] = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$photo, "tab_order"=>$tab_order, "slideshow_id"=>$slideshow->slideshow_id) );
 				$tab_order += 6;
 			}
 			$slideshow_editors[] = $this->plugin->render_backend_view("admin_slideshow_editor.php", array("photo_editors"=>$photo_editors, "slideshow"=>$slideshow) );

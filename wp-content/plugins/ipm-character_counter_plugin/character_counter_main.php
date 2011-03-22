@@ -99,7 +99,8 @@ if(!function_exists('character_count_js')){
 {
 	//element, position, box title, post meta key, inputfield name
 	$prefix='char_count_';
-	if(get_option($prefix."teaser_activated") )
+	$teaser_activated = get_option($prefix."teaser_activated");
+	if($teaser_activated != "off" )
 	{
 		require_once('plugin_classes.php');
 		$teaser_box = new box_custom_field_plugin(array('settings'=> "style='width: 100%;'", 'element' =>'textarea'), 'normal','Teaser', 'teaser_text', 'teaser' );

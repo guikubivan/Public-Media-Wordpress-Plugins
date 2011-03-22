@@ -33,18 +33,26 @@ class wpss_main{
 		
 	}	
 	
+	public function media_upload()
+	{
+		require_once(WPSSCONTROLLERS."media_upload.controller.php");
+		$media_uploader = new WPSSMediaUpload($this);
+		$media_uploader->initialize_uploader();
+		
+	}
+	
 	//function for the admin_menu action	
 	public function show_editor_box()
 	{
 		require_once(WPSSCONTROLLERS."admin_box.controller.php");
 		$slideshow_box = new WPSSAdminBox($this);
 		
-		
-		
 		add_meta_box('slideshow-box-div', __('Slideshows', 'slideshowbox'), array(&$slideshow_box, 'post_form'), 'post', 'normal', 'high');
 		add_meta_box('slideshow-box-div', __('Slideshows', 'slideshowbox'), array(&$slideshow_box, 'page_form'), 'page', 'normal', 'high');
 		
 	}	
+	
+	
 	
 	//must be called during runtime functions 
 	public function get_post()
