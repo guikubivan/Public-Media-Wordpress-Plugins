@@ -73,7 +73,7 @@
 	<form method='post' name='search_form' action='?type=slideshow_image<?php echo $img_id_var;?>' >
 	
 	
-	<input id="post-search-input" type="text" value="<?php $search = $_POST['s'] ? $_POST['s'] : $_GET['s']; echo $_POST['see_all'] ? '' : $search; ?>" name="s"/>
+	<input id="post-search-input" type="text" value="<?= $this->plugin->_post['see_all'] ? '' : $search ?>" name="s"/>
 	<input type="submit" value="Search Photos"/> <input type="submit" name='see_all' value="See all"/>
 	
 	</form>
@@ -122,47 +122,9 @@
 	</form>
 	
 	<?php
-		$count = 0;
-		foreach($posts as $img_post){
-			if($count >= $end)break;
-			if($count < $start){ 
-				++$count;
-				continue;
-			}
-			if(!preg_match("/image/",$img_post->post_mime_type)) continue;
-			
-			$id = $img_post->ID;
-			$titles = array($img_post->post_title);
-			$this->getExtraTitles($id, $titles);
-
-			$alt =htmlentities( strip_tags($img_post->post_excerpt), ENT_QUOTES);
-			$caption =  htmlentities( strip_tags($img_post->post_content), ENT_QUOTES);
-			$photo_date = $img_post->post_modified;
-			$thumb = wp_get_attachment_image_src( $id, 'thumbnail');
-
-			$photo_props = $this->getPhotoFixedProps($id);
-
-			$thumb = $photo_props['url'];
-
-			$photo_credit =  htmlentities(stripslashes($photo_props['photo_credit']), ENT_QUOTES);
-
-			//$items['title'] = $titles[0];
-			$items['alt'] = $alt;
-			$items['caption'] = $caption;
-
-			$items['url'] = $thumb;
-			$items['photo_credit'] = $photo_credit;
-			$items['geo_location'] = $photo_props['geo_location'];
-			$items['original_url'] = $photo_props['original_url'];
-			$titles = array_unique($titles);
-			$titles = $this->utils->convertquotes($titles);
-			if($img_id){
-				$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_replace_photo($img_id,$id,'".$items['url']."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
-			}else{
-				$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_send_and_return('$id','".$this->photoItemHTML_simple($id, $items, true)."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
-			}
-			$titleCol = sizeof($titles)>1 ? $this->utils->makeSelectBox("${id}[title]",$titles) : "<input type='hidden' id='${id}[title]' value='$titles[0]'/>". $this->utils->shorten_name($titles[0], 10);
-			?>
+		foreach($better_posts as $post){
+			extract($post);
+			?>			
 			<tr>
 				<td class="select_column">
 					<?=$select_value?>
@@ -181,11 +143,16 @@
 				</td>
 			
 			</tr>
+			
 			<?
-			++$count;
-			}
+		}
 		?>
 		</table>
 		</form>
+	<?
+	}
+	?>	
+		<div >
+			<?= $msg ?>
+		</div>
 		
-		<div ><?=$msg?></div>

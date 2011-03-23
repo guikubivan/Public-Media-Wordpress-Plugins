@@ -5,7 +5,7 @@ class WPSSMediaUpload
 	
 	public $plugin_prefix;
 	private $plugin;
-	private $wpdb;
+	private $this->wpdb;
 	
 	public function __construct($plugin)
 	{
@@ -31,7 +31,7 @@ class WPSSMediaUpload
 	}
 	
 	function simple_image_chooser_content(){
-		$post_id = $_GET['post_id'];
+		$post_id = $this->plugin->_get['post_id'];
 
 		if($pid){
 			
@@ -46,105 +46,71 @@ class WPSSMediaUpload
 			return;
 		}
 		
+		$parameters = array();
 		
-
-?>
-<style type="text/css">
-
-	.select_column{
-		color: #FFFFFF;
-		background-color: #000000;
-		text-align:center;
-		height:50px;
-		font-family: serif;
-		font-style: italic;
-		font-size: 13px;
-		padding-bottom:0px;
-	}
-	img {
-		height:50px;
-	}
-
-	.title_column{
-		background-color: #C4AEAE;
-	}
-
-	.credit_column{
-		background-color: #D0BF87;
-	}
-
-	.date_column{
-		background-color: #A4B6B2;
-	}
-	
-	.button {
-		background-color:#E5E5E5;
-		border:solid 1px #333333;
-		padding:5px;
-		cursor: pointer;
-	}
-
-	th, td {
-		width: 25%;
-	}
-	.caption {
-		margin:0px;
-	}
-</style> 
-	<h2>Upload new photo</h2>
-<?php			$_REQUEST['flash'] = 0;
-			$this->wpss_media_upload_form();
-			media_upload_form();
-			$img_id = $_GET['img_id'];
-			$img_id_var = $img_id ? "&img_id=$img_id" : '';
-			//echo $img_id ? $img_id : 'none';
-
-			echo $img_id ? "<input type='hidden' name='img_id' value='$img_id' />" : '';
-			echo "</form>\n";
-//<a href='media-upload.php?post_id=$pid&type=image&flash=0' class='button'>Upload new photo</a>
-?>
-
-	<hr />
-	<h2 style='margin-bottom:50px'>Choose picture</h2>
-<div>
-
-<form method='post' name='search_form' action='?type=slideshow_image<?php echo $img_id_var;?>' >
-
-
-<input id="post-search-input" type="text" value="<?php $search = $_POST['s'] ? $_POST['s'] : $_GET['s']; echo $_POST['see_all'] ? '' : $search; ?>" name="s"/>
-<input type="submit" value="Search Photos"/> <input type="submit" name='see_all' value="See all"/>
-
-</form>
-</div>
-<?php
+		$_REQUEST['flash'] = 0;
+		
+		ob_start();
+		media_upload_form();
+		$parameters['media_upload_form'] = ob_get_contents()
+		ob_end_clean();
+		
+		$parameters['img_id'] = $img_id = $this->plugin->_get['img_id'];
+		$parameters['img_id_var'] = $img_id_var = $img_id ? "&img_id=$img_id" : '';
+		$parameters['search'] = $search = $this->plugin->_post['s'] ? $this->plugin->_post['s'] : $this->plugin->_get['s']; 
+		
 		$maxposts = 10;
-		$start = $_GET['start'] ? $_GET['start'] : 0;
+		$start = $this->plugin->_get['start'] ? $this->plugin->_get['start'] : 0;
 
-		if(!isset($_GET['order_by']) && !isset($_REQUEST['s']) && !isset($_POST['see_all'])){
-			echo '<hr />';
+		if(!isset($this->plugin->_get['order_by']) && !isset($_REQUEST['s']) && !isset($this->plugin->_post['see_all'])){
 			return;
 		}
-		//echo $_POST['order_by'] ? "Order by "  . $_POST['order_by'] : '';
+		
+		
 		$msg = '';
-		$orderby = $_GET['order_by'] ? $_GET['order_by'] : 'title';
-		$direction = $_GET['direction'] ? $_GET['direction'] : 'asc';
-		if($_GET['order_by'] != $_GET['porder_by']){
-			$direction = 'asc';
+		$parameters['order_by'] = $orderby = $this->plugin->_get['order_by'] ? $this->plugin->_get['order_by'] : 'title';
+		$parameters['direction'] = $direction = $this->plugin->_get['direction'] ? $this->plugin->_get['direction'] : 'asc';
+		
+		if($this->plugin->_get['order_by'] != $this->plugin->_get['porder_by']){
+			$parameters['direction'] = $direction = 'asc';
 		}
 
-		$query = "SELECT ID, post_title, post_excerpt, post_content, post_modified, post_mime_type FROM ".$wpdb->prefix."posts WHERE post_mime_type LIKE '%image%' AND post_type='attachment'";
+		$query = "SELECT 
+					ID, 
+					post_title, 
+					post_excerpt, 
+					post_content, 
+					post_modified, 
+					post_mime_type 
+				FROM 
+					".$this->wpdb->prefix."posts 
+				WHERE 
+					post_mime_type LIKE '%image%' 
+					AND post_type='attachment'";
 		if($orderby == 'title'){
 			$query .= " ORDER BY post_title $direction";
 		}else if($orderby ==  'date'){
 			$query .= " ORDER BY post_modified $direction";
 		}else if($orderby == 'photo_credit'){
-			//$query = "SELECT DISTINCT posts.ID, posts.post_title, posts.post_excerpt, posts.post_content FROM ".$wpdb->prefix."posts as posts RIGHT JOIN ".$wpdb->prefix."postmeta as postmeta ON posts.ID=postmeta.post_id WHERE posts.post_mime_type LIKE '%image%' AND postmeta.meta_key='photo_credit' ORDER BY postmeta.meta_value";
-			//$query = "SELECT DISTINCT posts.ID, posts.post_title, posts.post_excerpt, posts.post_content, posts.post_modified FROM ".$wpdb->prefix."posts as posts, ".$wpdb->prefix."postmeta as postmeta WHERE posts.ID=postmeta.post_id AND posts.post_mime_type LIKE '%image%' AND postmeta.meta_key='photo_credit' ORDER BY postmeta.meta_value $direction";
-			$query = "SELECT DISTINCT posts.ID, posts.post_title, posts.post_excerpt, posts.post_content, posts.post_modified, post_mime_type FROM ".$wpdb->prefix."posts as posts LEFT JOIN ".$wpdb->prefix."postmeta as postmeta ON (posts.ID=postmeta.post_id AND postmeta.meta_key='photo_credit') WHERE posts.post_mime_type LIKE '%image%' AND posts.post_type='attachment' ORDER BY postmeta.meta_value $direction";
-			//echo $query;
+			$query = "SELECT DISTINCT 
+						posts.ID, 
+						posts.post_title, 
+						posts.post_excerpt, 
+						posts.post_content, 
+						posts.post_modified, 
+						post_mime_type 
+					FROM 
+						".$this->wpdb->prefix."posts as posts 
+						LEFT JOIN ".$this->wpdb->prefix."postmeta as postmeta 
+							ON (posts.ID=postmeta.post_id AND postmeta.meta_key='photo_credit') 
+					WHERE 
+						posts.post_mime_type LIKE '%image%' 
+						AND posts.post_type='attachment' 
+					ORDER BY postmeta.meta_value $direction";
 		}
-		//$query .= ' LIMIT 20';
-		if($search && !$_POST['see_all']){
+		
+		if($search && !$this->plugin->_post['see_all'])
+		{
 			$q['orderby']=$orderby;
 			$q['order']=$direction;
 			$q['s']=$search;
@@ -160,56 +126,53 @@ class WPSSMediaUpload
 					$post_ids_array[] = $attachment->ID;
 				$post_ids = "OR posts.ID IN (".implode(',', $post_ids_array).") ";
 			}
-			$query = "SELECT DISTINCT posts.ID, posts.post_title, posts.post_excerpt, posts.post_content, posts.post_modified, post_mime_type FROM ".$wpdb->prefix."posts as posts LEFT JOIN ".$wpdb->prefix."postmeta as postmeta ON (posts.ID=postmeta.post_id AND postmeta.meta_key='photo_credit') WHERE posts.post_mime_type LIKE '%image%' AND posts.post_type='attachment' AND (postmeta.meta_value LIKE \"%".$search."%\" $post_ids) ORDER BY postmeta.meta_value $direction";
+			$query = "SELECT DISTINCT 
+						posts.ID, 
+						posts.post_title, 
+						posts.post_excerpt, 
+						posts.post_content, 
+						posts.post_modified, 
+						post_mime_type 
+					FROM 
+						".$this->wpdb->prefix."posts as posts 
+						LEFT JOIN ".$this->wpdb->prefix."postmeta as postmeta 
+							ON (posts.ID=postmeta.post_id AND postmeta.meta_key='photo_credit') 
+					WHERE 
+						posts.post_mime_type LIKE '%image%' 
+						AND posts.post_type='attachment' 
+						AND (postmeta.meta_value LIKE \"%".$search."%\" $post_ids) 
+						ORDER BY postmeta.meta_value $direction";
 
-			$rows = $wpdb->get_results($query);
+			$rows = $this->wpdb->get_results($query);
 
 			if(is_array($rows)){
-				//$posts = array_merge($posts, $rows);
 				foreach ( $rows as $attachment )
 					$posts[$attachment->ID] = $attachment;
 			}
 			if(sizeof($posts)==0){
 				$msg .= "No results found for \"$search\".\n<br />";
 			}
-			//return;
-			//	
-		}else{
-			$posts = $wpdb->get_results($query);
+				
+		}
+		else
+		{
+			$posts = $this->wpdb->get_results($query);
 		}
 
-		$search = $search ? "&s=$search" : '';
+		$parameters["search"] = $search = $search ? "&s=$search" : '';
 		if(!$msg){
-			$end = (($start + $maxposts) > sizeof($posts)) ? sizeof($posts) : ($start+$maxposts);
-			$pstart = (($start - $maxposts) >=0 ) ? ($start-$maxposts) : 0;
-			$nstart = (($start + $maxposts) > sizeof($posts)) ? sizeof($posts) : ($start+$maxposts);
-			echo "<div style='position:relative;text-align: left'>&nbsp;";
-			if($start > 0){
-				echo "<a href=\"?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$pstart".$search."$img_id_var\"  > << </a>";
-			}
-
-			echo "<span style='position: absolute;top:0;right:0;'>";
-			echo "Showing " . ($start+1) . "-$end of " . sizeof($posts);
-			if($nstart < sizeof($posts)){
-				echo " <a href=\"?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$nstart".$search."$img_id_var\"  > >> </a></span>";
-			}
-			echo "</div>";
-
-
-			$direction = ($direction == 'asc') ? 'desc' : 'asc';
-			echo '<form method="POST" name="edit_form" action="?type=image&flash=0" >';
-
-			echo "<input type='hidden' id='post_id' name='post_id' value=''>";
-			echo "<table>";
-			echo $this->utils->table_headers(array(" ", 'Select'),
-					array("class='title_column'","<a href=\"?type=slideshow_image&post_id=$pid&order_by=title&direction=$direction&porder_by=$orderby&start=$start".$search."$img_id_var\" >Title</a>"),
-					array("class='credit_column'","<a href=\"?type=slideshow_image&post_id=$pid&order_by=photo_credit&direction=$direction&porder_by=$orderby&start=$start".$search."$img_id_var\" >Photo Credit</a>"), 
-					array("class='date_column'","<a href=\"?type=slideshow_image&post_id=$pid&order_by=date&direction=$direction&porder_by=$orderby&start=$start".$search."$img_id_var\" >Upload Date</a>"),
-					'');
-			//echo "</form>\n";
+			$parameters['end'] = $end = (($start + $maxposts) > sizeof($posts)) ? sizeof($posts) : ($start+$maxposts);
+			$parameters['pstart'] = $pstart = (($start - $maxposts) >=0 ) ? ($start-$maxposts) : 0;
+			$parameters['nstart'] = $nstart = (($start + $maxposts) > sizeof($posts)) ? sizeof($posts) : ($start+$maxposts);
+			
+			$parameters['direction'] = $direction = ($direction == 'asc') ? 'desc' : 'asc';
+			
 			$count = 0;
-
-			foreach($posts as $img_post){
+			
+			$better_posts = array();
+			
+			foreach($posts as $img_post)
+			{
 				if($count >= $end)break;
 				if($count < $start){ 
 					++$count;
@@ -248,18 +211,22 @@ class WPSSMediaUpload
 					$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_send_and_return('$id','".$this->photoItemHTML_simple($id, $items, true)."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
 				}
 				$titleCol = sizeof($titles)>1 ? $this->utils->makeSelectBox("${id}[title]",$titles) : "<input type='hidden' id='${id}[title]' value='$titles[0]'/>". $this->utils->shorten_name($titles[0], 10);
-				echo $this->utils->table_data_fill(array("class='select_column'",$select_value),array("class='title_column'",$titleCol),
-						array("class='credit_column'","$photo_credit"),
-						array("class='date_column'",date("Y-m-d",strtotime($photo_date))),
-						'<a href="?type=slideshow_image&post_id='.$id . $img_id_var.'" class="button" >Edit</a>'  );//
-				//echo "<h3 style='margin:0px;padding:0px;'>$title</h3><br />$caption<br /><br />";
+				
+				$better_posts[$id]['select'] = $select_value;
+				$better_posts[$id]['titleCol'] = $titleCol;
+				$better_posts[$id]['photo_credit'] = $photo_credit;
+				$better_posts[$id]['photo_date'] = $photo_date;
+				
+				
 				++$count;
 			}
-			echo "</table>";
-			echo "</form>";
-		}
 
-		echo "<div >$msg</div>";
+			$parameters['better_posts'] = $better_posts;
+			
+			echo $this->plugin->render_backend_view("media_uploader_form.php", $parameters);
+
+			
+		}
 
 	}
 	
