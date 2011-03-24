@@ -58,7 +58,7 @@
 				-->
 				</script>
 				
-				<?= $media_upload_form() ?>
+				<?= $media_upload_form ?>
 				
 				<? if($img_id) { ?>
 					<input type='hidden' name='img_id' value='<?= $img_id ?>' />
@@ -70,7 +70,7 @@
 	<h2 style='margin-bottom:50px'>Choose picture</h2>
 	<div>
 	
-	<form method='post' name='search_form' action='?type=slideshow_image<?php echo $img_id_var;?>' >
+	<form method='post' name='search_form' action='?type=slideshow_image<?= $img_id_var ?>' >
 	
 	
 	<input id="post-search-input" type="text" value="<?= $this->plugin->_post['see_all'] ? '' : $search ?>" name="s"/>
@@ -94,7 +94,7 @@
 		<? } ?>
 	
 		<span style='position: absolute;top:0;right:0;'>
-		Showing <?=($start+1) ?> -$end of <?= sizeof($posts) ?>
+		Showing <?=($start+1) ?> - <?=$end?> of <?= sizeof($posts) ?>
 		<? if($nstart < sizeof($posts)){ ?>
 			<a href=\"?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$nstart<?= $search . $img_id_var ?>"  > >> </a>
 		<? } ?>
@@ -122,24 +122,39 @@
 	</form>
 	
 	<?php
+//	if($img_id){
+//					$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_replace_photo($img_id,$id,'".$photo->url."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
+//				}else{
+			//		$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_send_and_return('$id','".$this->photoItemHTML_simple($id, $items, true)."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
+//				}
+			//	$titleCol = sizeof($titles)>1 ? $this->utils->makeSelectBox("${id}[title]",$titles) : "<input type='hidden' id='${id}[title]' value='$titles[0]'/>". $this->utils->shorten_name($titles[0], 10);
+				
+	
+	
 		foreach($better_posts as $post){
-			extract($post);
 			?>			
 			<tr>
 				<td class="select_column">
-					<?=$select_value?>
+					<img 
+						onmouseover="this.style.border='3px solid red';" 
+						onmouseout="this.style.border='none';" 
+						onclick="wpss_replace_photo( <?=$img_id?>, <?=$post->id?>, '<?=$post->url?>');" 
+						style='margin:0px;' title="<?=$post->alt?>" alt="<?=$post->alt?>" src="<?=$post->thumb?>" />
+					<p class="caption">
+						<?= $post->caption ?>
+					</p>
 				</td>
 				<td class="title_column">
 					<?=$titleCol?>
 				</td>
 				<td class="credit_column">
-					<?=$photo_credit?>
+					<?=$post->photo_credit?>
 				</td>
 				<td class="date_column">
-					<?=date("Y-m-d", strtotime($photo_date) ) ?>
+					<?=date("Y-m-d", strtotime($post->photo_date) ) ?>
 				</td>
 				<td>
-					<a href="?type=slideshow_image&post_id=<?=$id . $img_id_var?>" class="button" >Edit</a>
+					<a href="?type=slideshow_image&post_id=<?=$post->post_id . $img_id_var?>" class="button" >Edit</a>
 				</td>
 			
 			</tr>

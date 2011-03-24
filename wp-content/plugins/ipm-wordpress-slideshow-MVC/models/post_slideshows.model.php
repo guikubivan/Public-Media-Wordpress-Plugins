@@ -33,7 +33,7 @@ class IPM_PostSlideshows
 				{
 					$this->slideshows = array();
 					
-					$post_image_id = get_post_meta($post->ID, $this->postmeta_post_image, true);
+					$post_image_id = get_post_meta($this->post->ID, $this->postmeta_post_image, true);
 					
 					foreach($slideshows as $slideshow_id)
 					{

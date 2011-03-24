@@ -34,6 +34,10 @@ if(!class_exists ('IPM_Slideshow')) {
 	require_once(dirname(__FILE__).'/models/slideshow.model.php');
 }
 
+if(!class_exists ('IPM_SlideshowPhoto')) {
+	require_once(dirname(__FILE__).'/models/slideshow_photo.model.php');
+}
+
 if(!class_exists ('IPM_PostSlideshows')) {
 	require_once(dirname(__FILE__).'/models/post_slideshows.model.php');
 }

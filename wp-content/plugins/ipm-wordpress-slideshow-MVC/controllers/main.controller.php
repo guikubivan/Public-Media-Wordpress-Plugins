@@ -122,7 +122,7 @@ class wpss_main{
 			extract($parameter);
 		}
 		
-		include(WPSSVIEWS . $end . "/" . $view);
+		include(WPSSVIEWS .  $view);
 		$output = ob_get_contents();
 		ob_end_clean();
 		
@@ -138,6 +138,7 @@ class wpss_main{
 	//render view wrapper that only gets backend views
 	public function render_backend_view($view, $parameters = array())
 	{
+		$view = "backend/".$view;
 		$output = $this->render_view($view, $parameters, "backend");
 		return $output;
 	}

@@ -5,7 +5,7 @@ class WPSSMediaUpload
 	
 	public $plugin_prefix;
 	private $plugin;
-	private $this->wpdb;
+	private $wpdb;
 	
 	public function __construct($plugin)
 	{
@@ -31,11 +31,12 @@ class WPSSMediaUpload
 	}
 	
 	function simple_image_chooser_content(){
+		//echo "<pre>".print_r($this->plugin, true)."</pre>";	
 		$post_id = $this->plugin->_get['post_id'];
 
-		if($pid){
+		if($post_id){
 			
-			$media_items = get_media_items($pid, null);
+			$media_items = get_media_items($post_id, null);
 			
 			$params = array("post_id" => 0, 
 						"type"=>"image", 
@@ -45,14 +46,13 @@ class WPSSMediaUpload
 			echo $this->plugin->render_backend_view("media_uploader_chooser.php", $params);
 			return;
 		}
-		
 		$parameters = array();
 		
 		$_REQUEST['flash'] = 0;
 		
 		ob_start();
 		media_upload_form();
-		$parameters['media_upload_form'] = ob_get_contents()
+		$parameters['media_upload_form'] = ob_get_contents();
 		ob_end_clean();
 		
 		$parameters['img_id'] = $img_id = $this->plugin->_get['img_id'];
@@ -63,8 +63,10 @@ class WPSSMediaUpload
 		$start = $this->plugin->_get['start'] ? $this->plugin->_get['start'] : 0;
 
 		if(!isset($this->plugin->_get['order_by']) && !isset($_REQUEST['s']) && !isset($this->plugin->_post['see_all'])){
-			return;
+			//return;
 		}
+		else
+		{
 		
 		
 		$msg = '';
@@ -160,7 +162,8 @@ class WPSSMediaUpload
 		}
 
 		$parameters["search"] = $search = $search ? "&s=$search" : '';
-		if(!$msg){
+		if(!$msg)
+		{
 			$parameters['end'] = $end = (($start + $maxposts) > sizeof($posts)) ? sizeof($posts) : ($start+$maxposts);
 			$parameters['pstart'] = $pstart = (($start - $maxposts) >=0 ) ? ($start-$maxposts) : 0;
 			$parameters['nstart'] = $nstart = (($start + $maxposts) > sizeof($posts)) ? sizeof($posts) : ($start+$maxposts);
@@ -170,7 +173,6 @@ class WPSSMediaUpload
 			$count = 0;
 			
 			$better_posts = array();
-			
 			foreach($posts as $img_post)
 			{
 				if($count >= $end)break;
@@ -179,54 +181,35 @@ class WPSSMediaUpload
 					continue;
 				}
 				if(!preg_match("/image/",$img_post->post_mime_type))continue;
-				
+
 				$id = $img_post->ID;
-				$titles = array($img_post->post_title);
-				$this->getExtraTitles($id, $titles);
-
-				$alt =htmlentities( strip_tags($img_post->post_excerpt), ENT_QUOTES);
-				$caption =  htmlentities( strip_tags($img_post->post_content), ENT_QUOTES);
-				$photo_date = $img_post->post_modified;
-				$thumb = wp_get_attachment_image_src( $id, 'thumbnail');
-
-				$photo_props = $this->getPhotoFixedProps($id);
-
-				$thumb = $photo_props['url'];
-
-				$photo_credit =  htmlentities(stripslashes($photo_props['photo_credit']), ENT_QUOTES);
-
-				//$items['title'] = $titles[0];
-				$items['alt'] = $alt;
-				$items['caption'] = $caption;
-
-				$items['url'] = $thumb;
-				$items['photo_credit'] = $photo_credit;
-				$items['geo_location'] = $photo_props['geo_location'];
-				$items['original_url'] = $photo_props['original_url'];
-				$titles = array_unique($titles);
-				$titles = $this->utils->convertquotes($titles);
-				if($img_id){
-					$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_replace_photo($img_id,$id,'".$items['url']."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
-				}else{
-					$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_send_and_return('$id','".$this->photoItemHTML_simple($id, $items, true)."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
-				}
-				$titleCol = sizeof($titles)>1 ? $this->utils->makeSelectBox("${id}[title]",$titles) : "<input type='hidden' id='${id}[title]' value='$titles[0]'/>". $this->utils->shorten_name($titles[0], 10);
+				$photo = new IPM_Photo($this->plugin, $id);
+			//	$titles = array($img_post->post_title);
 				
-				$better_posts[$id]['select'] = $select_value;
-				$better_posts[$id]['titleCol'] = $titleCol;
-				$better_posts[$id]['photo_credit'] = $photo_credit;
-				$better_posts[$id]['photo_date'] = $photo_date;
 				
+			//	$this->getExtraTitles($id, $titles);
+			//	$titles = array_unique($titles);
+
+			//	$titles = $this->utils->convertquotes($titles);
+
+				$better_posts[$id] = $photo;
+			//	$better_posts[$id]['select'] = $select_value;
+			//	$better_posts[$id]['titleCol'] = $titleCol;
+			//	$better_posts[$id]['photo_credit'] = $photo->photo_credit;
+			//	$better_posts[$id]['photo_date'] = $photo->modified_date;
 				
 				++$count;
 			}
 
 			$parameters['better_posts'] = $better_posts;
-			
-			echo $this->plugin->render_backend_view("media_uploader_form.php", $parameters);
-
-			
+		//	echo "<pre>".print_r($parameters, true)."</pre>";	
+		
 		}
+		
+		}
+		
+		echo $this->plugin->render_backend_view("media_uploader_form.php", $parameters);
+
 
 	}
 	

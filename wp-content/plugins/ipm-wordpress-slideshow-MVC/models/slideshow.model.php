@@ -63,7 +63,7 @@ class IPM_Slideshow
 		$result = $this->wpdb->get_results($query);
 		//$this->photos = $result;
 		foreach($result as $key=>$row){
-			$this->photos[] = new IPM_Photo($this->wpss, $row->photo_id);
+			$this->photos[] = new IPM_SlideshowPhoto($this->wpss, $row->photo_id);
 		}
 	}
 	

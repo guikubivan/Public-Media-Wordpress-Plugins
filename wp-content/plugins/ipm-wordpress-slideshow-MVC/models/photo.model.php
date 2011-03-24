@@ -1,8 +1,12 @@
 <?php
 
+/**
+ * Wrapper for Word Press's attachement post types... 
+ * Normalizes the attribute names and provides a few methods for dealing with extra metadata
+ */
+
 class IPM_Photo
 {
-	public $photo_id = "";
 	public $post_id = "";
 	
 	//public $wp_photo_id = ""; //this and post_id are the same thing
@@ -19,6 +23,8 @@ class IPM_Photo
 	public $medium_url = "";
 	public $thumb_url = "";
 	public $update = "";
+	public $date_modified = "";
+	public $mime_type = "";
 	
 	
 	//always send the wordpress_slideshow object, so we can have access to 
@@ -26,52 +32,45 @@ class IPM_Photo
 	private $wpss;
 	private $wpdb;
 	
-	public function __construct($wordpress_slideshow, $photo_id = "")
+	public function __construct($wordpress_slideshow, $post_id = "")
 	{
 		$this->wpss = $wordpress_slideshow;
 		$this->wpdb = $wordpress_slideshow->wpdb;
 		
-		if(!empty($photo_id))
+		if(!empty($post_id))
 		{
-			$this->get_photo($photo_id);
+			$this->get_photo($post_id);
 		}
 		
 	}
 	
-	public function get_photo($photo_id = "")
+	public function get_photo($post_id = "")
 	{
-		if(!empty($photo_id))		
-			$this->photo_id = $photo_id;
+		if(!empty($post_id))		
+			$this->post_id = $post_id;
 		
-		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
-		$slideshow_photos = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
-		$photo_meta = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta";
-		$pid = $this->photo_id;
-		
-		$query ="SELECT DISTINCT `wp_photo_id`, `meta_name`, `meta_value` 
-					FROM  
-						`".$slideshow_photos."` as `sp`,
-						`".$photo_meta."` as `pm`, 
-						`". $photo_meta_rels ."` as `pmr` 
-					WHERE
-						`sp`.`photo_id`=`pmr`.`photo_id` AND
-						`pmr`.`meta_id`=`pm`.`meta_id` AND
-						`sp`.`photo_id`='".$pid."' ";
-		
+		$query = "SELECT 
+					`ID`, 
+					`post_title`, 
+					`post_excerpt`, 
+					`post_content`, 
+					`post_modified`, 
+					`post_mime_type` 
+				FROM 
+					`".$this->wpdb->prefix."posts` 
+				WHERE 
+					`post_mime_type` LIKE '%image%' 
+					AND `post_type`='attachment'
+					AND `ID` = '".$this->post_id."'
+					";
 		$result = $this->wpdb->get_results($query);
-		$photo= array();
-		foreach($result as $row){
-			$photo['wp_photo_id']=$row->wp_photo_id;
-			$photo[$row->meta_name]=$row->meta_value;
-		}
-		$post_id = $photo['wp_photo_id'];
-
-		//NOTE:  $pid and $post_id are different
-
-		$this->post_id = $this->post_id = $photo['wp_photo_id'];
-		$this->title = stripslashes($photo['title']);
-		$this->alt = stripslashes($photo['alt']);
-		$this->caption = stripslashes($photo['caption']);
+		
+		$this->title = stripslashes($result['post_title']);
+		$this->alt = stripslashes($result['post_excerpt']);
+		$this->caption = stripslashes($result['post_content']);
+		$this->date_modified = stripslashes($result['post_modified']);
+		$this->mime_type = stripslashes($result['post_mime_type']);
+		
 		$this->geo_location = stripslashes(get_post_meta($this->post_id, "geo_location", true));
 		$this->photo_credit = stripslashes(get_post_meta($this->post_id, "photo_credit", true));
 		$this->latitude = stripslashes(get_post_meta($this->post_id, "latitude", true));
@@ -79,7 +78,7 @@ class IPM_Photo
 		$this->original_url = stripslashes(get_post_meta($this->post_id, "original_url", true));
 		$this->update = $photo['update'];
 		
-		
+		$post_id = $this->post_id;
 		$photo['url'] = $thumb[0];
 
 		$thumb = wp_get_attachment_image_src( $this->post_id, 'thumbnail');
@@ -187,77 +186,9 @@ class IPM_Photo
 		return $url;
 	}
 
-	public function get_photo_by_post_id($post_id = "")
-	{
-		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
-			
-		$query = "SELECT `photo_id` FROM `".$photo_table."` WHERE `wp_photo_id` = '".$this->post_id."';";
-		$result = $this->wpdb->get_results($query);
-		
-		if($result===false)
-			return false;
-		else
-		{
-			echo $this->photo_id = $result['photo_id'];
-			if(!empty($this->photo_id))
-				$this->get_photo();
-				
-			return true;
-		}
-		
-	}
-	
-	public function insert()
-	{
-		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
-			
-		$query = "INSERT INTO ".$photo_table." (wp_photo_id) VALUES (".$this->post_id.");";//INSERT PHOTO
-		$result = $this->wpdb->query($query);
-		
-		if($result===false)
-			return false;
-		else
-			$this->photo_id = $this->wpdb->get_var('SELECT LAST_INSERT_ID();');
-			$this->get_photo($this->photo_id);
-		return true;
-	}
-
 	public function update()
 	{
-		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
-		$query = "UPDATE `".$photo_meta_rels."`
-					SET
-						`meta_value` = '". addslashes($this->title) ."'
-					WHERE
-						`photo_id` = '".$this->photo_id."'
-						AND `meta_id` = '1'
-					";
-					
-		$success  = $this->wpdb->get_results($query);
-		
-		$query  = "UPDATE `".$photo_meta_rels."`
-					SET
-						`meta_value` = '". addslashes($this->alt) ."'
-					WHERE
-						`photo_id` = '".$this->photo_id."'
-						AND `meta_id` = '2'
-					";			
-		
-		if($success !== false)
-			$success  = $this->wpdb->get_results($query);
-		$query = "UPDATE `".$photo_meta_rels."`
-					SET
-						`meta_value` = '". addslashes($this->caption) ."'
-					WHERE
-						`photo_id` = '".$this->photo_id."'
-						AND `meta_id` = '3'
-					";				
-		if($success !== false)
-			$success  = $this->wpdb->get_results($query);
-		
-		
-		if($success !== false)
-			$success  = update_post_meta($this->post_id, "geo_location", addslashes($this->geo_location) );
+		$success  = update_post_meta($this->post_id, "geo_location", addslashes($this->geo_location) );
 		if($success !== false)
 			$success  = update_post_meta($this->post_id, "photo_credit", addslashes($this->photo_credit) );
 		if($success !== false)
@@ -271,54 +202,6 @@ class IPM_Photo
 		
 		
 	}
-
-	public function add_to_slideshow($slideshow, $order)
-	{
-		$relation_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations";
-		$result = $this->wpdb->query("REPLACE INTO ".$relation_table." VALUES( '".$slideshow."', '".$this->photo_id."', '".$order."' );");//LINK PHOTO TO SLIDESHOW
-		if($result === false)
-			return false;
-		else
-			return true;			
-	}
-	public function remove_from_slideshow($slideshow_id)
-	{
-		$relation_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations";
-		$result = $this->wpdb->query("DELETE FROM ".$relation_table." WHERE `slideshow_id` = '".$slideshow_id."' AND `photo_id` = '".$this->photo_id."' ");//REMOVE FROM SLIDESHOW
-		if($result === false)
-			return false;
-		else
-			return true;			
-	}
-		
-
-
-	
-
-
-	//this gets stuck into the getPhoto method of the wpss class to return an array
-	// that looks like what the function was originally outputting.  This is so that we can
-	// use the new class and not break everything that depends on the old function.
-	public function getPhoto_emulator()
-	{
-		$tmp = array(
-			"wp_photo_id" => $this->post_id,
-			"title" => $this->title,
-			"alt" => $this->alt,
-			"caption" => $this->caption,
-			"geo_location" => $this->geo_location,
-			"photo_credit" => $this->photo_credit,
-			"latitude" => $this->latitude,
-			"longitude" => $this->longitude,
-			"original_url" => $this->original_url,
-			"url" => $this->url,
-			"large_url" => $this->large_url,
-			"update" =>$this->update
-		);
-		
-		return $tmp;
-	}
-	
 	
 }
 
