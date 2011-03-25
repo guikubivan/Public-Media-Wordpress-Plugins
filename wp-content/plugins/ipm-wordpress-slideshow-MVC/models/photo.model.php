@@ -64,44 +64,50 @@ class IPM_Photo
 					AND `ID` = '".$this->post_id."'
 					";
 		$result = $this->wpdb->get_results($query);
-		
-		$this->title = stripslashes($result['post_title']);
-		$this->alt = stripslashes($result['post_excerpt']);
-		$this->caption = stripslashes($result['post_content']);
-		$this->date_modified = stripslashes($result['post_modified']);
-		$this->mime_type = stripslashes($result['post_mime_type']);
-		
-		$this->geo_location = stripslashes(get_post_meta($this->post_id, "geo_location", true));
-		$this->photo_credit = stripslashes(get_post_meta($this->post_id, "photo_credit", true));
-		$this->latitude = stripslashes(get_post_meta($this->post_id, "latitude", true));
-		$this->longitude = stripslashes(get_post_meta($this->post_id, "longitude", true));
-		$this->original_url = stripslashes(get_post_meta($this->post_id, "original_url", true));
-		$this->update = $photo['update'];
-		
-		$post_id = $this->post_id;
-		$photo['url'] = $thumb[0];
-
-		$thumb = wp_get_attachment_image_src( $this->post_id, 'thumbnail');
-		$photo['url'] = $this->process_thumb_url($photo['url']);
-
-		$large = wp_get_attachment_image_src( $post_id, 'large');
-		$photo['large_url'] =  $large[0] ? $large[0] : current(wp_get_attachment_image_src( $post_id, 'full'));
-		$photo['large_url'] = $this->process_large_url($photo['large_url']);
-				
-		$photo['thumb_url']=$this->process_thumb_url($photo['url']);
-		$photo['medium_url']=$this->process_medium_url(current(wp_get_attachment_image_src( $post_id, $image_size)));
-		$photo['large_url']=$this->process_large_url(current(wp_get_attachment_image_src( $post_id, 'large')));
-		$photo['url']=current(wp_get_attachment_image_src( $post_id, 'full'));
-		
-		
-		$this->url = $photo['url'];
-		$this->large_url = $photo['large_url'];
-		$this->medium_url = $photo['medium_url'];
-		$this->thumb_url = $photo['thumb_url'];
-		
-		
-		//echo "<pre>".print_r($this, true)."</pre>";
-		return true;
+		if( count($result) > 0 )
+		{
+			$result = $result[0];
+			//echo "<pre>".print_r($result, true)."</pre>";
+			
+			$this->title = stripslashes($result->post_title);
+			$this->alt = stripslashes($result->post_excerpt);
+			$this->caption = stripslashes($result->post_content);
+			$this->date_modified = stripslashes($result->post_modified);
+			$this->mime_type = stripslashes($result->post_mime_type);
+			
+			$this->geo_location = stripslashes(get_post_meta($this->post_id, "geo_location", true));
+			$this->photo_credit = stripslashes(get_post_meta($this->post_id, "photo_credit", true));
+			$this->latitude = stripslashes(get_post_meta($this->post_id, "latitude", true));
+			$this->longitude = stripslashes(get_post_meta($this->post_id, "longitude", true));
+			$this->original_url = stripslashes(get_post_meta($this->post_id, "original_url", true));
+			$this->update = $photo['update'];
+			
+			$post_id = $this->post_id;
+			$photo['url'] = $thumb[0];
+	
+			$thumb = wp_get_attachment_image_src( $this->post_id, 'thumbnail');
+			$photo['url'] = $this->process_thumb_url($photo['url']);
+	
+			$large = wp_get_attachment_image_src( $post_id, 'large');
+			$photo['large_url'] =  $large[0] ? $large[0] : current(wp_get_attachment_image_src( $post_id, 'full'));
+			$photo['large_url'] = $this->process_large_url($photo['large_url']);
+					
+			$photo['thumb_url']=$this->process_thumb_url(current(wp_get_attachment_image_src( $post_id, 'thumbnail')));
+			$photo['medium_url']=$this->process_medium_url(current(wp_get_attachment_image_src( $post_id, $image_size)));
+			$photo['large_url']=$this->process_large_url(current(wp_get_attachment_image_src( $post_id, 'large')));
+			$photo['url']=current(wp_get_attachment_image_src( $post_id, 'full'));
+			
+			
+			$this->url = $photo['url'];
+			$this->large_url = $photo['large_url'];
+			$this->medium_url = $photo['medium_url'];
+			$this->thumb_url =  $photo['thumb_url'];
+			
+			
+			//echo "<pre>".print_r($this, true)."</pre>";
+			return true;
+		}
+		return false;
 	}
 
 	private function process_thumb_url($url)
@@ -201,6 +207,31 @@ class IPM_Photo
 		return $success;
 		
 		
+	}
+	
+	//get additional slideshow-specific titles for the photo
+	function extra_titles()
+	{
+		$photo_meta_rel = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
+		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
+		
+		$query = "SELECT 
+						`meta_value` 
+					FROM 
+						`".$photo_meta_rel."` `r`,
+						`".$photo_table."` `p`
+					WHERE
+						`r`.`photo_id` = `p`.`photo_id`
+						AND `p`.`wp_photo_id` = '".$this->post_id."'
+						AND `r`.`meta_id` = '1'
+					";
+						
+		$results=$this->wpdb->get_col($query);
+		if(sizeof($results)>0){
+			return $results;
+		}
+		
+		return false;
 	}
 	
 }

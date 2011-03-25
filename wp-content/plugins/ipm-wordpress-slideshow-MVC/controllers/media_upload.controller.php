@@ -199,6 +199,7 @@ class WPSSMediaUpload
 			//	$better_posts[$id]['photo_date'] = $photo->modified_date;
 				
 				++$count;
+			//	print_r($photo);
 			}
 
 			$parameters['better_posts'] = $better_posts;

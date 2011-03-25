@@ -24,27 +24,7 @@
             simplifyUploadInterface();
           });
         <?php endif; ?>
-                  
-		function ajax_replace_wp_photo(photo_id, wp_photo_id, new_url, pcred, gloc){
-		   var mysack = new sack( 
-		       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
-
-		  mysack.execute = 1;
-		  mysack.method = 'POST';
-		  mysack.setVar( "action", "action_replace_wp_photo" );
-		  mysack.setVar( "photo_id", photo_id );
-		  mysack.setVar( "wp_photo_id", wp_photo_id );
-		  mysack.setVar( "new_url", new_url );
-		  mysack.setVar( "photo_credit", pcred );
-		  mysack.setVar( "geo_location", gloc );
-		  mysack.encVar( "cookie", document.cookie, false );
-		  mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
-		  //mysack.onCompletion = whenImportCompleted;
-		  mysack.runAJAX();
-
-		  return true;
-
-		}
+        
 
 		function mapper_ajax_getCoords(station_location, latitude_id, longitude_id)
 		{//alert("hi mapper");
@@ -129,21 +109,20 @@
 		{
 			wpss_start_loading();
 		
-			var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
-		
-			 // mysack.execute = 1;
+			var mysack = new sack( 
+		       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
 			mysack.method = 'POST';
 			mysack.setVar( "action", "action_remove_photo_from_slideshow" );
 			mysack.setVar( "photo_id", photo_id );
 			mysack.setVar( "slideshow_id", slideshow_id);
-			
 			mysack.encVar( "cookie", document.cookie, false );
-			mysack.onCompletion = function () { 
-					wpss_stop_loading(mysack.response);
-					
-				};
-			mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
-			//mysack.onCompletion = whenImportCompleted;
+			mysack.onCompletion = function () 
+			{ 
+				wpss_stop_loading(mysack.response);
+				if ( document.getElementById("photoContainer_"+photo_id).parentNode && document.getElementById("photoContainer_"+photo_id).parentNode.removeChild ) 
+					document.getElementById("photoContainer_"+photo_id).parentNode.removeChild(document.getElementById("photoContainer_"+photo_id));
+			};
+			mysack.onError = function() { alert('Ajax error in deleting slideshow photo from database.' )};
 			mysack.runAJAX();
 			return true;
 		}
@@ -155,7 +134,7 @@
 		function wpss_stop_loading(msg)
 		{
 			jQuery("#hourglass").hide();
-			jQuery("#hourglass").html( msg );
+			 console.log( msg );
 		}
 		
 		
@@ -187,29 +166,67 @@
 		
 		}
 		
-		function wpss_send_and_return(photo_id, html){
+		
+		function wpss_replace_photo(current_photo_id, new_photo_post_id, new_url){
 			var win = window.dialogArguments || opener || parent || top;
-			win.send_to_slideshow(photo_id, html);
+			if(typeof(win.currentSlideshowID) !== 'undefined' ){
+				//win.ajax_replace_wp_photo(photo_id,wp_photo_id, new_url);
+			}
+			else
+			{
+				alert('No slideshow currently selected.');
+				return;
+			}
+		
+			win.tb_remove();
 		}
-		function send_to_slideshow(photo_id, html)
+		
+		          
+		function ajax_replace_wp_photo(photo_id, wp_photo_id, new_url, pcred, gloc){
+		   var mysack = new sack( 
+		       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
+
+		  //mysack.execute = 1;
+		  mysack.method = 'POST';
+		  mysack.setVar( "action", "action_replace_wp_photo" );
+		  mysack.setVar( "photo_id", photo_id );
+		  mysack.setVar( "wp_photo_id", wp_photo_id );
+		  mysack.setVar( "new_url", new_url );
+		  mysack.setVar( "photo_credit", pcred );
+		  mysack.setVar( "geo_location", gloc );
+		  mysack.encVar( "cookie", document.cookie, false );
+		  mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
+		  //mysack.onCompletion = whenImportCompleted;
+		  mysack.runAJAX();
+
+		  return true;
+
+		}
+		
+		function wpss_send_and_return(photo_id){
+			var win = window.dialogArguments || opener || parent || top;
+			win.send_to_slideshow(photo_id);
+			//alert(photo_id);
+		}
+		function send_to_slideshow(photo_post_id, title)
 		{
 			wpss_start_loading();
 		
 			var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
-		
 			mysack.method = 'POST';
 			mysack.setVar( "action", "action_add_photo_to_slideshow" );
-			mysack.setVar( "photo_id", photo_id );
+			mysack.setVar( "photo_post_id", photo_post_id );
 			mysack.setVar( "slideshow_id", current_slideshow);
+			mysack.setVar( "title", title );
 			mysack.encVar( "cookie", document.cookie, false );
-			mysack.onCompletion = function () { 
-					wpss_stop_loading( mysack.response );
-					
-			tb_remove();
+			mysack.onCompletion = function () 
+			{ 
+				wpss_stop_loading( mysack.response );
+				current_slideshow = "";
+				tb_remove();
 				};
 			mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
 			mysack.runAJAX();
-			current_slideshow = "";
 		}
 		
 		

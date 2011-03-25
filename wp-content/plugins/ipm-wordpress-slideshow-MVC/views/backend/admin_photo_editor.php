@@ -1,9 +1,8 @@
 		<div  class='<?= $this->plugin_prefix ?>photo_container' id='photoContainer_<?=$photo->photo_id?>'>
 
-		<span id='deletePhotoButton_<?= $photo->photo_id ?>_<?= $slideshow_id ?>' title="Delete Photo" class='button' style='float:right; font-size: 200%;' onclick='
-				if ( this.parentNode.parentNode && this.parentNode.parentNode.removeChild ) 
-				{this.parentNode.parentNode.removeChild(this.parentNode);
-				removePhotoItem(<?= $photo->photo_id ?>, <?= $slideshow_id ?>);}
+		<span id='deletePhotoButton_<?= $photo->photo_id ?>_<?= $slideshow_id ?>' title="Delete Photo" class='button' style='float:right; font-size: 200%;' 
+			onclick='
+				removePhotoItem(<?= $photo->photo_id ?>, <?= $slideshow_id ?>)
 			'>X</span>
 
 		<input type='hidden' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_cover' class='photo_in_slideshow_<?= $slideshow_id ?>' name='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_cover' value='<?=$photo->cover?>' /> 
@@ -45,7 +44,7 @@
 				</div>
 				
 				<div >
-					<span onclick='ajax_update_photo(<?=$photo->photo_id?>);' id='save_photo_button_<?=$photo->photo_id?>' class='button save_photo_button_<?= $slideshow_id ?>' style='text-align:center;margin-top:5px;' >Update This Photo</span>
+					<span onclick='ajax_update_photo(<?=$photo->photo_id?>, <?= $slideshow_id ?>);' id='save_photo_button_<?=$photo->photo_id?>' class='button save_photo_button_<?= $slideshow_id ?>' style='text-align:center;margin-top:5px;' >Update This Photo</span>
 				</div>
 				
 	

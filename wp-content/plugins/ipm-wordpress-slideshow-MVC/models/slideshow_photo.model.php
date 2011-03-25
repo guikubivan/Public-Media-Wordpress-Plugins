@@ -23,11 +23,16 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		if(!empty($photo_id))		
 			$this->photo_id = $photo_id;
 		
+		//$this->post_id = $this->get_post_id_by_photo_id($this->photo_id);
+		//$this->post_id = $photo['wp_photo_id'];
+		$this->get_photo_only();
+		
+		//get data related to the main Photo
+		
+		//get meta data specific to the slideshow's version of the photo
 		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
 		$slideshow_photos = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
 		$photo_meta = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta";
-		$pid = $this->photo_id;
-		
 		$query ="SELECT DISTINCT `wp_photo_id`, `meta_name`, `meta_value` 
 					FROM  
 						`".$slideshow_photos."` as `sp`,
@@ -36,25 +41,32 @@ class IPM_SlideshowPhoto extends IPM_Photo
 					WHERE
 						`sp`.`photo_id`=`pmr`.`photo_id` AND
 						`pmr`.`meta_id`=`pm`.`meta_id` AND
-						`sp`.`photo_id`='".$pid."' ";
+						`sp`.`photo_id`='".$this->photo_id."' ";
 		
 		$result = $this->wpdb->get_results($query);
 		$photo= array();
-		foreach($result as $row){
-			$photo['wp_photo_id']=$row->wp_photo_id;
-			$photo[$row->meta_name]=$row->meta_value;
-		}
-		$this->post_id = $photo['wp_photo_id'];
-		parent::get_photo();
+		if(count($result) > 0)
+		{
+			foreach($result as $row){
+				$photo['wp_photo_id']=$row->wp_photo_id;
+				$photo[$row->meta_name]=$row->meta_value;
+			}
 		
-		$this->title = stripslashes($photo['title']);
-		$this->alt = stripslashes($photo['alt']);
-		$this->caption = stripslashes($photo['caption']);
+			if(!empty($photo['title']))	
+				$this->title = stripslashes($photo['title']);
+			if(!empty($photo['alt']))	
+				$this->alt = stripslashes($photo['alt']);
+			if(!empty($photo['caption']))	
+				$this->caption = stripslashes($photo['caption']);
+			//return true;
+			
+		}
 		
 		return true;
+		
 	}
 
-
+	/* this function does not work as intended... */
 	public function get_photo_by_post_id($post_id = "")
 	{
 		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
@@ -74,6 +86,36 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		}
 		
 	}
+	public function get_post_id_by_photo_id()
+	{
+		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
+		
+		$query = "SELECT `wp_photo_id` FROM `".$photo_table."` WHERE `photo_id` = '".$this->photo_id."'";
+		$result = $this->wpdb->get_results($query);
+		print_r($result);
+		if($result===false)
+			return false;
+		else
+		{
+			//$this->post_id = $result[0]['wp_photo_id'];
+			return $result[0]->wp_photo_id;
+		}
+		
+	}
+	
+	public function get_photo_only($post_id = "")
+	{
+		if( !empty($post_id) )
+			$this->post_id = $post_id;
+		if( empty($this->post_id) )
+			$this->post_id = $this->get_post_id_by_photo_id();
+				
+		$success = parent::get_photo();
+		return $success;
+	}
+	
+			
+		
 	
 	public function insert()
 	{
@@ -86,6 +128,7 @@ class IPM_SlideshowPhoto extends IPM_Photo
 			return false;
 		else
 			$this->photo_id = $this->wpdb->get_var('SELECT LAST_INSERT_ID();');
+			$this->update();
 			$this->get_photo($this->photo_id);
 		return true;
 	}
@@ -93,7 +136,7 @@ class IPM_SlideshowPhoto extends IPM_Photo
 	public function update()
 	{
 		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
-		$query = "UPDATE `".$photo_meta_rels."`
+		$query = "REPLACE INTO `".$photo_meta_rels."`
 					SET
 						`meta_value` = '". addslashes($this->title) ."'
 					WHERE
@@ -103,7 +146,7 @@ class IPM_SlideshowPhoto extends IPM_Photo
 					
 		$success  = $this->wpdb->get_results($query);
 		
-		$query  = "UPDATE `".$photo_meta_rels."`
+		$query  = "REPLACE INTO `".$photo_meta_rels."`
 					SET
 						`meta_value` = '". addslashes($this->alt) ."'
 					WHERE
@@ -113,7 +156,7 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		
 		if($success !== false)
 			$success  = $this->wpdb->get_results($query);
-		$query = "UPDATE `".$photo_meta_rels."`
+		$query = "REPLACE INTO `".$photo_meta_rels."`
 					SET
 						`meta_value` = '". addslashes($this->caption) ."'
 					WHERE
@@ -123,7 +166,7 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		if($success !== false)
 			$success  = $this->wpdb->get_results($query);
 		
-		
+		/*
 		if($success !== false)
 			$success  = update_post_meta($this->post_id, "geo_location", addslashes($this->geo_location) );
 		if($success !== false)
@@ -134,13 +177,53 @@ class IPM_SlideshowPhoto extends IPM_Photo
 			$success  = update_post_meta($this->post_id, "longitude", addslashes($this->longitude) );
 		if($success !== false)
 			$success  = update_post_meta($this->post_id, "original_url", addslashes($this->original_url) );
+		*/
 		
+		if($success !== false)
+			parent::update();	
 		return $success;
 		
 		
 	}
 
-	public function add_to_slideshow($slideshow, $order)
+	public function delete()
+	{
+		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
+		$query = "DELETE FROM `".$photo_meta_rels."`
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+						AND `meta_id` = '1'
+					";
+					
+		$success  = $this->wpdb->get_results($query);
+		
+		$query  = "DELETE FROM `".$photo_meta_rels."`
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+						AND `meta_id` = '2'
+					";			
+		
+		if($success !== false)
+			$success  = $this->wpdb->get_results($query);
+		$query = "DELETE FROM `".$photo_meta_rels."`
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+						AND `meta_id` = '3'
+					";				
+		if($success !== false)
+			$success  = $this->wpdb->get_results($query);
+		
+		if($success !== false)
+		{
+			$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
+			$query = "DELETE FROM ".$photo_table." WHERE `photo_id` = '".$this->photo_id."' ;";//INSERT PHOTO
+		}
+		
+		return $success;
+		
+	}
+
+	public function add_to_slideshow($slideshow, $order=0)
 	{
 		$relation_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations";
 		$result = $this->wpdb->query("REPLACE INTO ".$relation_table." VALUES( '".$slideshow."', '".$this->photo_id."', '".$order."' );");//LINK PHOTO TO SLIDESHOW
@@ -149,6 +232,7 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		else
 			return true;			
 	}
+	
 	public function remove_from_slideshow($slideshow_id)
 	{
 		$relation_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations";
@@ -156,93 +240,14 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		if($result === false)
 			return false;
 		else
-			return true;			
+		{
+			return $this->delete();	
+		}			
 	}
 
 
 
-	/*private function process_thumb_url($url)
-	{
-		$id = $this->post_id;
-		$pic =  get_post_meta($id, '_wp_attachment_metadata');
-		if(!is_array($pic))return $url;
-		if(isset($pic[0]['sizes']['thumbnail'])){
-			return str_replace(basename($url), $pic[0]['sizes']['thumbnail']['file'], $url);
 	
-		}
-		else if(!isset($pic[0]['sizes']['thumbnail']['width']) || !isset($pic[0]['sizes']['thumbnail']['height'])){
-			return $url;
-		}
-		
-		$tw = $pic[0]['sizes']['thumbnail']['width'];//get_option('thumbnail_size_w');
-		$th = $pic[0]['sizes']['thumbnail']['height'];
-		if(!preg_match("/\-${tw}x${th}\./", $url)){
-			$base = basename($url);
-			$dot = strrpos($base, '.');
-			$name = substr($base, 0, $dot);
-			$new_name = $name . "-${tw}x${th}";
-			$new_url = str_replace($name, $new_name, $url);
-			return $new_url;
-		}
-		return $url;	
-	}
-
-	private function process_large_url($url)
-	{
-		$id= $this->post_id;
-		$pic =  get_post_meta($id, '_wp_attachment_metadata');
-		if(!is_array($pic))return $url;
-		if(isset($pic[0]['sizes']['large'])){
-			return str_replace(basename($url), $pic[0]['sizes']['large']['file'], $url);
-	
-		}else if(!isset($pic[0]['sizes']['large']['width']) || !isset($pic[0]['sizes']['large']['height'])){
-			return $url;
-		}
-
-
-		$tw = $pic[0]['sizes']['large']['width'];//get_option('thumbnail_size_w');
-		$th = $pic[0]['sizes']['large']['height'];
-		if(!preg_match("/\-${tw}x${th}\./", $url)){
-		//if(false){
-			$base = basename($url);
-			$dot = strrpos($base, '.');
-			$name = substr($base, 0, $dot);
-			$new_name = $name . "-${tw}x${th}";
-			$new_url = str_replace($name, $new_name, $url);
-			//if(@fopen($new_url,'r')!== false){
-			return $new_url;
-			//}
-		}
-		return $url;
-	}
-
-	private function process_medium_url($url)
-	{
-		$id = $this->post_id;
-		$pic =  get_post_meta($id, '_wp_attachment_metadata');
-		if(!is_array($pic))return $url;
-		if(isset($pic[0]['sizes']['medium'])){
-			return str_replace(basename($url), $pic[0]['sizes']['medium']['file'], $url);
-	
-		}
-		else if(!isset($pic[0]['sizes']['medium']['width']) || !isset($pic[0]['sizes']['medium']['height'])){
-			return $url;
-		}
-
-		$w = $pic[0]['sizes']['medium']['width'];//get_option('thumbnail_size_w');
-		$h = $pic[0]['sizes']['medium']['height'];
-
-		if(!preg_match("/\-${w}x${h}\./", $url)){
-			$base = basename($url);
-			$dot = strrpos($base, '.');
-			$name = substr($base, 0, $dot);
-			$new_name = $name . "-${w}x${h}";
-
-			return str_replace($name, $new_name, $url);
-		}
-		return $url;
-	}
-*/
 		
 
 

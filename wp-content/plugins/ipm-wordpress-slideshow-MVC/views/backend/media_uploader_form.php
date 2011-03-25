@@ -93,7 +93,7 @@
 			<a href="?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$pstart <?=$search . $img_id_var?>"  > << </a>
 		<? } ?>
 	
-		<span style='position: absolute;top:0;right:0;'>
+		<span style='top:0;right:0;'>
 		Showing <?=($start+1) ?> - <?=$end?> of <?= sizeof($posts) ?>
 		<? if($nstart < sizeof($posts)){ ?>
 			<a href=\"?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$nstart<?= $search . $img_id_var ?>"  > >> </a>
@@ -118,11 +118,14 @@
 			<th class='date_column' >
 				<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=date&direction=<?=$direction?>&porder_by=<?=$orderby?>&start=<?=$start?><?=$search?><?=$img_id_var?>" >Upload Date</a>
 			</th>
+			<th>
+				&nbsp;
+			</th>
 		</tr>
 	</form>
 	
 	<?php
-//	if($img_id){
+//		if($img_id){
 //					$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_replace_photo($img_id,$id,'".$photo->url."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
 //				}else{
 			//		$select_value = " <img onmouseover=\"this.style.border='3px solid red';\" onmouseout=\"this.style.border='none';\" onclick=\"wpss_send_and_return('$id','".$this->photoItemHTML_simple($id, $items, true)."');\" style='margin:0px;' title=\"$alt\" alt=\"$alt\" src=\"$thumb\" /><p class=\"caption\">$caption</p>";
@@ -131,30 +134,41 @@
 				
 	
 	
-		foreach($better_posts as $post){
+		foreach($better_posts as $photo){
 			?>			
 			<tr>
 				<td class="select_column">
 					<img 
 						onmouseover="this.style.border='3px solid red';" 
 						onmouseout="this.style.border='none';" 
-						onclick="wpss_replace_photo( <?=$img_id?>, <?=$post->id?>, '<?=$post->url?>');" 
-						style='margin:0px;' title="<?=$post->alt?>" alt="<?=$post->alt?>" src="<?=$post->thumb?>" />
+				<? if($img_id) { ?>
+						onclick="wpss_replace_photo( <?=$img_id?>, <?=$photo->post_id?>, '<?=$photo->url?>');"
+				<? } else { ?>
+						onclick="wpss_send_and_return('<?=$photo->post_id?>', jQuery(this).parent().next().children('select').val() );" 
+				<? } ?> 
+						style='margin:0px;' title="<?=$photo->alt?>" alt="<?=$photo->alt?>" src="<?=$photo->thumb_url?>" />
 					<p class="caption">
-						<?= $post->caption ?>
+						<?= $photo->caption ?>
 					</p>
 				</td>
 				<td class="title_column">
-					<?=$titleCol?>
+					<select>
+						<option><?=$photo->title?></option>
+					<?
+						foreach($photo->extra_titles() as $title)
+						{ ?>
+						<option><?=$title?></option>
+						<? } ?>
+					</select>
 				</td>
 				<td class="credit_column">
-					<?=$post->photo_credit?>
+					<?=$photo->photo_credit?>
 				</td>
 				<td class="date_column">
-					<?=date("Y-m-d", strtotime($post->photo_date) ) ?>
+					<?=date("Y-m-d", strtotime($photo->date_modified) ) ?>
 				</td>
 				<td>
-					<a href="?type=slideshow_image&post_id=<?=$post->post_id . $img_id_var?>" class="button" >Edit</a>
+					<a href="?type=slideshow_image&post_id=<?=$photo->post_id . $img_id_var?>" class="button" >Edit</a>
 				</td>
 			
 			</tr>
