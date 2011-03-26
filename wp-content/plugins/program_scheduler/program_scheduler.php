@@ -35,7 +35,6 @@ METHODS
 */
 
 require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/plugin_functions.php');
-require_once(ABSPATH.PLUGINDIR.'/program_scheduler/ajax_get_programs.php');
 
 function add_how_option($name, $val){
 	if(function_exists('add_site_option')){
@@ -175,18 +174,26 @@ function ps_frontend_include(){
 
 				
 if(!class_exists('ProgramSchedule')) {
-	require_once(ABSPATH.PLUGINDIR.'/program_scheduler/program_scheduler_classes.php');
-	$helper_schedule = new ProgramScheduler();
-	add_action('init', array(&$helper_schedule, 'register_js_scripts'));
-	add_action( "admin_print_scripts", array(&$helper_schedule, 'plugin_head') );
+  require_once(ABSPATH.PLUGINDIR.'/program_scheduler/program_scheduler_classes.php');
+  $helper_schedule = new ProgramScheduler();
+  add_action('init', array(&$helper_schedule, 'register_js_scripts'));
+  add_action( "admin_print_scripts", array(&$helper_schedule, 'admin_print_scripts') );
+  //add_action( "admin_head", array(&$helper_schedule, 'admin_head') );
 }
 
 //add_action('wp_head', 'ps_frontend_include');
 add_action('wp_ajax_action_send_categories', 'php_get_categories');
 
-add_action('wp_ajax_action_send_programs', 'php_get_programs');
-add_action('wp_ajax_action_receive_event', 'php_receive_event');
-add_action('wp_ajax_action_delete_event', 'php_delete_event');
+add_action('wp_ajax_action_send_programs', 'global_get_programs');
+add_action('wp_ajax_nopriv_action_send_programs', 'global_get_programs');
+
+add_action('wp_ajax_action_single_day', 'global_get_single_day');
+add_action('wp_ajax_nopriv_action_single_day', 'global_get_single_day');
+
+if( is_admin() ){
+  add_action('wp_ajax_action_receive_event', 'php_receive_event');
+  add_action('wp_ajax_action_delete_event', 'php_delete_event');
+}
 
 function valid_schedule_name($sname){
 		$schedules = get_how_option('schedules');
@@ -247,7 +254,35 @@ function php_delete_event(){
 	}
 }
 
+function global_get_programs($single=false){
+        if($_POST['single'] == '1'){
+          $single = true;
+        }
+	if(isset($_POST['schedule_name']) ){
+		$sname = $_POST['schedule_name'];
+		//echo $sname;
+		$scheduleObject = new ProgramScheduler($sname);
+		if($scheduleObject->is_valid()){
+			unset($_POST['schedule_name']);
+			if($single){
+				$scheduleObject->php_get_program($_POST['program_id']);
+			}else{
+				$scheduleObject->php_get_programs();
+			}
+		}else{
+			echo "alert('Invalid schedule: $sname');";
+		}
+	}
+}
 
+function global_get_single_day(){
+	if(isset($_POST['start_date']) ){
+		$_GET['schedule_name'] = '';
+		$_GET['mode'] = 'single';
+		$_GET['start_date'] = $_POST['start_date'];
+		include(dirname(__FILE__).'/schedule_viewer.php');
+	}
+}
 
 
 //add_action('activate_program_scheduler/program_scheduler.php', array(&$schedule_class, 'create_tables'));

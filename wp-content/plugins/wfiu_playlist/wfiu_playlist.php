@@ -44,7 +44,7 @@ function activate_wfiu_playlist() {
 	$table = $wpdb->prefix."wfiu_playlist";
 	$query = "CREATE TABLE $table (
 	playlist_item_id INT(9) NOT NULL AUTO_INCREMENT,
-	post_id INT(9) NOT NULL DEFAULT 0,
+	post_id INT(9),
 	title VARCHAR(255) NOT NULL,
 	composer VARCHAR(255),
 	artist VARCHAR(255) NOT NULL,
@@ -53,6 +53,9 @@ function activate_wfiu_playlist() {
 	release_year INT(4) DEFAULT 0,
 	asin VARCHAR(20),
 	notes VARCHAR(1023),
+        start_time DATETIME,
+        duration INT(9),
+        label_id VARCHAR(255),
 	PRIMARY KEY (playlist_item_id),
 	KEY post_id (post_id),
 	INDEX(post_id)
@@ -105,7 +108,7 @@ function the_playlist($xsl_file, $suppress = true){
 }
 
 add_action('the_playlist', array(&$wfiuPlaylist,'get_wfiu_playlist') );
-add_action('the_content', array(&$wfiuPlaylist, 'replace_tags')); 
+add_action('the_content', array(&$wfiuPlaylist, 'replace_tags'));
 
 //**************************AJAX STUFF(needs work)*****************************
 add_action('admin_print_scripts', 'myplugin_js_admin_header' );
@@ -122,8 +125,8 @@ function myplugin_js_admin_header() // this is a PHP function
 
 	function myplugin_ajax_elevation( post_id, playlist_url)
 	{
-	   var mysack = new sack( 
-	       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
+	   var mysack = new sack(
+	       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );
 
 	  mysack.execute = 1;
 	  mysack.method = 'POST';
@@ -139,7 +142,7 @@ function myplugin_js_admin_header() // this is a PHP function
 
 
 	}
-	
+
 
 	 // end of JavaScript function myplugin_ajax_elevation
 	//]]>

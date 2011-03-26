@@ -1,4 +1,20 @@
-<?php 
+<?php
+
+
+if(!function_exists('get_days')) {
+
+  function get_days($format, $sort_by = 'N') {
+    $days = array();
+    for ($i = 0; $i < 7; ++$i) {
+      $cur = 3600 * 24 * $i + time();
+      $days[date($format, $cur)] = intval(date($sort_by, $cur));
+    }
+    asort($days);
+    return array_keys($days);
+  }
+
+}
+
 echo "\nvar num2day  = ['";
 $days = get_days('D', 'w');
 echo implode("','", $days);
@@ -17,13 +33,14 @@ echo "};";
 ?>
 
 function ajax_get_program(schedule_name, id, element, leftright){
-	var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-content/plugins/program_scheduler/ajax_get_programs.php" );    
+	var mysack = new sack(ajaxurl);
 	mysack.execute = 0;
 	mysack.method = 'POST';
-	mysack.setVar( "action", "action_single_program" );
+	mysack.setVar( "action", "action_send_programs" );
+        mysack.setVar( "single", "1" );
 	mysack.setVar('schedule_name', schedule_name);
 
-	mysack.setVar( 'content', 'full' );
+	mysack.setVar( 'content', 'full');
 	mysack.setVar( 'program_id', id);
 
 
@@ -43,7 +60,7 @@ function ajax_get_program(schedule_name, id, element, leftright){
 }
 
 function ajax_get_single_day(date_str){
-	var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-content/plugins/program_scheduler/ajax_get_programs.php" );    
+	var mysack = new sack(ajaxurl);
 	mysack.execute = 0;
 	mysack.method = 'POST';
 	mysack.setVar( "action", "action_single_day" );

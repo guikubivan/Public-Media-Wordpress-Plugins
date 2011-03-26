@@ -467,7 +467,32 @@ if(!class_exists ('ProgramScheduler')) {
 		public $scheduler_event;
 		public $schedule_name;
 		public $max_year = 3000;
-		
+
+                public function __construct($schedule_name = ''){
+			//global $wpdb;
+			$schedule_name = $this->clean_name($schedule_name);
+			$this->plugin_prefix .= $schedule_name ? $schedule_name . '_' : '';
+			$this->schedule_name  = $schedule_name;
+
+			//$this->t_p = $this->plugin_prefix."programs";
+			$this->t_p = "ps_hd1_programs";
+			$this->t_tt = $this->plugin_prefix."timetable";
+			//$this->t_c = $this->plugin_prefix."categories";
+			$this->t_c = "ps_hd1_categories";
+			//$this->t_cr = $this->plugin_prefix."category_relationships";
+			$this->t_cr = "ps_hd1_category_relationships";
+			$this->t_pm = "ps_hd1_program_meta";
+			$this->t_pmr = "ps_hd1_program_meta_relationships";
+
+			$this->plugin_url = get_bloginfo('url').'/wp-content/plugins/program_scheduler/';
+			/*add_action( "admin_print_scripts", array(&$this, 'plugin_head') );
+			add_action('wp_ajax_action_send_programs', array(&$this, 'php_get_programs'));
+			add_action('wp_ajax_action_receive_event', array(&$this, 'php_receive_event'));
+			add_action('wp_ajax_action_delete_event', array(&$this, 'php_delete_event'));
+			*/
+
+		}
+                
 		function delete_tables(){
 			global $wpdb;			
 			$table = $this->t_p;
@@ -581,31 +606,6 @@ if(!class_exists ('ProgramScheduler')) {
 			
 		}
 		
-		public function __construct($schedule_name = ''){
-			//global $wpdb;
-			$schedule_name = $this->clean_name($schedule_name);
-			$this->plugin_prefix .= $schedule_name ? $schedule_name . '_' : '';
-			$this->schedule_name  = $schedule_name;
-						
-			//$this->t_p = $this->plugin_prefix."programs";
-			$this->t_p = "ps_hd1_programs";
-			$this->t_tt = $this->plugin_prefix."timetable";
-			//$this->t_c = $this->plugin_prefix."categories";
-			$this->t_c = "ps_hd1_categories";
-			//$this->t_cr = $this->plugin_prefix."category_relationships";
-			$this->t_cr = "ps_hd1_category_relationships";
-			$this->t_pm = "ps_hd1_program_meta";
-			$this->t_pmr = "ps_hd1_program_meta_relationships";
-			
-			$this->plugin_url = get_bloginfo('url').'/wp-content/plugins/program_scheduler/';
-			/*add_action( "admin_print_scripts", array(&$this, 'plugin_head') );
-			add_action('wp_ajax_action_send_programs', array(&$this, 'php_get_programs'));
-			add_action('wp_ajax_action_receive_event', array(&$this, 'php_receive_event'));
-			add_action('wp_ajax_action_delete_event', array(&$this, 'php_delete_event'));
-			*/
-
-		}
-		
 		public function is_valid(){
 			global $wpdb;
 			
@@ -621,13 +621,20 @@ if(!class_exists ('ProgramScheduler')) {
 		}
 		
 		function register_js_scripts(){
-			wp_register_script('jquery-ui-selectable', $this->plugin_url.'ui.selectable.js', array('jquery-ui-core'));				
+			//wp_register_script('jquery-ui-selectable', $this->plugin_url.'ui.selectable.js', array('jquery-ui-core'));
 			wp_register_script('jquery-ui-datepicker', $this->plugin_url.'ui.datepicker.js', array('jquery-ui-core'));
-			wp_register_script('schedule_week_viewer', $this->plugin_url.'week_schedule_js.php', array('jquery-ui-datepicker', 'jquery-ui-selectable', 'sack'));
+
 			wp_register_script('schedule_week_editor', $this->plugin_url.'week_schedule_edit_js.php', array('jquery-ui-datepicker', 'jquery-ui-selectable', 'sack'));
+                        wp_register_script('schedule_week_viewer', $this->plugin_url.'week_schedule_js.php', array('jquery-ui-datepicker', 'jquery-ui-selectable', 'sack'));
+
+                        $js_params = array(
+                          'url'=>get_bloginfo('url')
+                        );
+                        wp_localize_script( 'schedule_week_editor', 'WPScheduler', $js_params);
+                        wp_localize_script( 'schedule_week_viewer', 'WPScheduler', $js_params);
 		}
 		
-		function plugin_head(){
+		function admin_print_scripts(){
 				//wp_register_script('jquery-ui-selectable', $this->plugin_url.'ui.selectable.js', array('jquery-ui-core'));				
 				//wp_register_script('jquery-ui-datepicker', $this->plugin_url.'ui.datepicker.js', array('jquery-ui-core'));
 				
