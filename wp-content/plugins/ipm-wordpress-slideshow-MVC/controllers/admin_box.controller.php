@@ -17,7 +17,7 @@ class WPSSAdminBox
 	function page_form()
 	{
 		$this->post_form('page');
-		echo WPSSDIR;
+		//echo WPSSDIR;
 
 	}
 
@@ -28,21 +28,23 @@ class WPSSAdminBox
 		
 		$post_slideshows = new IPM_PostSlideshows($this->plugin);
 		$post_slideshows->get_slideshows();
-		
-		
-		$slideshow_editors = array();
-		foreach($post_slideshows->slideshows as $key => $slideshow)
+		if(!empty($post_slideshows->slideshows) )
 		{
-			$tab_order = $this->plugin->tab_order + 4;
-			$photo_editors = array();
-			foreach($slideshow->photos as $key => $photo)
+		
+			$slideshow_editors = array();
+			foreach($post_slideshows->slideshows as $key => $slideshow)
 			{
-				$photo_editors[] = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$photo, "tab_order"=>$tab_order, "slideshow_id"=>$slideshow->slideshow_id) );
-				$tab_order += 6;
+				$tab_order = $this->plugin->tab_order + 4;
+				$photo_editors = array();
+				foreach($slideshow->photos as $key => $photo)
+				{
+					$photo_editors[] = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$photo, "tab_order"=>$tab_order, "slideshow_id"=>$slideshow->slideshow_id) );
+					$tab_order += 6;
+				}
+				$slideshow_editors[] = $this->plugin->render_backend_view("admin_slideshow_editor.php", array("photo_editors"=>$photo_editors, "slideshow"=>$slideshow) );
+				$this->plugin->tab_order += 4;
+				$this->plugin->tab_order += $tab_order;
 			}
-			$slideshow_editors[] = $this->plugin->render_backend_view("admin_slideshow_editor.php", array("photo_editors"=>$photo_editors, "slideshow"=>$slideshow) );
-			$this->plugin->tab_order += 4;
-			$this->plugin->tab_order += $tab_order;
 		}
 			
 		

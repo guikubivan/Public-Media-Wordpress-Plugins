@@ -33,6 +33,11 @@ class wpss_main{
 		
 	}	
 	
+	public function front_end()
+	{
+		
+	}
+	
 	public function media_upload()
 	{
 		require_once(WPSSCONTROLLERS."media_upload.controller.php");
