@@ -36,10 +36,10 @@ class IPM_Ajax
 		$photo->geo_location = $this->plugin->_post['geo_location'];
 		$photo->photo_credit = $this->plugin->_post['photo_credit'];
 		$photo->original_url = $this->plugin->_post['original_url'];
+		echo $photo->update();
 		
-		$photo->update();
-		
-		echo "<pre>".print_r($this->plugin->_post, true)."</pre>"; //urlencode(print_r($photo, true));
+		//print_r($photo);
+		//print_r($this->plugin->_post); 
 		
 		die();
 		
@@ -79,7 +79,10 @@ class IPM_Ajax
 		$success = $slideshow_photo->add_to_slideshow($slideshow_id); //link the record to the slideshow
 		if(!$success)
 			die("could not link");
-		die("success?".print_r($slideshow_photo, true) );
+		
+		$editor = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$slideshow_photo, "slideshow_id" => $slideshow_id) );
+		die($editor);
+		
 		
 	}
 	

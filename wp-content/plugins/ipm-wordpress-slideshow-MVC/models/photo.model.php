@@ -25,6 +25,7 @@ class IPM_Photo
 	public $update = "";
 	public $date_modified = "";
 	public $mime_type = "";
+	public $extra_titles = array();
 	
 	
 	//always send the wordpress_slideshow object, so we can have access to 
@@ -210,10 +211,10 @@ class IPM_Photo
 	}
 	
 	//get additional slideshow-specific titles for the photo
-	function extra_titles()
+	public function get_extra_titles()
 	{
 		$photo_meta_rel = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
-		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
+		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
 		
 		$query = "SELECT 
 						`meta_value` 
@@ -226,12 +227,12 @@ class IPM_Photo
 						AND `r`.`meta_id` = '1'
 					";
 						
-		$results=$this->wpdb->get_col($query);
-		if(sizeof($results)>0){
-			return $results;
-		}
-		
-		return false;
+		$results=$this->wpdb->get_results($query);
+		$this->extra_titles = array();
+		foreach($results as $row)
+			$this->extra_titles[] = $row->meta_value;
+			
+		return $this->extra_titles;
 	}
 	
 }

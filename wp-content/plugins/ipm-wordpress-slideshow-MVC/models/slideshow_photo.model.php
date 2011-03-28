@@ -3,6 +3,7 @@
 class IPM_SlideshowPhoto extends IPM_Photo
 {
 	public $photo_id = "";
+	public $slideshow_id = "";
 	
 	public function __construct($wordpress_slideshow, $photo_id = "")
 	{
@@ -23,17 +24,37 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		if(!empty($photo_id))		
 			$this->photo_id = $photo_id;
 		
+		$this->get_photo_only();
+		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
+		$query = "SELECT `meta_id`, `meta_value` FROM `".$photo_meta_rels."`
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+					";
+		$results = $this->wpdb->get_results($query);
+		if(!empty($results) )
+		{
+			foreach($results as $row)
+			{
+				switch($row->meta_id)
+				{
+					case 1 : $this->title = stripslashes($row->meta_value); break;
+					case 2 : $this->alt = stripslashes($row->meta_value); break;
+					case 3 : $this->caption = stripslashes($row->meta_value); break;
+				}
+			}			
+		}	
+		
+		return true;
+		
 		//$this->post_id = $this->get_post_id_by_photo_id($this->photo_id);
 		//$this->post_id = $photo['wp_photo_id'];
-		$this->get_photo_only();
 		
 		//get data related to the main Photo
 		
 		//get meta data specific to the slideshow's version of the photo
-		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
-		$slideshow_photos = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
-		$photo_meta = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta";
-		$query ="SELECT DISTINCT `wp_photo_id`, `meta_name`, `meta_value` 
+		//$photo_meta = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta";
+		//$slideshow_photos = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
+		/*$query ="SELECT DISTINCT `wp_photo_id`, `meta_name`, `meta_value` 
 					FROM  
 						`".$slideshow_photos."` as `sp`,
 						`".$photo_meta."` as `pm`, 
@@ -42,9 +63,33 @@ class IPM_SlideshowPhoto extends IPM_Photo
 						`sp`.`photo_id`=`pmr`.`photo_id` AND
 						`pmr`.`meta_id`=`pm`.`meta_id` AND
 						`sp`.`photo_id`='".$this->photo_id."' ";
+		*/
+
+					
+		/*			
+					
+		if(!empty($results))	
+				$this->title = stripslashes($results[0]);
+				
+		$query  = "SELECT *  FROM `".$photo_meta_rels."`
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+						AND `meta_id` = '2'
+					";			
+		$results = $this->wpdb->get_results($query);
+		if(!empty($results))	
+				$this->alt = stripslashes($results[0]);
 		
-		$result = $this->wpdb->get_results($query);
-		$photo= array();
+		$query = "SELECT *  FROM `".$photo_meta_rels."`
+					WHERE
+						`photo_id` = '".$this->photo_id."'
+						AND `meta_id` = '3'
+					";			
+		$results = $this->wpdb->get_results($query);
+		if(!empty($results))	
+				$this->caption = stripslashes($results[0]);
+		*/
+		/*$photo= array();
 		if(count($result) > 0)
 		{
 			foreach($result as $row){
@@ -60,9 +105,8 @@ class IPM_SlideshowPhoto extends IPM_Photo
 				$this->caption = stripslashes($photo['caption']);
 			//return true;
 			
-		}
+		}*/
 		
-		return true;
 		
 	}
 
@@ -92,7 +136,7 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		
 		$query = "SELECT `wp_photo_id` FROM `".$photo_table."` WHERE `photo_id` = '".$this->photo_id."'";
 		$result = $this->wpdb->get_results($query);
-		print_r($result);
+		//print_r($result);
 		if($result===false)
 			return false;
 		else
@@ -135,36 +179,46 @@ class IPM_SlideshowPhoto extends IPM_Photo
 
 	public function update()
 	{
+		$msg = "";
 		$photo_meta_rels = $this->wpdb->prefix.$this->wpss->plugin_prefix."photo_meta_relations";
 		$query = "REPLACE INTO `".$photo_meta_rels."`
 					SET
-						`meta_value` = '". addslashes($this->title) ."'
-					WHERE
-						`photo_id` = '".$this->photo_id."'
-						AND `meta_id` = '1'
+						`meta_value` = '". addslashes($this->title) ."',
+						`photo_id` = '".$this->photo_id."',
+						`meta_id` = '1'
 					";
-					
+		$query;
 		$success  = $this->wpdb->get_results($query);
+		if($success === false)
+			$msg .= "Failed to Update Title - $query"; 
 		
 		$query  = "REPLACE INTO `".$photo_meta_rels."`
 					SET
-						`meta_value` = '". addslashes($this->alt) ."'
-					WHERE
-						`photo_id` = '".$this->photo_id."'
-						AND `meta_id` = '2'
+						`meta_value` = '". addslashes($this->alt) ."',
+						`photo_id` = '".$this->photo_id."',
+						`meta_id` = '2'
 					";			
 		
 		if($success !== false)
+		{
 			$success  = $this->wpdb->get_results($query);
+			if($success === false)
+				$msg .= "Failed to Update Alt - $query";
+		}		
+				
 		$query = "REPLACE INTO `".$photo_meta_rels."`
 					SET
-						`meta_value` = '". addslashes($this->caption) ."'
-					WHERE
-						`photo_id` = '".$this->photo_id."'
-						AND `meta_id` = '3'
+						`meta_value` = '". addslashes($this->caption) ."',
+						`photo_id` = '".$this->photo_id."',
+						`meta_id` = '3'
 					";				
-		if($success !== false)
+		
+		if($success !== false) 
+		{ 
 			$success  = $this->wpdb->get_results($query);
+			if($success === false)
+				$msg .= "Failed to Update Caption - $query";
+		} 
 		
 		/*
 		if($success !== false)
@@ -178,10 +232,22 @@ class IPM_SlideshowPhoto extends IPM_Photo
 		if($success !== false)
 			$success  = update_post_meta($this->post_id, "original_url", addslashes($this->original_url) );
 		*/
-		
+		 
 		if($success !== false)
-			parent::update();	
-		return $success;
+		{
+			$success = parent::update();
+			if($success !== true)
+				$msg .= "Failed to Update Parent Photo - $success";
+		}	
+
+		if(empty($msg))
+		{
+			return true;
+		}
+		else
+		{
+			return $msg;
+		}
 		
 		
 	}

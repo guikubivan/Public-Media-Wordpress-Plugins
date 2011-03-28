@@ -14,21 +14,21 @@
 	
 	<div class='slideshow_wrapper'>
 		<div class='slideshow_fields'>
-			<div style="float: right;">	
-				<label for="slideshow_field<?=$slideshow->slideshow_id?>][description]">Slideshow description</label>
-				<textarea tabindex='<?= ($this->tab_order+2)?>' id='slideshow_field[<?= $slideshow->slideshow_id ?>][description]' name='slideshow_field[<?= $slideshow->slideshow_id ?>][description]' style='width:100%;height:100%;' class='<?= $this->plugin_prefix ?>required' ><?= $slideshow->description ?></textarea>
-			</div>	
 			<div>
 				<label for="slideshow_field[<?=$slideshow->slideshow_id?>][title]">Slideshow title</label>
-				<input type='text' tabindex='<?= ($this->tab_order +1) ?>' id='slideshow_field[<?= $slideshow->slideshow_id ?>][title]' name='slideshow_field[<?= $slideshow->slideshow_id ?>][title]' style='width:$fieldW' value='<?=  $slideshow->title ?>' class='<?= $this->plugin_prefix ?>required' />
+				<input type='text' id='slideshow_field[<?= $slideshow->slideshow_id ?>][title]' name='slideshow_field[<?= $slideshow->slideshow_id ?>][title]' style='width:$fieldW' value='<?=  $slideshow->title ?>' class='<?= $this->plugin_prefix ?>required' />
+			</div>	
+			<div style="float: right;">	
+				<label for="slideshow_field<?=$slideshow->slideshow_id?>][description]">Slideshow description</label>
+				<textarea id='slideshow_field[<?= $slideshow->slideshow_id ?>][description]' name='slideshow_field[<?= $slideshow->slideshow_id ?>][description]' style='width:100%;height:100%;' class='<?= $this->plugin_prefix ?>required' ><?= $slideshow->description ?></textarea>
 			</div>	
 			<div>	
 				<label for="slideshow_field<?=$slideshow->slideshow_id?>][photo_credit]">Slideshow photo credit</label>
-				<input type='text' tabindex='<?= ($this->tab_order+3)?>' name='slideshow_field[<?= $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_field[<?= $slideshow->slideshow_id ?>][photo_credit]' style='width:$fieldW' value='<?=  $slideshow->photo_credit ?>' />
+				<input type='text' name='slideshow_field[<?= $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_field[<?= $slideshow->slideshow_id ?>][photo_credit]' style='width:$fieldW' value='<?=  $slideshow->photo_credit ?>' />
 			</div>	
 			<div>	
 				<label for="slideshow_field<?=$slideshow->slideshow_id?>][geo_location]">Slideshow geo location</label>
-				<input type='text' tabindex='<?= ($this->tab_order+4)?>' name='slideshow_field[<?= $slideshow->slideshow_id ?>][geo_location]' id='slideshow_field[<?= $slideshow->slideshow_id ?>][geo_location]' style='width:50%' value='<?=  $slideshow->geo_location ?>' onkeyup='slideshow_getCoords(this.id);' onblur='slideshow_getCoords(this.id);' />
+				<input type='text' name='slideshow_field[<?= $slideshow->slideshow_id ?>][geo_location]' id='slideshow_field[<?= $slideshow->slideshow_id ?>][geo_location]' style='width:50%' value='<?=  $slideshow->geo_location ?>' onkeyup='slideshow_getCoords(this.id);' onblur='slideshow_getCoords(this.id);' />
 				<img onClick='showMap(this.previousSibling.value,this.nextSibling.id, this.nextSibling.nextSibling.id, this);' class='map_icon centervertical' src='images/map_icon.jpg' />
 			</div>
 			<input type='hidden' id='slideshowItem[<?= $slideshow->slideshow_id ?>][latitude]' name='slideshowItem[<?= $slideshow->slideshow_id ?>][latitude]' ReadOnly size='4' value='<?=  $slideshow->latitude ?>' />
@@ -44,7 +44,7 @@
 			</li>		
 			<?	
 			}?>
-			<li>
+			<li id="slideshow_<?=$slideshow->slideshow_id?>_add_button" >
 				<span id='addphoto_button_<?= $slideshow->slideshow_id ?>' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(<?= $slideshow->slideshow_id ?>);' tip='Add Media'>Add photo</span>
 			</li>
 		</ul>

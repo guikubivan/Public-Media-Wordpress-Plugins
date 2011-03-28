@@ -144,7 +144,7 @@
 				<? if($img_id) { ?>
 						onclick="wpss_replace_photo( <?=$img_id?>, <?=$photo->post_id?>, '<?=$photo->url?>');"
 				<? } else { ?>
-						onclick="wpss_send_and_return('<?=$photo->post_id?>', jQuery(this).parent().next().children('select').val() );" 
+						onclick="wpss_send_and_return('<?=$photo->post_id?>', jQuery('#photo_title_<?=$photo->post_id?>').val() );" 
 				<? } ?> 
 						style='margin:0px;' title="<?=$photo->alt?>" alt="<?=$photo->alt?>" src="<?=$photo->thumb_url?>" />
 					<p class="caption">
@@ -152,10 +152,10 @@
 					</p>
 				</td>
 				<td class="title_column">
-					<select>
+					<select id="photo_title_<?=$photo->post_id?>">
 						<option><?=$photo->title?></option>
 					<?
-						foreach($photo->extra_titles() as $title)
+						foreach($photo->extra_titles as $title)
 						{ ?>
 						<option><?=$title?></option>
 						<? } ?>

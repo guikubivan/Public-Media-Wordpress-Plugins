@@ -192,7 +192,9 @@ class WPSSMediaUpload
 
 			//	$titles = $this->utils->convertquotes($titles);
 
+				$photo->get_extra_titles();
 				$better_posts[$id] = $photo;
+				
 			//	$better_posts[$id]['select'] = $select_value;
 			//	$better_posts[$id]['titleCol'] = $titleCol;
 			//	$better_posts[$id]['photo_credit'] = $photo->photo_credit;
