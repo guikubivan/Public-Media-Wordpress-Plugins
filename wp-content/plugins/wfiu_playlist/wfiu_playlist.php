@@ -3,15 +3,57 @@
 Plugin Name:WFIU Playlist
 Plugin URI: http://www.wfiu.org
 Description: Adds a playlist input to a post and posts it (well, not yet).
-Version: 1.1
+Version: 2.0
 Author: Pablo Vanwoerkom
 Author URI: http://www.wfiu.org
 */
-define('WPINC', 'wp-includes');
+register_activation_hook(ABSPATH.PLUGINDIR."/wfiu_playlist/".basename(__FILE__), 'wfiu_playlist_activate');
+#Variables need to be declared global here or it won't be accessible on activate function
+global $wfiu_playlist_version;
+global $wfiuPlaylist;
+$wfiu_playlist_version = 2.0;
 
-require_once(ABSPATH. WPINC . '/post.php');
-//require_once(ABSPATH.PLUGINDIR.'/wfiu_playlist/wfiu_playlist_functions.php');
+/************************
+***** HOOKS *************
+************************/
 
+#**** admin hooks *******
+
+
+
+#admin javacript, css, etc..
+add_action('admin_print_scripts', array(&$wfiuPlaylist,'admin_head'));
+
+#Admin form functions
+add_action('admin_menu', array(&$wfiuPlaylist, 'post_box'), 1);//add slideshow box
+
+/*add_action('simple_edit_form', array(&$wfiuPlaylist, 'post_form'));
+add_action('edit_form_advanced', array(&$wfiuPlaylist, 'post_form'));
+add_action('edit_page_form', 'page_form_wfiu_playlist');*/
+#add_action('admin_head',array(&$wfiuPlaylist, 'import_dispatch') );
+
+#save and delete post hook
+add_action('save_post', array(&$wfiuPlaylist,'save_postdata'), 1, 2);
+add_action('delete_post', array(&$wfiuPlaylist,'delete_playlist'));
+
+#***** end admin hooks ********
+
+
+#**** front end hooks *********
+#add_action('the_content', array(&$wfiuPlaylist, 'insert_content')); //used a tag isntead
+function the_playlist($xsl_file, $suppress = true){
+	global $wfiuPlaylist;
+	$wfiuPlaylist->get_wfiu_playlist($xsl_file, $suppress);
+}
+
+add_action('the_playlist', array(&$wfiuPlaylist,'get_wfiu_playlist') );
+add_action('the_content', array(&$wfiuPlaylist, 'replace_tags'));
+
+#************** ajax hooks **************
+add_action('admin_print_scripts', 'myplugin_js_admin_header' );
+add_action('wp_ajax_add_one_playlist', array(&$wfiuPlaylist,'importOnePlaylist') );
+#******** end frontend and ajax hooks **
+/****END HOOKS**********/
 
 if(!class_exists ('wfiuPlaylist_class')) {
 	require_once(ABSPATH.PLUGINDIR.'/wfiu_playlist/wfiu_playlist_class.php');
@@ -21,7 +63,7 @@ if(!class_exists ('wfiuPlaylist_class')) {
 if(!function_exists('wfiu_maybe_create_table')) {
 	//copied from podpress
 	function wfiu_maybe_create_table($table_name, $create_ddl) {
-		GLOBAL $wpdb;
+		global $wpdb;
 		foreach ($wpdb->get_col("SHOW TABLES",0) as $table ) {
 			if ($table == $table_name) {
 				return true;
@@ -39,11 +81,13 @@ if(!function_exists('wfiu_maybe_create_table')) {
 	}
 }
 
-function activate_wfiu_playlist() {
-	global $wpdb,$wfiuPlaylist;
+function wfiu_playlist_activate() {
+	global $wpdb, $wfiuPlaylist, $wfiu_playlist_version;
+        #die(get_option( "wfiu_playlist_version"));
+        
 	$table = $wpdb->prefix."wfiu_playlist";
 	$query = "CREATE TABLE $table (
-	playlist_item_id INT(9) NOT NULL AUTO_INCREMENT,
+	ID INT(9) NOT NULL AUTO_INCREMENT,
 	post_id INT(9),
 	title VARCHAR(255) NOT NULL,
 	composer VARCHAR(255),
@@ -56,18 +100,26 @@ function activate_wfiu_playlist() {
         start_time DATETIME,
         duration INT(9),
         label_id VARCHAR(255),
-	PRIMARY KEY (playlist_item_id),
-	KEY post_id (post_id),
-	INDEX(post_id)
+        station_id INT(9),
+	PRIMARY KEY (ID),
+	INDEX post_id (post_id),
+	INDEX(post_id),
+        INDEX(station_id),
+        INDEX(start_time)
 	);";
 
-	wfiu_maybe_create_table($table,$query);
+        if( (floatval(get_option( "wfiu_playlist_version")) == 0) ||
+            ($wpdb->get_var( "show tables like '$table'" ) != $table )){
 
-	if(!class_exists ('XmlTransformClass')) {
-		require_once(dirname(__FILE__).'/xml_transform_class.php');
-	}
-	$transformClass = new XmlTransformClass($wfiuPlaylist->plugin_url());
-	$transformClass->activate();
+          wfiu_maybe_create_table($table,$query);
+
+          if(!class_exists ('XmlTransformClass')) {
+                  require_once(dirname(__FILE__).'/xml_transform_class.php');
+          }
+          $transformClass = new XmlTransformClass($wfiuPlaylist->plugin_url());
+          $transformClass->activate();
+          update_option( "wfiu_playlist_version", $wfiu_playlist_version );
+        }
 }
 
 
@@ -77,42 +129,8 @@ function page_form_wfiu_playlist() {
 }
 
 $wp_importers['wfiuPlaylist'] = array ('WFIU Playlists', 'WFIU playlist import of playlists from an XML file (defined by Pablo).', array(&$wfiuPlaylist, 'import_playlists'));
-//*********************ADMIN STUFF*********************************
-//activate plugin
-add_action('activate_wfiu_playlist/wfiu_playlist.php', 'activate_wfiu_playlist');
-
-//admin javacript, css, etc..
-add_action('admin_print_scripts', array(&$wfiuPlaylist,'admin_head'));
-
-
-//Admin form functions
-add_action('admin_menu', array(&$wfiuPlaylist, 'post_box'), 1);//add slideshow box
-
-/*add_action('simple_edit_form', array(&$wfiuPlaylist, 'post_form'));
-add_action('edit_form_advanced', array(&$wfiuPlaylist, 'post_form'));
-add_action('edit_page_form', 'page_form_wfiu_playlist');*/
-//add_action('admin_head',array(&$wfiuPlaylist, 'import_dispatch') );
-
-//save and delete post hook
-add_action('save_post', array(&$wfiuPlaylist,'save_postdata'), 1, 2);
-add_action('delete_post', array(&$wfiuPlaylist,'delete_playlist'));
-
-//*********************ADMIN STUFF END*********************************
-
-
-//*********************FRONTEND STUFF*********************************
-	//add_action('the_content', array(&$wfiuPlaylist, 'insert_content')); //used a tag isntead
-function the_playlist($xsl_file, $suppress = true){
-	global $wfiuPlaylist;
-	$wfiuPlaylist->get_wfiu_playlist($xsl_file, $suppress);
-}
-
-add_action('the_playlist', array(&$wfiuPlaylist,'get_wfiu_playlist') );
-add_action('the_content', array(&$wfiuPlaylist, 'replace_tags'));
 
 //**************************AJAX STUFF(needs work)*****************************
-add_action('admin_print_scripts', 'myplugin_js_admin_header' );
-add_action('wp_ajax_add_one_playlist', array(&$wfiuPlaylist,'importOnePlaylist') );
 function myplugin_js_admin_header() // this is a PHP function
 {
   // use JavaScript SACK library for Ajax

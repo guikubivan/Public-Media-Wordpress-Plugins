@@ -1,2 +1,3 @@
 # Welcome
-# edit by pablo as test
+
+#Note that when referencing plugin files, we rely on wordpress' constants for folders since plugins folder file may be symbolically linked for development purposes. In this way we cover all scenarios.

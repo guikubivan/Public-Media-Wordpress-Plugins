@@ -29,7 +29,7 @@ class XmlTransformClass {
 	function transform_playlist($post_id, $stylesheet){
 		global $wpdb;
 		$mytable = $wpdb->prefix."wfiu_playlist";
-		$query = "SELECT count(post_id) FROM ".$mytable ." WHERE post_id=".$post_id . " ORDER BY playlist_item_id ASC";
+		$query = "SELECT count(post_id) FROM ".$mytable ." WHERE post_id=".$post_id . " ORDER BY ID ASC";
 		$playlist_count = $wpdb->get_var($query);
 		if($playlist_count>0){
 
@@ -61,7 +61,7 @@ class XmlTransformClass {
 
 		$post_info = $wpdb->get_row($query);
 
-		$query = "SELECT * FROM ".$mytable ." WHERE post_id=$post_id ORDER BY playlist_item_id ASC";
+		$query = "SELECT * FROM ".$mytable ." WHERE post_id=$post_id ORDER BY ID ASC";
 		$playlist = $wpdb->get_results($query);
 		if(sizeof($playlist)==0){
 			return '';
@@ -85,7 +85,7 @@ class XmlTransformClass {
 
 		if(!is_object($playlistItem)){
 
-			$query = "SELECT * FROM ".$wpdb->prefix ."wfiu_playlist WHERE playlist_item_id=$playlistItem;";
+			$query = "SELECT * FROM ".$wpdb->prefix ."wfiu_playlist WHERE ID=$playlistItem;";
 			$playlistItem = $wpdb->get_row($query);
 		}
 
@@ -172,7 +172,7 @@ class XmlTransformClass {
 	function replace_playlist_tags($text, $probe=false){
 		global $wpdb, $post;
 		$post_id = $post->ID;
-		$query = "SELECT playlist_item_id FROM ".$wpdb->prefix ."wfiu_playlist WHERE post_id=$post_id ORDER BY playlist_item_id ASC;";
+		$query = "SELECT ID FROM ".$wpdb->prefix ."wfiu_playlist WHERE post_id=$post_id ORDER BY ID ASC;";
 
 		$playlist = $wpdb->get_col($query);
 		if(sizeof($playlist)==0){

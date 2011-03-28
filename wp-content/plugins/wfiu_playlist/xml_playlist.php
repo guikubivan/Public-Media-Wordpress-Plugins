@@ -25,7 +25,7 @@ $query = "SELECT post_title, post_modified FROM wp_" . $blog_id . "_posts WHERE 
 
 $post_info = $wpdb->get_row($query);
 
-$query = "SELECT * FROM ".$mytable ." WHERE post_id=".$_GET['post_id'] . " ORDER BY playlist_item_id ASC";
+$query = "SELECT * FROM ".$mytable ." WHERE post_id=".$_GET['post_id'] . " ORDER BY ID ASC";
 //echo $query;
 $playlist = $wpdb->get_results($query);
 if(sizeof($playlist)==0){

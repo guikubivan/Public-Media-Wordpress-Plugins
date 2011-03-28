@@ -9,7 +9,7 @@ class wfiuPlaylist_class {
 		global $post, $wpdb;
 		$mytable = $wpdb->prefix."wfiu_playlist";
 
-		$query = "SELECT count(*) FROM ".$mytable ." WHERE post_id=".$post->ID . " ORDER BY playlist_item_id ASC";
+		$query = "SELECT count(*) FROM ".$mytable ." WHERE post_id=".$post->ID . " ORDER BY ID ASC";
 
 		$playlist = $wpdb->get_results($query);
 		$playlistLink = '';
@@ -33,7 +33,7 @@ class wfiuPlaylist_class {
 
 
 		$mytable = $wpdb->prefix."wfiu_playlist";
-		$query = "SELECT count(post_id) FROM ".$mytable ." WHERE post_id=".$post_id . " ORDER BY playlist_item_id ASC";
+		$query = "SELECT count(post_id) FROM ".$mytable ." WHERE post_id=".$post_id . " ORDER BY ID ASC";
 		$playlist_count = $wpdb->get_var($query);
 		if($playlist_count>0){
 
@@ -97,7 +97,7 @@ class wfiuPlaylist_class {
 		$table = $wpdb->prefix."wfiu_playlist";
 
 		$existing_post = $wpdb->get_results("SELECT * FROM ".$table ." WHERE post_id=".$post->ID . 
-" ORDER BY playlist_item_id ASC");
+" ORDER BY ID ASC");
 
 	/*	if($existing_post){
 			echo '<div id="postWFIUPLAYLIST" class="postbox if-js-open">';
@@ -191,7 +191,7 @@ class wfiuPlaylist_class {
 */
 
 		$table = $wpdb->prefix."wfiu_playlist";
-		$existing_post = $wpdb->get_col("SELECT playlist_item_id FROM ".$table ." WHERE post_id=".$post_id .  " ORDER BY playlist_item_id ASC");
+		$existing_post = $wpdb->get_col("SELECT ID FROM ".$table ." WHERE post_id=".$post_id .  " ORDER BY ID ASC");
 
 
 		$maxUpdates = sizeof($existing_post);
@@ -219,7 +219,7 @@ class wfiuPlaylist_class {
 				
 					if($count < $maxUpdates){
 						$itemID = $existing_post[$count];
-						$sqlI = "UPDATE " . $table . " SET artist=\"$artist\", composer=\"$composer\", title=\"$title\", album=\"$album\", label=\"$label\", release_year=$rel_year, asin=\"$asin\", notes=\"$notes\" WHERE playlist_item_id=$itemID;";
+						$sqlI = "UPDATE " . $table . " SET artist=\"$artist\", composer=\"$composer\", title=\"$title\", album=\"$album\", label=\"$label\", release_year=$rel_year, asin=\"$asin\", notes=\"$notes\" WHERE ID=$itemID;";
 					}else{
 						$sqlI = "INSERT INTO " . $table . " (post_id, artist, composer, title, album, label, release_year, asin, notes) VALUES ($post_id, \"$artist\", \"$composer\", \"$title\", \"$album\", \"$label\", $rel_year, \"$asin\", \"$notes\");";
 					}
@@ -237,12 +237,12 @@ class wfiuPlaylist_class {
 			add_post_meta($post_id, 'wfiu_playlist_id', $post_id, true) or update_post_meta($post_id, 'wfiu_playlist_id', $post_id);
 		}
 		while($count < $maxUpdates) {
-			$sqlD = "delete from " . $table . " where playlist_item_id=". $existing_post[$count] .";";
+			$sqlD = "delete from " . $table . " where ID=". $existing_post[$count] .";";
 			$wpdb->query($sqlD);
 			++$count;
 		}
 
-		$existing_post = $wpdb->get_col("SELECT playlist_item_id FROM ".$table ." WHERE post_id=".$post_id .  " ORDER BY playlist_item_id ASC");
+		$existing_post = $wpdb->get_col("SELECT ID FROM ".$table ." WHERE post_id=".$post_id .  " ORDER BY ID ASC");
 		if(sizeof($existing_post) == 0 ){
 			delete_post_meta($post_id, 'wfiu_playlist_id');
 		}
