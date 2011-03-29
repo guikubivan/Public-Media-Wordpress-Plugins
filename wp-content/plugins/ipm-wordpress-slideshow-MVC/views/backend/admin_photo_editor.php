@@ -9,8 +9,8 @@
 			
 			<div class='photo_fields'>
 				
-				<div style="float: right;">
-					<img id='img_<?= $slideshow_id ?>_<?=$photo->photo_id?>' class='wpss_photo_thumb' title='Click to replace image' onclick='confirmChooseNewPhoto(<?= $slideshow_id ?>, <?=$photo->photo_id?>);' src='<?= $photo->url ?>' /><br />
+				<div style="float: right; height: 130px; vertical-align: bottom;">
+					<img style="width: 130px; height: auto; max-height: 130px;"  id='img_<?= $slideshow_id ?>_<?=$photo->photo_id?>' class='wpss_photo_thumb' title='Click to replace image' onclick='confirmChooseNewPhoto(<?= $slideshow_id ?>, <?=$photo->photo_id?>);' src='<?= $photo->thumb_url ?>' /><br />
 					<span onclick='setCoverImage(<?= $slideshow_id ?>, <?=$photo->photo_id?>);' id='cover_button_<?= $slideshow_id ?>_<?=$photo->photo_id?>' class='button set_cover_button_<?= $slideshow_id ?>' style='text-align:center;margin-top:5px;' >Slideshow Thumbnail</span>
 				</div>
 				

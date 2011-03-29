@@ -38,6 +38,52 @@ class wpss_main{
 		
 	}
 	
+	function show_photos($post_id, $stylesheet=''){
+		global $wpdb;
+		if($slideshows=get_post_meta($post_id,$this->fieldname, false)){
+			$stylesheet = $stylesheet ? $stylesheet : get_option($this->option_default_style_slideshow);
+		}else{
+			$stylesheet = $stylesheet ? $stylesheet : get_option($this->option_default_style_photo);
+		}
+		$xml_text = $this->getXML($post_id, $stylesheet);
+		//echo $xml_text;
+		$xml = new DOMDocument;
+		if(!@$xml->loadXML($xml_text)){
+			//echo $xml_text;
+			//$xml->loadXML($xml_text);
+			return;
+		}
+	
+		$xsl = new DOMDocument;
+		@$xsl->load($this->stylesheets_path.$stylesheet);
+
+		// Configure the transformer
+		$proc = new XSLTProcessor;
+		@$proc->importStyleSheet($xsl); // attach the xsl rules
+		$output = @$proc->transformToXML($xml);
+		//echo "<pre>".print_r($xml_text, true)."</pre>";
+		if($output){
+			echo $output;
+		}else{
+			if($stylesheet = "")
+				echo "Error. The Slideshow Stylesheets have not been defined.";
+			else
+				echo "Unknown error.";
+		}
+
+	}
+	
+	public function convert_stylesheet($stylesheet)
+	{
+		if(substr($stylesheet, -3) == "xsl")
+		{
+			$stylesheet = substr($stylesheet, 0, strlen($stylesheet) - 3);
+			$stylesheet .= "php";
+		}
+		return $stylesheet;
+			
+	}
+	
 	public function media_upload()
 	{
 		require_once(WPSSCONTROLLERS."media_upload.controller.php");

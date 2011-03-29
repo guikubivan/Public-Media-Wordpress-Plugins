@@ -23,8 +23,8 @@ if(file_exists(ABSPATH.PLUGINDIR.'/wfiu_utils/ipm-utils-class.php')){
 
 
 if(!class_exists ('wordpress_slideshow')) {
-	require_once(dirname(__FILE__).'/wordpress_slideshow_classes.php');
-	$wp_slideshow = new wordpress_slideshow;
+	//require_once(dirname(__FILE__).'/wordpress_slideshow_classes.php');
+	//$wp_slideshow = new wordpress_slideshow;
 }
 
 
@@ -95,14 +95,31 @@ add_action('admin_menu', 'slideshow_manager_menu');
 //add_action('the_content', array(&$wp_slideshow, 'replace_tags')); 
 add_action('the_content', array(&$slideshow_plugin, 'front_end')); 
 
+
+
+
+//this is the function that is called by the templates that shows the photos.
 function wpss_photos($stylesheet=''){
-	global $wp_slideshow, $post;
+	global $slideshow_plugin;
+	echo $stylesheet;
+	echo $slideshow_plugin->convert_stylesheet($stylesheet);
+	
+	/*global $wp_slideshow, $post;
+	
+	$slideshow_plugin;
+	
+	
 	if(!$wp_slideshow->post_has_tags($post->post_content)){
 		$wp_slideshow->show_photos($post->ID, $stylesheet);
-	}
+	}*/
+	//echo "VRIMPLES";
 }
 
-function wpss_post_image($stylesheet= '', $post_id=''){
+function wpss_post_image($stylesheet= '', $post_id='')
+{
+	//echo "BALLS";	
+	
+	/*
 	global $wp_slideshow, $post;
 	if(!$post_id)$post_id = $post->ID;
 	$stylesheet = $stylesheet ? $stylesheet : get_option($wp_slideshow->option_default_style_post_image);
@@ -126,7 +143,8 @@ function wpss_post_image($stylesheet= '', $post_id=''){
 		echo $wp_slideshow->get_photo_clip($post_image_id,$stylesheet);
 		return true;
 	}
-	return false;
+	return false;	
+	*/
 }
 
 //****************************************************************
