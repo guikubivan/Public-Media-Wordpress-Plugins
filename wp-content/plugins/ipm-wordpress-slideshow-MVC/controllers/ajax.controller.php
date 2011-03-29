@@ -67,20 +67,80 @@ class IPM_Ajax
 		$slideshow_id = $this->plugin->_post['slideshow_id'];
 		$slideshow_photo = new IPM_SlideshowPhoto($this->plugin); //create new Photo-Slideshow Relationship
 		$success = $slideshow_photo->get_photo_only($photo_post_id); //fill the slideshow photo with default photo data
-		if(!$success)
-			die("could not get");
-		$success = $slideshow_photo->insert(); //add the record to the database
-		if(!$success)
-			die("could not insert");
-		$success = $slideshow_photo->title = $this->plugin->_post["title"];
-		$success = $slideshow_photo->update();
-		if(!$success)
-			die("could not update");
-		$success = $slideshow_photo->add_to_slideshow($slideshow_id); //link the record to the slideshow
-		if(!$success)
-			die("could not link");
+	
 		
-		$editor = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$slideshow_photo, "slideshow_id" => $slideshow_id) );
+		if($slideshow_id == "new") //adding a new single photo
+		{
+			$post_slideshow = new IPM_PostSlideshows($this->plugin);
+			$post_slideshow->post_id = $this->plugin->_post["post_id"];
+			$post_slideshow->photo = $slideshow_photo;
+			$post_slideshow->save_single_photo();
+			$photo_editor = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$slideshow_photo, "slideshow_id"=>"single") );
+			$admin_box = $this->plugin->render_backend_view("admin_single_photo.php", array("photo_editor"=>$photo_editor) );
+			
+		}
+		else if($slideshow_id == "single" ) //transforming a single into a slideshow
+		{
+			//get the current photo	
+			$post_slideshow = new IPM_PostSlideshows($this->plugin);
+			$post_slideshow->post_id = $this->plugin->_post["post_id"];
+			$post_slideshow->get_single_photo();
+			$current_photo = $post_slideshow->photo;
+		//	print_r($current_photo);
+			
+			//create new slideshow
+			$new_slideshow = new IPM_Slideshow($this->plugin);
+			$new_slideshow->insert();
+			$new_slideshow->attach_to_post($post_slideshow->post_id);
+			$new_slideshow->title = $current_photo->title;
+			$new_slideshow->update();
+		
+			//add current photo to new slideshow
+			$current_photo->add_to_slideshow($new_slideshow->slideshow_id);
+			
+		//	print_r($new_slideshow);
+			
+			//create NEW photo
+			$slideshow_photo->insert();
+			$slideshow_photo->title = $this->plugin->_post["title"];
+			$slideshow_photo->update();
+			
+			//add new photo to slideshow
+			$slideshow_photo->add_to_slideshow($new_slideshow->slideshow_id);
+			
+			//create the new editor
+			$post_slideshow->get_slideshows();
+			$slideshow_editors = array();
+			foreach($post_slideshow->slideshows as $key => $slideshow)
+			{
+				$photo_editors = array();
+				foreach($slideshow->photos as $key => $photo)
+				{
+					$photo_editors[] = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$photo, "slideshow_id"=>$slideshow->slideshow_id) );
+				}
+				$slideshow_editors[] = $this->plugin->render_backend_view("admin_slideshow_editor.php", array("photo_editors"=>$photo_editors, "slideshow"=>$slideshow) );
+			}
+			$editor = $this->plugin->render_backend_view("admin_box.php", array("slideshow_editors"=>$slideshow_editors) );
+		
+		}
+		else
+		{
+			if(!$success)
+				die("could not get");
+			$success = $slideshow_photo->insert(); //add the record to the database
+			if(!$success)
+				die("could not insert");
+			$success = $slideshow_photo->title = $this->plugin->_post["title"];
+			$success = $slideshow_photo->update();
+			if(!$success)
+				die("could not update");
+			$success = $slideshow_photo->add_to_slideshow($slideshow_id); //link the record to the slideshow
+			if(!$success)
+				die("could not link");
+			
+			$editor = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$slideshow_photo, "slideshow_id" => $slideshow_id) );
+		}
+		
 		die($editor);
 		
 		

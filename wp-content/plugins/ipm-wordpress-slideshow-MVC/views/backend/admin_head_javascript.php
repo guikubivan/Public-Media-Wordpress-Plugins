@@ -6,8 +6,7 @@
           function simplifyUploadInterface(){
                   jQuery("#tab-gallery").hide();
                   jQuery("#tab-library").hide();
-                  jQuery("#media-buttons").hide();
-
+                  jQuery("#add_media").hide();
 
 
                   if(jQuery(".post_title").length == 0){
@@ -25,7 +24,7 @@
           });
         <?php endif; ?>
         
-
+/*
 		function mapper_ajax_getCoords(station_location, latitude_id, longitude_id)
 		{//alert("hi mapper");
 		   var mysack = new sack( 
@@ -44,8 +43,8 @@
 
 		  return true;
 		}
-		
-		
+*/		
+/*		
 		function ajax_getSlideshow(sid)
 		{//alert("hi mapper");
 		if(sid=='none'){return;}
@@ -62,8 +61,8 @@
 		  mysack.runAJAX();
 		  return true;
 		}
-
-		function ajax_update_photo_property(photo_id, property_name, property_value, update, element_id){
+*/
+/*		function ajax_update_photo_property(photo_id, property_name, property_value, update, element_id){
 			   var mysack = new sack( 
 			       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
 
@@ -80,7 +79,10 @@
 			  mysack.runAJAX();
 			  return true;
 		}
+*/
+
 		
+		//This is called when you hit the "Update This Photo" button
 		function ajax_update_photo(photo_id, slideshow_id)
 		{
 			wpss_start_loading();
@@ -105,6 +107,7 @@
 			return true;
 		}
 		
+		//called when pressing the "X" button on a photo
 		function removePhotoItem(photo_id, slideshow_id)
 		{
 			wpss_start_loading();
@@ -127,6 +130,7 @@
 			return true;
 		}
 		
+		//Used to control the loading animations
 		function wpss_start_loading()
 		{
 			jQuery("#hourglass").show();
@@ -140,33 +144,19 @@
 		
 	
 		
+		//Used for adding images to the slideshow... sets the current_slideshow global and opens the thick box
 		var current_slideshow = "";
 		function pickPhoto(slideshowID){
 			current_slideshow = slideshowID
-			/*if(slideshowOrganizer.isSingle(slideshow_id) && (slideshowOrganizer.subItems(slideshow_id)==1)){
-				val = window.confirm("This will convert the image management to slideshow mode, is this what you want?");
-				if(val==true){
-					//alert('yep');
-					jQuery("#slideshowTable_"+slideshow_id).show();
-					jQuery("#slideshow_heading_"+slideshow_id).html('Slideshow');
-					slideshowOrganizer.setSingle(slideshow_id, false);
-					jQuery('.set_cover_button_'+slideshow_id).show();
-		
-				}else{
-					return;
-				}
-			}*/
-		
+			
 			if(document.getElementById('post_ID')!=null){
 				pid = document.getElementById('post_ID').value;
 			}
 		
 			tb_show('', 'media-upload.php?type=slideshow_image&TB_iframe=true', false);
-			//tb_show('', 'media-upload.php?type=slideshow_image&post_id=' + pid + '&TB_iframe=true', false);
-		
 		}
 		
-		
+/*
 		function wpss_replace_photo(current_photo_id, new_photo_post_id, new_url){
 			var win = window.dialogArguments || opener || parent || top;
 			if(typeof(win.currentSlideshowID) !== 'undefined' ){
@@ -202,12 +192,16 @@
 		  return true;
 
 		}
+*/		
 		
+		//called by the image chooser box when clicking an image
 		function wpss_send_and_return(photo_id, title){
 			var win = window.dialogArguments || opener || parent || top;
 			win.send_to_slideshow(photo_id, title);
 			//alert(photo_id);
 		}
+		
+		//adds the image to the slideshow
 		function send_to_slideshow(photo_post_id, title)
 		{
 			wpss_start_loading();
@@ -216,20 +210,42 @@
 			mysack.setVar( "action", "action_add_photo_to_slideshow" );
 			mysack.setVar( "photo_post_id", photo_post_id );
 			mysack.setVar( "slideshow_id", current_slideshow);
+			mysack.setVar( "post_id", get_wordpress_post_id() );
 			mysack.setVar( "title", title );
 			mysack.encVar( "cookie", document.cookie, false );
 			mysack.onCompletion = function () 
 			{ 
-				jQuery("#slideshow_"+current_slideshow+"_add_button").before("<li>"+mysack.response+"</li>");
+				if(current_slideshow != "single")
+				{
+					jQuery("#slideshow_"+current_slideshow+"_add_button").before("<li>"+mysack.response+"</li>");
+				}
+				else if(current_slideshow == "single")
+				{
+					jQuery("#slideshowContainer_single").before(mysack.response);
+					jQuery("#slideshowContainer_single").empty().remove();
+				}
+					
 				wpss_stop_loading( "" );
 				current_slideshow = "";
 				tb_remove();
 				};
-			mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
+				
+			mysack.onError = function() { alert('Ajax error in add the image to the slideshow.' )};
 			mysack.runAJAX();
 		}
 		
-		
+		function get_wordpress_post_id()
+		{
+			var key="post";
+			var default_="";
+			key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+			var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
+			var qs = regex.exec(window.location.href);
+			if(qs == null)
+				return default_;
+			else
+				return qs[1];
+		}
 		
 		 // end of JavaScript function myplugin_ajax_elevation
 		//]]>

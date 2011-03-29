@@ -44,7 +44,7 @@
 				</div>
 				
 				<div >
-					<span onclick='ajax_update_photo(<?=$photo->photo_id?>, <?= $slideshow_id ?>);' id='save_photo_button_<?=$photo->photo_id?>' class='button save_photo_button_<?= $slideshow_id ?>' style='text-align:center;margin-top:5px;' >Update This Photo</span>
+					<span onclick='ajax_update_photo(<?=$photo->photo_id?>, "<?= $slideshow_id ?>");' id='save_photo_button_<?=$photo->photo_id?>' class='button save_photo_button_<?= $slideshow_id ?>' style='text-align:center;margin-top:5px;' >Update This Photo</span>
 				</div>
 				
 	

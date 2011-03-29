@@ -15,7 +15,7 @@ class wpss_main{
 	public $plugin_prefix = 'wpss_';
 	public $plugin_url;
 	
-	public $google_api_key = 'ABQIAAAAr-xNI7Kn6NVsjnBBFpVvTBSqyx3ou9-UoyELVa_btXTyMYHxNRSdDo_WgOuZ0Zn8SSPShIN_pETOsg';
+	public $google_api_key = 'ABQIAAAAIVgh1deAtW1cu85uZMLCBhTnn3xAjQHqpFtU4TMbi6qQki1QvhSoa7FSZMKpfIEdNdXx68sI8xbwhA';
 		
 	
 	public $wpdb;

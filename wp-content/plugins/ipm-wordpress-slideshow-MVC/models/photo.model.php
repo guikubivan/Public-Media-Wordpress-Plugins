@@ -235,6 +235,32 @@ class IPM_Photo
 		return $this->extra_titles;
 	}
 	
+	
+
+
+	//this gets stuck into the getPhoto method of the wpss class to return an array
+	// that looks like what the function was originally outputting.  This is so that we can
+	// use the new class and not break everything that depends on the old function.
+	public function getPhoto_emulator()
+	{
+		$tmp = array(
+			"wp_photo_id" => $this->post_id,
+			"title" => $this->title,
+			"alt" => $this->alt,
+			"caption" => $this->caption,
+			"geo_location" => $this->geo_location,
+			"photo_credit" => $this->photo_credit,
+			"latitude" => $this->latitude,
+			"longitude" => $this->longitude,
+			"original_url" => $this->original_url,
+			"url" => $this->url,
+			"large_url" => $this->large_url,
+			"update" =>$this->update
+		);
+		
+		return $tmp;
+	}
+	
 }
 
 ?>

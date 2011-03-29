@@ -91,8 +91,7 @@ class IPM_Slideshow
 	public function insert()
 	{
 		$table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshows";
-		
-		 $query = "INSERT INTO $table 
+		$query = "INSERT INTO $table 
 						SET
 							`title` = '".$this->title."',
 							`photo_credit` = '".$this->photo_credit."',
@@ -102,24 +101,45 @@ class IPM_Slideshow
 							`latitude` = '".$this->latitude."',
 							`thumb_id` = '".$this->thumb_id."'
 			";
-			
-
-		$result = $wpdb->query($query);
-		if($result===false){
-			$wpdb->print_error();
-			return false;
-		}else if($sid){
-			return $sid;
-		}
-
-		$this->slideshow_id = $this->wpdb->get_var('SELECT LAST_INSERT_ID();');
 		
-		if($post_id && $post_id > -1){
-			add_post_meta($post_id, $this->fieldname, $slideshow_id, false);
+		$result = $this->wpdb->query($query);
+		if($result===false){
+			$this->wpdb->print_error();
+			return false;
 		}
-
+		//$this->slideshow_id = $this->wpdb->get_var('SELECT LAST_INSERT_ID();');
+		$this->slideshow_id = $this->wpdb->insert_id;
 		return $slideshow_id;
 	}
+	
+	public function attach_to_post($post_id)
+	{
+		if(!empty($this->slideshow_id) )
+		{	
+			$current_slideshows = array();
+			$tmp = get_post_meta($post_id , "slideshow_id", true);
+			/*if(is_array($tmp))
+			{
+				$current_slideshows[] = $tmp;
+			//	if(!in_array($this->slideshow_id, $tmp) )
+				$current_slideshows[] = $this->slideshow_id;
+			}
+			else
+			{
+				$current_slideshows[] = $tmp;
+				$current_slideshows[] = $this->slideshow_id;
+				
+			}*/
+			
+			$success = update_post_meta($post_id, "slideshow_id", $this->slideshow_id);
+			return $success;
+		}
+		else
+		{
+			return false;
+		}
+	}
+		
 		
 	
 	//thumbnail_id is a photo_id, rather than a post_id
