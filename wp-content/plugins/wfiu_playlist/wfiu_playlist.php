@@ -7,7 +7,7 @@ Version: 2.0
 Author: Pablo Vanwoerkom
 Author URI: http://www.wfiu.org
 */
-register_activation_hook(ABSPATH.PLUGINDIR."/wfiu_playlist/".basename(__FILE__), 'wfiu_playlist_activate');
+
 #Variables need to be declared global here or it won't be accessible on activate function
 global $wfiu_playlist_version;
 global $wfiuPlaylist;
@@ -18,8 +18,7 @@ $wfiu_playlist_version = 2.0;
 ************************/
 
 #**** admin hooks *******
-
-
+register_activation_hook(ABSPATH.PLUGINDIR."/wfiu_playlist/".basename(__FILE__), 'wfiu_playlist_activate');
 
 #admin javacript, css, etc..
 add_action('admin_print_scripts', array(&$wfiuPlaylist,'admin_head'));

@@ -148,7 +148,7 @@ if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
 	echo "<table >";
 	echo table_headers('Name', 'Start date', 'End date', 'Repeats');
 	foreach($rows as $row){
-		echo "<tr id='".$row->ID."' event_id='".$row->time_id."' class='edit_program dontdelete' style='cursor:pointer;' onmouseover=\"jQuery(this).css('background-color','#FFBBBB');\" onmouseout=\"jQuery(this).css('background-color','');\" >";
+		echo "<tr id='".$row->ID."' event_id='".$row->event_id."' class='edit_program dontdelete' style='cursor:pointer;' onmouseover=\"jQuery(this).css('background-color','#FFBBBB');\" onmouseout=\"jQuery(this).css('background-color','');\" >";
 		echo "<td style='padding: 5px'>";
 		echo $row->name;
 		echo "</td><td style='padding: 5px'>". $row->start_date;

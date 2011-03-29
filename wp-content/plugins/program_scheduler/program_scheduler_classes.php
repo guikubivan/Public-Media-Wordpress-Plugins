@@ -8,7 +8,7 @@ if(!class_exists ('SchedulerEvent')) {
 		public $repeat_presets = array('1234567'=> 'daily', '12345'=> 'every weekday (Mon-Fri)', '135'=> 'every Mon., Wed., Fri.', '24'=> 'every Tues., and Thurs.'); 
 		private $Scheduler;
 		private $days_of_week;
-		public $time_id;
+		public $event_id;
 		public $never_ends;
 		public $daysHash;
 
@@ -53,7 +53,7 @@ if(!class_exists ('SchedulerEvent')) {
 			$this->Scheduler = &$Scheduler_pointer;
 			$this->days_of_week = get_days('D');
 			if($event_id){
-				$this->time_id = $event_id;	
+				$this->event_id = $event_id;
 			}
 
 			//echo  $start . "\n" . date('m/d/Y H:i',$this->start_date) . "\n". $end . "\n" . date('m/d/Y H:i',$this->end_date);
@@ -208,7 +208,7 @@ if(!class_exists ('SchedulerEvent')) {
 		
 		function has_valid_timeframe(){
 			global $wpdb;
-			$query = "SELECT * FROM " . $this->Scheduler->t_tt . " WHERE " . $this->getConfinedDateClause() .";";
+			$query = "SELECT * FROM " . $this->Scheduler->t_e . " WHERE " . $this->getConfinedDateClause() .";";
 			
 			$overlaps = $wpdb->get_results($query);
 			$confirmed = array();
@@ -239,18 +239,18 @@ if(!class_exists ('SchedulerEvent')) {
 		
 		function insert_dates($ID){
 			global $wpdb;
-			$query = "INSERT INTO " . $this->Scheduler->t_tt ." (program_id, weekdays, start_date, end_date) VALUES($ID, '$this->weekdays', '".$this->getStartDateTime()."', '".$this->getEndDateTime()."');";
+			$query = "INSERT INTO " . $this->Scheduler->t_e ." (station_id, program_id, weekdays, start_date, end_date) VALUES(" . $this->Scheduler->id . ", $ID, '$this->weekdays', '".$this->getStartDateTime()."', '".$this->getEndDateTime()."');";
 			$result = $wpdb->query($query);	
 			if($result==false){
 				return 'Error inserting: ' . $query;
 			}
-			$this->time_id = $wpdb->get_var('SELECT LAST_INSERT_ID();');
+			$this->event_id = $wpdb->insert_id;
 			return;	
 		}
 		
 		function update_dates($ID){
 			global $wpdb;
-			$query = "UPDATE " . $this->Scheduler->t_tt ." SET weekdays= '$this->weekdays', start_date = '".$this->getStartDateTime()."', end_date =  '".$this->getEndDateTime()."' WHERE time_id = $this->time_id;";
+			$query = "UPDATE " . $this->Scheduler->t_e ." SET weekdays= '$this->weekdays', start_date = '".$this->getStartDateTime()."', end_date =  '".$this->getEndDateTime()."' WHERE ID = $this->event_id;";
 			$result = $wpdb->query($query);	
 			if($result===false){
 				return 'Error updating dates: ' . $query;
@@ -323,7 +323,7 @@ if(!class_exists('SchedulerProgram') ){
 		
 		function bind_category(){
 			global $wpdb;
-			$query = "SELECT category_id FROM " . $this->Scheduler->t_c . " WHERE category_name LIKE \"$this->category_name\" LIMIT 1;";
+			$query = "SELECT ID FROM " . $this->Scheduler->t_c . " WHERE category_name LIKE \"$this->category_name\" LIMIT 1;";
 			$cat_id = $wpdb->get_var($query);	
 			
 			if(!$cat_id){
@@ -334,12 +334,12 @@ if(!class_exists('SchedulerProgram') ){
 					$cat_id = $wpdb->get_var('SELECT LAST_INSERT_ID();');	
 				}
 			}
-			$query = "INSERT INTO " . $this->Scheduler->t_cr . " (program_id, category_id) VALUES ($this->ID, $cat_id);";
+			$query = "INSERT INTO " . $this->Scheduler->t_pc . " (program_id, category_id) VALUES ($this->ID, $cat_id);";
 			$result = $wpdb->query($query);	
 			if($result){
 				return;	
-			}else if($result == false){//duplicate primary key (photo_id, meta_id), so try to update
-				$query = "UPDATE " .$this->Scheduler->t_cr  . " SET category_id=$cat_id WHERE program_id=$this->ID;";
+			}else if($result == false){//duplicate primary key (photo_id, category_id), so try to update
+				$query = "UPDATE " .$this->Scheduler->t_pc  . " SET category_id=$cat_id WHERE program_id=$this->ID;";
 				$result = $wpdb->query($query);
 			}else{
 				return 'Error binding category to program: ' . $query;
@@ -430,7 +430,7 @@ if(!class_exists('SchedulerProgram') ){
 				$errors = $this->save_new_program();
 				if(empty($errors)){
 					//$str .= "Event saved";
-					die("[$this->ID, " . $this->scheduler_event->time_id . "]" );
+					die("[$this->ID, " . $this->scheduler_event->event_id . "]" );
 				}
 			}else if(isset($this->fields['event_id']) ) {//update existing program and given instance
 			 	unset($this->fields[event_id]);
@@ -441,7 +441,7 @@ if(!class_exists('SchedulerProgram') ){
 			}else{//bind new event to existing program
 				$errors = $this->add_event_to_program();
 				if(empty($errors)){
-					die("[$this->ID, " . $this->scheduler_event->time_id . "]" );
+					die("[$this->ID, " . $this->scheduler_event->event_id . "]" );
 				}
 			}
 			
@@ -462,27 +462,56 @@ if(!class_exists ('ProgramScheduler')) {
 	class ProgramScheduler {
 		public $plugin_url;
 		public $plugin_prefix = 'ps_';
-		public $t_p, $t_tt, $t_c, $t_cr, $t_pm, $t_pmr;
+		public $t_p, $t_e, $t_c, $t_pc, $t_t, $t_pt;
 		public $program;
 		public $scheduler_event;
 		public $schedule_name;
+                public $show_playlist;
 		public $max_year = 3000;
+                public $id;
 
-                public function __construct($schedule_name = ''){
+                static function find($id){
+                  global $wpdb;
+                  $record = new ProgramScheduler();
+                  $r = $wpdb->get_row( $wpdb->prepare("SELECT * FROM $record->t_s WHERE ID = %s", $id) );
+                  if(is_null($r))return $r;
+
+                  $record->schedule_name = $r->name;
+                  $record->show_playlist = $r->show_playlist;
+                  $record->id = $r->ID;
+                  return $record;
+                }
+
+                static function find_by_name($name){
+                  global $wpdb;
+                  $record = new ProgramScheduler();
+                  $r = $wpdb->get_row( $wpdb->prepare("SELECT * FROM $record->t_s WHERE name like %s", $name) );
+                  if(is_null($r))return $r;
+
+                  $record->schedule_name = $r->name;
+                  $record->show_playlist = $r->show_playlist;
+                  $record->id = $r->ID;
+                  return $record;
+                }
+
+
+                public function __construct($schedule_name = '', $show_playlist=false){
 			//global $wpdb;
-			$schedule_name = $this->clean_name($schedule_name);
+			//$schedule_name = $this->clean_name($schedule_name);
 			$this->plugin_prefix .= $schedule_name ? $schedule_name . '_' : '';
 			$this->schedule_name  = $schedule_name;
+                        $this->show_playlist  = $show_playlist;
 
-			//$this->t_p = $this->plugin_prefix."programs";
-			$this->t_p = "ps_hd1_programs";
-			$this->t_tt = $this->plugin_prefix."timetable";
-			//$this->t_c = $this->plugin_prefix."categories";
-			$this->t_c = "ps_hd1_categories";
-			//$this->t_cr = $this->plugin_prefix."category_relationships";
-			$this->t_cr = "ps_hd1_category_relationships";
-			$this->t_pm = "ps_hd1_program_meta";
-			$this->t_pmr = "ps_hd1_program_meta_relationships";
+
+                        $this->t_s = "ps_stations";
+			$this->t_p = "ps_programs";
+			$this->t_e = "ps_events";
+			
+			$this->t_c = "ps_categories";
+			
+			$this->t_pc = "ps_program_categories";
+			$this->t_t = "ps_tags";
+			$this->t_pt = "ps_program_tags";
 
 			$this->plugin_url = get_bloginfo('url').'/wp-content/plugins/program_scheduler/';
 			/*add_action( "admin_print_scripts", array(&$this, 'plugin_head') );
@@ -494,118 +523,150 @@ if(!class_exists ('ProgramScheduler')) {
 		}
                 
 		function delete_tables(){
-			global $wpdb;			
+			global $wpdb;
+                        $table = $this->t_s;
+                        //$wpdb->query("DROP TABLE $table;") ? "Error when deleting $table \n<br />" : '';
+                        
 			$table = $this->t_p;
 			//$wpdb->query("DROP TABLE $table;") ? "Error when deleting $table \n<br />" : '';
 
-			$table = $this->t_tt;
+			$table = $this->t_e;
 			$wpdb->query("DROP TABLE $table;") ? "Error when deleting $table \n<br />" : '';
 			
 			$table = $this->t_c;
 			//$wpdb->query("DROP TABLE $table;") ? "Error when deleting $table \n<br />" : '';
 			
-			$table = $this->t_cr;
+			$table = $this->t_pc;
 			//$wpdb->query("DROP TABLE $table;") ? "Error when deleting $table \n<br />" : '';
 			
-			$table = $this->t_pm;
+			$table = $this->t_t;
 			//$wpdb->query("DROP TABLE $table;") ? "Error when deleting $table \n<br />" : '';
 			
-			$table = $this->t_pmr;
+			$table = $this->t_pt;
 			//$wpdb->query("DROP TABLE $table;") ? "Error when deleting $table \n<br />" : '';
 		}
 		
 		function create_tables(){
 			global $wpdb;
 			//need mysql >= 5.0.3
+                        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+			$table = $this->t_s;
+			$query = "CREATE TABLE $table (
+			ID INT(9) NOT NULL AUTO_INCREMENT,
+			name VARCHAR(255) NOT NULL,
+                        show_playlist TINYINT(1) DEFAULT 0,
+			PRIMARY KEY (ID),
+                        UNIQUE KEY (name)
+			);";
+
+                        dbDelta($query);
+
 			$table = $this->t_p;
 			$query = "CREATE TABLE $table (
 			ID INT(9) NOT NULL AUTO_INCREMENT,
 			name VARCHAR(255) NOT NULL,
 			url VARCHAR(255),
-			description VARCHAR(1023),
+			description TEXT,
 			blog_id INT(9),
 			post_id INT(9),
 			color VARCHAR(255),
+                        host_name VARCHAR(255),
+                        host_bio TEXT,
+                        host_photo_url TEXT,
+                        host_bio_link TEXT,
+                        host_wordpress_username VARCHAR(255),
 			PRIMARY KEY (ID),
-			INDEX(blog_id),
-			INDEX(post_id)
+			KEY (blog_id),
+			KEY (post_id),
+                        KEY (host_wordpress_username (3))
 			);";
-			if(wfiu_maybe_create_table($table,$query)){
-				echo "Error for : $query \n<br />";
-				//return false;
-			}
-			
+
+                        dbDelta($query);
+
 			//need mysql >= 5.0.3
-			$table = $this->t_tt;
+			$table = $this->t_e;
 			$query = "CREATE TABLE $table (
-			time_id INT(9) NOT NULL AUTO_INCREMENT,
+			ID INT(9) NOT NULL AUTO_INCREMENT,
+                        station_id INT(9) NOT NULL,
 			program_id INT(9) NOT NULL,
 			weekdays VARCHAR(7),
 			start_date DATETIME,
 			end_date DATETIME,
-			PRIMARY KEY(time_id),
-			INDEX(weekdays)
+                        post_id INT(9),
+			PRIMARY KEY(ID),
+                        KEY (station_id),
+                        KEY (program_id),
+			KEY (weekdays),
+                        KEY (post_id)
 			);";
-			if(wfiu_maybe_create_table($table,$query)){
-				echo "Error for : $query \n<br />";
-				return false;	
-			}
+			dbDelta($query);
+                        
 			//need mysql >= 5.0.3
 			$table = $this->t_c;
 			$query = "CREATE TABLE $table (
-			category_id INT(6) NOT NULL AUTO_INCREMENT,
-			category_name VARCHAR(1023),
+			ID INT(9) NOT NULL AUTO_INCREMENT,
+			category_name VARCHAR(255),
 			category_color VARCHAR(255),
-			PRIMARY KEY (category_id)
+			PRIMARY KEY (ID)
 			);";
-			if(wfiu_maybe_create_table($table,$query)){
-				echo "Error for : $query \n<br />";
-				//return false;	
-			}			
+			dbDelta($query);
 			
 			//need mysql >= 5.0.3
-			$table = $this->t_cr;
+			$table = $this->t_pc;
 			$query = "CREATE TABLE $table (
+                        ID INT(9) NOT NULL AUTO_INCREMENT,
 			program_id INT(9) NOT NULL,
-			category_id INT(6) NOT NULL,
-			PRIMARY KEY (program_id),
-			INDEX(program_id),
-			INDEX(category_id)
+			category_id INT(9) NOT NULL,
+			PRIMARY KEY (ID),
+			UNIQUE KEY (program_id, category_id)
 			);";
-			if(wfiu_maybe_create_table($table,$query)){
-				echo "Error for : $query \n<br />";
-				//return false;	
-			}			
+			dbDelta($query);
+
 			//need mysql >= 5.0.3
-			$table = $this->t_pm;
+			$table = $this->t_t;
 			$query = "CREATE TABLE $table (
-			meta_id INT(6) NOT NULL AUTO_INCREMENT,
-			meta_name VARCHAR(255) NOT NULL,
-			PRIMARY KEY (meta_id),
-			UNIQUE KEY (meta_name)
+			ID INT(9) NOT NULL AUTO_INCREMENT,
+			name VARCHAR(255) NOT NULL,
+			PRIMARY KEY (ID),
+			UNIQUE KEY (name)
 			);";
-			if(wfiu_maybe_create_table($table,$query)){
-				echo "Error for : $query \n<br />";
-				//return false;	
-			}			
-			$table = $this->t_pmr;
+                        dbDelta($query);
+                        
+			$table = $this->t_pt;
 			$query = "CREATE TABLE $table (
+                        ID INT(9) NOT NULL AUTO_INCREMENT,
 			program_id INT(9) NOT NULL,
-			meta_id INT(6) NOT NULL,
-			meta_value VARCHAR(1023),
-			PRIMARY KEY (program_id, meta_id),
-			INDEX(program_id),
-			INDEX(meta_id)
+			tag_id INT(9) NOT NULL,
+			value VARCHAR(255),
+			PRIMARY KEY (ID),
+                        UNIQUE KEY(program_id, tag_id)
 			);";
-			if(wfiu_maybe_create_table($table,$query)){
-				echo "Error for : $query \n<br />";
-				//return false;	
-			}
+			dbDelta($query);
 			
 			return true;			
 			
 		}
-		
+
+                public function save_station(){
+                  global $wpdb;
+                  $wpdb->insert($this->t_s, array("name" => $this->schedule_name, "show_playlist" => $this->show_playlist));
+                  if($wpdb->insert_id === false) return false;
+                          
+                  return true;
+                }
+
+                public function delete_station(){
+                  global $wpdb;
+
+                  $r = $wpdb->query( $wpdb->prepare("DELETE FROM $this->t_e WHERE station_id = %s", $this->id) );
+                  if($r===false)return false;
+                  $r = $wpdb->query( $wpdb->prepare("DELETE FROM $this->t_s WHERE ID = %s", $this->id) );
+                  if($r===false)return false;
+                  return true;
+                }
+
+                #Not sure why we need this check -Pablo
 		public function is_valid(){
 			global $wpdb;
 			
@@ -760,7 +821,8 @@ if(!class_exists ('ProgramScheduler')) {
 			echo "</tr>";
 			return true;
 		}
-		
+
+                /*TO-DO - fix to use unlimited stations*/
 		function parse_program_times($programs, $eventHelper = null){
 			if($eventHelper == null) $eventHelper = new SchedulerEvent('', '', '');
 			$noPrograms= sizeof($programs)> 0 ? false : true;
@@ -815,15 +877,15 @@ if(!class_exists ('ProgramScheduler')) {
 		}
 		function get_all_programs(){
 			global $wpdb;
-			$fields = 'ID, time_id, name, url, description, blog_id, post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date';
-			$whichtables = "$this->t_tt as tt JOIN $this->t_p as p ON (p.ID=tt.program_id) LEFT JOIN $this->t_cr as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.category_id)";
+			$fields = 'ID, e.ID AS event_id, name, url, description, blog_id, post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date';
+			$whichtables = "$this->t_e as e JOIN $this->t_p as p ON (p.ID=e.program_id) LEFT JOIN $this->t_pc as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.ID)";
 			
 			$query = "SELECT DISTINCT $fields FROM $whichtables ORDER BY name";
 			$results = $wpdb->get_results($query);
 			return $results;
 		}
 		
-		
+		/*TO-DO - fix to use unlimited stations*/
 		function get_listing($ID=''){
 			global $wpdb;
 			
@@ -837,7 +899,7 @@ if(!class_exists ('ProgramScheduler')) {
 					$sname = $this->clean_name($schedule_name);
 					$tt = 'ps_' . $sname . '_timetable';
 					$withID = $ID ? "WHERE ID=$ID" : '';
-					$query[] = "(SELECT DISTINCT \"$schedule_name\" as schedule_name, time_id, ID, name, url, description, blog_id, post_id, color, category_name, category_color, weekdays, start_date, end_date FROM $tt as tt JOIN $p as p ON (p.ID=tt.program_id) LEFT JOIN $cr as cr ON (p.ID=cr.program_id) LEFT JOIN $c as c ON (cr.category_id = c.category_id) $withID )";
+					$query[] = "(SELECT DISTINCT \"$schedule_name\" as schedule_name, tt.ID, ID, name, url, description, blog_id, post_id, color, category_name, category_color, weekdays, start_date, end_date FROM $tt as tt JOIN $p as p ON (p.ID=tt.program_id) LEFT JOIN $cr as cr ON (p.ID=cr.program_id) LEFT JOIN $c as c ON (cr.category_id = c.ID) $withID )";
 				}
 				$query = implode('UNION', $query);
 				$query .= " ORDER BY name, schedule_name, WEEKDAY(start_date), Time(start_date);";
@@ -861,8 +923,8 @@ if(!class_exists ('ProgramScheduler')) {
 				die('false');
 			}
 			foreach($results as $cat){
-				echo "categories.name[" . $cat->category_id .	"] = \"" . $cat->category_name . "\";";
-				echo "categories.color[" . $cat->category_id .	"] = \"" . $cat->category_color . "\";";				
+				echo "categories.name[" . $cat->ID .	"] = \"" . $cat->category_name . "\";";
+				echo "categories.color[" . $cat->ID .	"] = \"" . $cat->category_color . "\";";
 			}
 			exit();
 		}
@@ -881,7 +943,7 @@ if(!class_exists ('ProgramScheduler')) {
 		function get_link_name($program){
 			return $program->url ? "<a href='$program->url' >$program->name</a>" : $program->name;	
 		}
-		
+		/*TO-DO*/
 		function format_single_row($row, $class='single_details', $popup = true){
 			$str = "<div class='$class'>";
 			if($popup){
@@ -907,7 +969,7 @@ if(!class_exists ('ProgramScheduler')) {
 			return $str;
 		}
 		
-		
+		/* to-do*/
 		function php_get_program($ID){
 			global $wpdb;
 			$programs = $this->get_listing($ID);
@@ -954,11 +1016,11 @@ if(!class_exists ('ProgramScheduler')) {
 				}
 			}
 			if( isset($_POST[event_id]) ){
-				$event_id_clause = 'tt.time_id = ' . $_POST[event_id];
+				$event_id_clause = 'tt.ID = ' . $_POST[event_id];
 			}
 			
-			$fields = ($content == 'full') ? 'ID, time_id, name, url, description, blog_id, post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date' : 'ID, name, color';
-			$whichtables = ($content == 'minimal') ? "$this->t_p as p" : "$this->t_tt as tt JOIN $this->t_p as p ON (p.ID=tt.program_id) LEFT JOIN $this->t_cr as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.category_id)";
+			$fields = ($content == 'full') ? 'p.ID as program_id, tt.ID as event_id, name, url, description, blog_id, p.post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date' : 'ID, name, color';
+			$whichtables = ($content == 'minimal') ? "$this->t_p as p" : "$this->t_e as tt JOIN $this->t_p as p ON (p.ID=tt.program_id) LEFT JOIN $this->t_pc as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.ID)";
 			
 			$query = "SELECT DISTINCT $fields FROM $whichtables";
 			$query .= $event_id_clause ? " WHERE " . $event_id_clause : '';
@@ -972,13 +1034,14 @@ if(!class_exists ('ProgramScheduler')) {
 				//$query .= " AND ( (TIMEDIFF(TIME(ADDTIME(end_date, -1)), TIME(start_date) ) >= '00:15:00' AND TIME(ADDTIME(end_date, -1)) >= TIME(start_date)) || (TIMEDIFF(TIME(ADDTIME(start_date, -1)), TIME(end_date) ) >= '00:15:00' AND TIME(ADDTIME(start_date,-1)) >= TIME(end_date)) )  ";
 				$query .= " AND  (TIMEDIFF(TIME(ADDTIME(end_date, -1)), TIME(start_date) ) >= '00:15:00' AND TIME(ADDTIME(end_date, -1)) >= TIME(start_date))";
 			}
+                        $query .= " AND tt.station_id = " . $this->id;
 			$query .= $sql ? " AND $sql " : '';
-			
+
 			$query .= ($content == 'full') ? " ORDER BY Time(start_date) ASC,  TIMEDIFF(TIME(ADDTIME(end_date,-1)), TIME(start_date)) DESC ;" : " ORDER BY name;";
 
-			/*if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI']) || preg_match("/schedule_viewer\.php/", $_SERVER['REQUEST_URI']) ){
-				echo $query;
-			}*/
+			//if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI']) || preg_match("/schedule_viewer\.php/", $_SERVER['REQUEST_URI']) ){
+			//	echo $query;
+			//}
 
 			$results = $wpdb->get_results($query);
 			if( !isset($_POST['content']) ){
@@ -997,13 +1060,13 @@ if(!class_exists ('ProgramScheduler')) {
 			foreach($results as $row){
 
 				echo "\n<program>";
-				$programs[] = $row->ID;
-				echo "\n<ID>".$row->ID."</ID>";
+				$programs[] = $row->program_id;
+				echo "\n<ID>".$row->program_id."</ID>";
 				echo "\n<name>".htmlspecialchars($row->name)."</name>";
 				echo "\n<color>".$row->color."</color>";
 				echo $row->category_color ? "\n<category_color>".$row->category_color."</category_color>" : '<category_color>-</category_color>';
 				if($content == 'full'){
-					echo "\n<event_id>".$row->time_id."</event_id>";
+					echo "\n<event_id>".$row->event_id."</event_id>";
 					echo "\n<start_date>".JFormatDateTime($row->start_date)."</start_date>";	
 					//echo "\n<end_date>".JFormatDateTime($row->end_date)."</end_date>";
 					echo "\n<end_date>".$row->mod_end_date."</end_date>";
@@ -1045,9 +1108,9 @@ if(!class_exists ('ProgramScheduler')) {
 			$this->program->submit();
 		}
 		
-		function delete_event($time_id, $ID =''){
+		function delete_event($event_id, $ID =''){
 			global $wpdb;
-			$query = "DELETE FROM $this->t_tt WHERE time_id = $time_id;";
+			$query = "DELETE FROM $this->t_e WHERE ID = $event_id;";
 			if($results = $wpdb->query($query)){
 				die('true');
 			}else{
@@ -1058,9 +1121,9 @@ if(!class_exists ('ProgramScheduler')) {
 		function php_delete_event(){
 			global $wpdb;
 			//$ID = $_POST['program_id'];
-			$time_id = $_POST['event_id'];
+			$event_id = $_POST['event_id'];
 			
-			$this->delete_event($time_id);
+			$this->delete_event($event_id);
 		}
 
 	}
