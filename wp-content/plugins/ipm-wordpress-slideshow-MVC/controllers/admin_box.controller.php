@@ -30,19 +30,6 @@ class WPSSAdminBox
 		$post_slideshows->get_slideshows();
 		$slideshow_editors = array();
 		
-		// global $post;
-		// echo get_post_meta($post->ID,$this->plugin_prefix.'photo_id', true);
-		
-		
-	/*	if($pid=get_post_meta($post->ID,$this->plugin_prefix.'photo_id', true)){//single photo
-			echo "slideshowOrganizer.organizerAddItem('',\"".$this->slideshowItemHTML('',array(), true)."\", true);
-				currentSlideshowID = '".$this->plugin_prefix."slideshow_photos_ul_'+slideshowOrganizer.getLastID();";
-			$photo = $this->getPhoto($pid);
-			echo "\nsend_to_slideshow($pid,'" . $this->photoItemHTML_simple($pid,$photo) . "');";
-			echo "showSlideshowMenu('', false);";
-		}
-		*/
-		
 		if(!empty($post_slideshows->slideshows) )
 		{
 			foreach($post_slideshows->slideshows as $key => $slideshow)

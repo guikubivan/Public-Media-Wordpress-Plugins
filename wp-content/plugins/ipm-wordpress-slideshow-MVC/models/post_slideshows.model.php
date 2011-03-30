@@ -54,7 +54,9 @@ class IPM_PostSlideshows
 		if(!empty($photo_id) )
 		{
 			$this->photo = new IPM_SlideshowPhoto($this->plugin, $photo_id);
+			return $this->photo;
 		}
+		return false;
 	}
 		
 }

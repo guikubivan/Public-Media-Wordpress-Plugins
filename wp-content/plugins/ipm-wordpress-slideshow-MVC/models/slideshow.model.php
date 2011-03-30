@@ -10,7 +10,7 @@ class IPM_Slideshow
 	public $longitude;
 	public $thumb_id; //photo_id
 	
-	public $thumbnail; //IPM_Photo object;
+	public $thumb; //IPM_Photo object;
 	
 	public $photos = array(); //array of IPM_Photo objects
 	
@@ -52,6 +52,9 @@ class IPM_Slideshow
 		$this->latitude = $result['latitude'];
 		$this->thumb_id = $result['thumb_id'];
 		
+		if(!empty($this->thumb_id) )
+			$this->thumb = new IPM_SlideshowPhoto($this->wpss, $this->thumb_id);
+		
 		$this->get_photos();
 	}
 	
@@ -59,11 +62,11 @@ class IPM_Slideshow
 	{
 		$query = "SELECT DISTINCT *  
 			FROM `".$this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations`
-			WHERE `slideshow_id` = '".$this->slideshow_id."' ";
+			WHERE `slideshow_id` = '".$this->slideshow_id."' ORDER BY `photo_order` ";
 		$result = $this->wpdb->get_results($query);
 		//$this->photos = $result;
 		foreach($result as $key=>$row){
-			$this->photos[] = new IPM_SlideshowPhoto($this->wpss, $row->photo_id);
+			$this->photos[$row->photo_order] = new IPM_SlideshowPhoto($this->wpss, $row->photo_id);
 		}
 	}
 	

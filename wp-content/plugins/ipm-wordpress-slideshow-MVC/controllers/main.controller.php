@@ -16,7 +16,17 @@ class wpss_main{
 	public $plugin_url;
 	
 	public $google_api_key = 'ABQIAAAAIVgh1deAtW1cu85uZMLCBhTnn3xAjQHqpFtU4TMbi6qQki1QvhSoa7FSZMKpfIEdNdXx68sI8xbwhA';
-		
+	
+	//defaults left over from the original version
+	public $default_style_photo = 'wpss_program_single_new.xsl';
+	public $default_style_slideshow = 'wpss_program_single_new.xsl';
+	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
+	
+	public $option_default_style_photo = "";
+	public $option_default_style_slideshow = "";
+	public $option_default_style_post_image = "";
+	public $option_multiple_slideshows = "";
+	
 	
 	public $wpdb;
 	public function __construct($wpdb)
@@ -29,48 +39,28 @@ class wpss_main{
 		
 		$this->ajax = new IPM_Ajax($this);
 		
-		
+		$this->option_default_style_photo = $this->plugin_prefix.'slideshow_stylesheet';
+		$this->option_default_style_slideshow = $this->plugin_prefix.'photo_stylesheet';
+		$this->option_default_style_post_image = $this->plugin_prefix.'post_image_stylesheet';
+		$this->option_multiple_slideshows = $this->plugin_prefix.'multiple_slideshows';
+		//$this->postmeta_post_image = $this->plugin_prefix.'post_image';
 		
 	}	
 	
 	public function front_end()
 	{
-		
+		require_once(WPSSCONTROLLERS."front_end.controller.php");
+		$front_end = new IPM_FrontEnd($this);
+		return $front_end->replace_tags();
 	}
 	
-	function show_photos($post_id, $stylesheet=''){
-		global $wpdb;
-		if($slideshows=get_post_meta($post_id,$this->fieldname, false)){
-			$stylesheet = $stylesheet ? $stylesheet : get_option($this->option_default_style_slideshow);
-		}else{
-			$stylesheet = $stylesheet ? $stylesheet : get_option($this->option_default_style_photo);
-		}
-		$xml_text = $this->getXML($post_id, $stylesheet);
-		//echo $xml_text;
-		$xml = new DOMDocument;
-		if(!@$xml->loadXML($xml_text)){
-			//echo $xml_text;
-			//$xml->loadXML($xml_text);
-			return;
-		}
 	
-		$xsl = new DOMDocument;
-		@$xsl->load($this->stylesheets_path.$stylesheet);
-
-		// Configure the transformer
-		$proc = new XSLTProcessor;
-		@$proc->importStyleSheet($xsl); // attach the xsl rules
-		$output = @$proc->transformToXML($xml);
-		//echo "<pre>".print_r($xml_text, true)."</pre>";
-		if($output){
-			echo $output;
-		}else{
-			if($stylesheet = "")
-				echo "Error. The Slideshow Stylesheets have not been defined.";
-			else
-				echo "Unknown error.";
-		}
-
+	//wrapper to redirect the front-end global function "wpss_photos($stylesheet) to the function through the front-end class
+	function show_photos($stylesheet='')
+	{
+		require_once(WPSSCONTROLLERS."front_end.controller.php");
+		$front_end = new IPM_FrontEnd($this);
+		$front_end->show_photos($stylesheet);
 	}
 	
 	public function convert_stylesheet($stylesheet)
@@ -190,6 +180,13 @@ class wpss_main{
 	public function render_backend_view($view, $parameters = array())
 	{
 		$view = "backend/".$view;
+		$output = $this->render_view($view, $parameters, "backend");
+		return $output;
+	}
+	//render view wrapper that only gets backend views
+	public function render_frontend_view($view, $parameters = array())
+	{
+		$view = "frontend/".$view;
 		$output = $this->render_view($view, $parameters, "backend");
 		return $output;
 	}

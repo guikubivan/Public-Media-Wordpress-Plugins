@@ -101,50 +101,50 @@ add_action('the_content', array(&$slideshow_plugin, 'front_end'));
 //this is the function that is called by the templates that shows the photos.
 function wpss_photos($stylesheet=''){
 	global $slideshow_plugin;
-	echo $stylesheet;
-	echo $slideshow_plugin->convert_stylesheet($stylesheet);
 	
-	/*global $wp_slideshow, $post;
-	
-	$slideshow_plugin;
-	
-	
-	if(!$wp_slideshow->post_has_tags($post->post_content)){
-		$wp_slideshow->show_photos($post->ID, $stylesheet);
-	}*/
-	//echo "VRIMPLES";
+	$slideshow_plugin->show_photos($slideshow_plugin->convert_stylesheet($stylesheet));
 }
 
+//used in templates to display the main image for a specific post
 function wpss_post_image($stylesheet= '', $post_id='')
 {
-	//echo "BALLS";	
+	global $slideshow_plugin;
+	$slideshow_plugin->get_post();
 	
-	/*
-	global $wp_slideshow, $post;
-	if(!$post_id)$post_id = $post->ID;
-	$stylesheet = $stylesheet ? $stylesheet : get_option($wp_slideshow->option_default_style_post_image);
-
-	$post_image_id = get_post_meta($post_id, $wp_slideshow->postmeta_post_image, true);
-	if(!$post_image_id){
-		//the image if it's single photo post
-		$post_image_id=get_post_meta($post_id,$wp_slideshow->plugin_prefix.'photo_id', true);
-		if(!$post_image_id){
-			if($sid=get_post_meta($post_id,$wp_slideshow->fieldname, true)){
-				$sProps = $wp_slideshow->getSlideshowProps($sid);
-				$post_image_id = $sProps['thumb_id'];
-				if(!$post_image_id){
-					$photos = $wp_slideshow->getPhotos($sid);
-					$post_image_id = key($photos);
-				}
+	if(!$post_id)$post_id = $slideshow_plugin->post->ID;
+	
+	$stylesheet = $stylesheet ? $stylesheet : get_option($slideshow_plugin->option_default_style_post_image);
+	$stylesheet = $slideshow_plugin->convert_stylesheet($stylesheet);
+	$post_slideshows = new IPM_PostSlideshows($slideshow_plugin);
+	//$slideshows->get_slideshows();
+	$post_image = $post_slideshows->get_single_photo();
+	
+	if(empty($post_image->medium_url)){
+		$post_slideshows->get_slideshows();
+		if(!empty($post_slideshows->slideshows) )
+		{
+			$slideshow = $post_slideshows->slideshows[0];
+			
+			if(!empty($slideshow->photos) )
+			{
+				$post_image = $slideshow->photos[0];
+			}
+			else
+			{
+				$post_image = false;
 			}
 		}
+		else
+		{
+			$post_image = false;
+		}
 	}
-	if($post_image_id){
-		echo $wp_slideshow->get_photo_clip($post_image_id,$stylesheet);
+	if($post_image){
+		echo $slideshow_plugin->render_frontend_view($stylesheet, array("type"=>"photo", "photo"=>$post_image) );
 		return true;
 	}
 	return false;	
-	*/
+	
 }
 
 //****************************************************************

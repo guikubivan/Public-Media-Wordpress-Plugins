@@ -1,6 +1,1 @@
-				<img class="program-photo" alt="
-					<?= $photo->alt ?>
-				" src="
-					<?= $photo->medium_url ?>
-				" />
-				
+<img class="program-photo" alt="<?= htmlentities($photo->alt) ?>" src="<?= $photo->medium_url ?>" />

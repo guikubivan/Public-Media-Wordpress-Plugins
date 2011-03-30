@@ -4,6 +4,7 @@ class IPM_SlideshowPhoto extends IPM_Photo
 {
 	public $photo_id = "";
 	public $slideshow_id = "";
+	public $order;
 	
 	public function __construct($wordpress_slideshow, $photo_id = "")
 	{
