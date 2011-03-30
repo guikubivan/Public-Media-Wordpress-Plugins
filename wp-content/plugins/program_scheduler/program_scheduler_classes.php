@@ -822,7 +822,6 @@ if(!class_exists ('ProgramScheduler')) {
 			return true;
 		}
 
-                /*TO-DO - fix to use unlimited stations*/
 		function parse_program_times($programs, $eventHelper = null){
 			if($eventHelper == null) $eventHelper = new SchedulerEvent('', '', '');
 			$noPrograms= sizeof($programs)> 0 ? false : true;
@@ -834,6 +833,7 @@ if(!class_exists ('ProgramScheduler')) {
 			$rows = array();
 			$row = array();
 			foreach($programs as $program){
+                          
 				if($cid != $program->ID){
 					if($cid > -1){
 						$rows[] = $row;
@@ -847,24 +847,12 @@ if(!class_exists ('ProgramScheduler')) {
 				
 				$end = $eventHelper->fix_end_time($start, $program->end_date);
 				
-				if($program->schedule_name == 'HD1'){
-					if($row['hd1']){
-						$row['hd1'] .=  "<div>" . implode(', ', $eventHelper->get_times_array($program->weekdays, $start, $end) ) . "</div>";
-					}else{
-						$row['hd1'] =  "<div>" . implode(', ', $eventHelper->get_times_array($program->weekdays, $start, $end) ) . "</div>";
-					}
-				}
-				
-				if($program->schedule_name == 'HD2'){
-					if(!$row['hd1']){
-						$row['hd1'] = '';	
-					}
-					if($row['hd2']){
-						$row['hd2'] .=  "<div>" . implode(', ', $eventHelper->get_times_array($program->weekdays, $start, $end) ) . "</div>";
-					}else{
-						$row['hd2'] =  "<div>" . implode(', ', $eventHelper->get_times_array($program->weekdays, $start, $end) ) . "</div>";
-					}
-				}
+
+                                if($row[$program->schedule_name]){
+                                        $row[$program->schedule_name] .=  "<div>" . implode(', ', $eventHelper->get_times_array($program->weekdays, $start, $end) ) . "</div>";
+                                }else{
+                                        $row[$program->schedule_name] =  "<div>" . implode(', ', $eventHelper->get_times_array($program->weekdays, $start, $end) ) . "</div>";
+                                }
 
 				$cid = $program->ID;
 				$cs = $program->schedule_name;
@@ -875,40 +863,30 @@ if(!class_exists ('ProgramScheduler')) {
 			return $rows;
 			
 		}
+                /* To-do: check ID references*/
 		function get_all_programs(){
 			global $wpdb;
-			$fields = 'ID, e.ID AS event_id, name, url, description, blog_id, post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date';
+			$fields = 'p.ID, e.ID AS event_id, name, url, description, blog_id, p.post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date';
 			$whichtables = "$this->t_e as e JOIN $this->t_p as p ON (p.ID=e.program_id) LEFT JOIN $this->t_pc as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.ID)";
 			
-			$query = "SELECT DISTINCT $fields FROM $whichtables ORDER BY name";
+			$query = "SELECT DISTINCT $fields FROM $whichtables";
+                        if($this->id) $query .= " WHERE e.station_id = $this->id";
+                        $query .= " ORDER BY name";
+
 			$results = $wpdb->get_results($query);
 			return $results;
 		}
 		
-		/*TO-DO - fix to use unlimited stations*/
-		function get_listing($ID=''){
+		function get_listing($ID='', $station_id=''){
 			global $wpdb;
 			
-			$schedules = get_how_option('schedules');
-			$schedules = $schedules ? unserialize($schedules) : $schedules;
-			if(is_array){
-				$p = 'ps_hd1_programs';
-				$cr = 'ps_hd1_category_relationships';
-				$c = 'ps_hd1_categories';
-				foreach($schedules as $schedule_name){
-					$sname = $this->clean_name($schedule_name);
-					$tt = 'ps_' . $sname . '_timetable';
-					$withID = $ID ? "WHERE ID=$ID" : '';
-					$query[] = "(SELECT DISTINCT \"$schedule_name\" as schedule_name, tt.ID, ID, name, url, description, blog_id, post_id, color, category_name, category_color, weekdays, start_date, end_date FROM $tt as tt JOIN $p as p ON (p.ID=tt.program_id) LEFT JOIN $cr as cr ON (p.ID=cr.program_id) LEFT JOIN $c as c ON (cr.category_id = c.ID) $withID )";
-				}
-				$query = implode('UNION', $query);
-				$query .= " ORDER BY name, schedule_name, WEEKDAY(start_date), Time(start_date);";
-				//echo $query;
-				$results = $wpdb->get_results($query);
-				return $results;
-			}else{
-				return false;	
-			}
+                        $query = "SELECT DISTINCT s.name as schedule_name, tt.ID as event_id, p.ID, p.name, url, description, blog_id, p.post_id, color, category_name, category_color, weekdays, start_date, end_date FROM $this->t_e as tt JOIN $this->t_p as p ON (p.ID=tt.program_id) LEFT JOIN $this->t_pc as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.ID) LEFT JOIN ps_stations as s ON (s.ID=tt.station_id)";
+                        if(!empty($station_id)) $query .= " WHERE s.ID=$station_id";
+                        if(!empty($ID)) $query .= empty($station_id) ? " WHERE p.ID=$ID" : " AND p.ID=$ID";
+			$query .= " ORDER BY p.name, schedule_name, WEEKDAY(start_date), Time(start_date);";
+			//echo $query."\n";
+                        $results = $wpdb->get_results($query);
+			return $results;
 		}
 		
 		function php_get_categories(){
@@ -926,7 +904,6 @@ if(!class_exists ('ProgramScheduler')) {
 				echo "categories.name[" . $cat->ID .	"] = \"" . $cat->category_name . "\";";
 				echo "categories.color[" . $cat->ID .	"] = \"" . $cat->category_color . "\";";
 			}
-			exit();
 		}
 
 		function get_categories(){
@@ -943,8 +920,8 @@ if(!class_exists ('ProgramScheduler')) {
 		function get_link_name($program){
 			return $program->url ? "<a href='$program->url' >$program->name</a>" : $program->name;	
 		}
-		/*TO-DO*/
-		function format_single_row($row, $class='single_details', $popup = true){
+
+		function format_single_row($allowed_schedules, $row, $class='single_details', $popup = true){
 			$str = "<div class='$class'>";
 			if($popup){
 				$str .= "<div><span class='single_program_name' >";
@@ -958,8 +935,9 @@ if(!class_exists ('ProgramScheduler')) {
 			$str .= $row['description'] ? "<div class='single_program_description'>".$row['description']."</div>" : '';
 
 			$str .= "<div class='single_program_times'> <span>Airdates and Times:</span><br />";
-			$str .= $row['hd1'] ? "<span class='single_program_channel'>HD1</span> <div>".$row['hd1']."</div>" : '';
-			$str .= $row['hd2'] ? "<span class='single_program_channel'>HD2</span> <div>".$row['hd2']."</div>" : '';
+                        foreach($allowed_schedules as $schedule_name){
+                          $str .= $row[$schedule_name] ? "<span class='single_program_channel'>$schedule_name</span> <div>".$row[$schedule_name]."</div><br/>" : '';
+                        }
 			$str .= "</div>";
 			
 			$str .= $row['url']? "<div class='single_program_url'><a href='".$row['url']."'>Website link &raquo;</a></div>" : '';
@@ -969,14 +947,17 @@ if(!class_exists ('ProgramScheduler')) {
 			return $str;
 		}
 		
-		/* to-do*/
 		function php_get_program($ID){
 			global $wpdb;
-			$programs = $this->get_listing($ID);
-			
-			$rows = $this->parse_program_times($programs);
-			//print_r($rows);
+			$airtimes = $this->get_listing($ID, '');//$this->id ? $this->id : '');
+                        $schedules = array();
+                        foreach($airtimes as $item){
+                          if(!in_array($item->schedule_name, $schedules)) $schedules[] = $item->schedule_name;
+                        }
+			$rows = $this->parse_program_times($airtimes);
+
 			if(sizeof($rows) <= 0 ) return '';
+
 			echo "<div class='single_details'>";
 
 			echo "<div><span class='single_program_name' >";
@@ -989,16 +970,15 @@ if(!class_exists ('ProgramScheduler')) {
 			echo $rows[0]['description'] ? "<div class='single_program_description'>".$rows[0]['description']."</div>" : '';
 
 			echo "<div class='single_program_times'> <span>Airdates and Times:</span><br />";
-			echo $rows[0]['hd1'] ? "<span class='single_program_channel'>HD1</span> <div>".$rows[0]['hd1']."</div>" : '';
-			echo $rows[0]['hd2'] ? "<span class='single_program_channel'>HD2</span> <div>".$rows[0]['hd2']."</div>" : '';
+                        foreach($schedules as $schedule_name){
+                          echo $rows[0][$schedule_name] ? "<span class='single_program_channel'>$schedule_name</span> <div>".$rows[0][$schedule_name]."</div>" : '';
+                        }
 			echo "</div>";
 			
 			echo $rows[0]['url']? "<div class='single_program_url'><a href='".$rows[0]['url']."'>Website link &raquo;</a></div>" : '';
 			
 			echo "</div>";
 			echo "</div>";
-			//print_r($row);
-		
 		}
 
 		function php_get_programs($start_date = '', $end_date = '', $sql = ''){
@@ -1006,7 +986,8 @@ if(!class_exists ('ProgramScheduler')) {
 			$start_date = $_POST[start_date] ? $_POST[start_date] : $start_date;
 			$end_date = $_POST[end_date] ? $_POST[end_date] : $end_date;
 			$content = $_POST['content'] ? $_POST['content'] : 'full';
-			
+			$where = array();
+                        
 			if($start_date && $end_date ){
 				$this->scheduler_event = new SchedulerEvent($this, $start_date, $end_date);
 				if( !isset($_POST['content']) ){
@@ -1018,24 +999,30 @@ if(!class_exists ('ProgramScheduler')) {
 			if( isset($_POST[event_id]) ){
 				$event_id_clause = 'tt.ID = ' . $_POST[event_id];
 			}
-			
-			$fields = ($content == 'full') ? 'p.ID as program_id, tt.ID as event_id, name, url, description, blog_id, p.post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date' : 'ID, name, color';
-			$whichtables = ($content == 'minimal') ? "$this->t_p as p" : "$this->t_e as tt JOIN $this->t_p as p ON (p.ID=tt.program_id) LEFT JOIN $this->t_pc as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.ID)";
+			if($content == 'full'){
+                          $fields = 'p.ID as program_id, tt.ID as event_id, name, url, description, blog_id, p.post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date';
+                        }else{
+                          $fields = 'ID as program_id, name, color';
+                        }
+                        if($content == 'minimal'){//just need list of programs
+                          $whichtables =  "$this->t_p as p";
+                        }else{
+                          $whichtables = "$this->t_e as tt JOIN $this->t_p as p ON (p.ID=tt.program_id) LEFT JOIN $this->t_pc as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.ID)";
+                          $where[] = "tt.station_id = " . $this->id;
+                        }
 			
 			$query = "SELECT DISTINCT $fields FROM $whichtables";
-			$query .= $event_id_clause ? " WHERE " . $event_id_clause : '';
-			if($event_id_clause){
-				$query .= $date_clause ? " AND " . $date_clause : '';
-			}else{
-				$query .= $date_clause ? " WHERE " . $date_clause : '';
-			}
-			
+
+                        if($event_id_clause) $where[] = $event_id_clause;
+                        
+			if($event_id_clause && $date_clause) $where[] = $date_clause;
+
 			if( isset($_POST['content']) && $content != 'minimal' && !isset($_POST['program_id']) && !isset($_POST['event_id']) ){
-				//$query .= " AND ( (TIMEDIFF(TIME(ADDTIME(end_date, -1)), TIME(start_date) ) >= '00:15:00' AND TIME(ADDTIME(end_date, -1)) >= TIME(start_date)) || (TIMEDIFF(TIME(ADDTIME(start_date, -1)), TIME(end_date) ) >= '00:15:00' AND TIME(ADDTIME(start_date,-1)) >= TIME(end_date)) )  ";
-				$query .= " AND  (TIMEDIFF(TIME(ADDTIME(end_date, -1)), TIME(start_date) ) >= '00:15:00' AND TIME(ADDTIME(end_date, -1)) >= TIME(start_date))";
+                          $where[] = "(TIMEDIFF(TIME(ADDTIME(end_date, -1)), TIME(start_date) ) >= '00:15:00' AND TIME(ADDTIME(end_date, -1)) >= TIME(start_date))";
 			}
-                        $query .= " AND tt.station_id = " . $this->id;
-			$query .= $sql ? " AND $sql " : '';
+                        
+                        if($sql) $where[] = $sql;
+                        if( sizeof($where) > 0 ) $query .= " WHERE " . implode(" AND ", $where);
 
 			$query .= ($content == 'full') ? " ORDER BY Time(start_date) ASC,  TIMEDIFF(TIME(ADDTIME(end_date,-1)), TIME(start_date)) DESC ;" : " ORDER BY name;";
 
@@ -1064,7 +1051,7 @@ if(!class_exists ('ProgramScheduler')) {
 				echo "\n<ID>".$row->program_id."</ID>";
 				echo "\n<name>".htmlspecialchars($row->name)."</name>";
 				echo "\n<color>".$row->color."</color>";
-				echo $row->category_color ? "\n<category_color>".$row->category_color."</category_color>" : '<category_color>-</category_color>';
+				echo $row->category_color ? "\n<category_color>".$row->category_color."</category_color>" : '';
 				if($content == 'full'){
 					echo "\n<event_id>".$row->event_id."</event_id>";
 					echo "\n<start_date>".JFormatDateTime($row->start_date)."</start_date>";	
@@ -1093,7 +1080,6 @@ if(!class_exists ('ProgramScheduler')) {
 			echo "\n<query><![CDATA[$query]]></query>";
 			echo "\n</programs>";
 			
-			exit();
 			//echo json_encode($programs);
 			//echo "alert(\"" . implode(',' , $programs) . "\");";
 			

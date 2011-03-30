@@ -75,7 +75,7 @@ if(!function_exists('get_how_option') ){
 }
 
 
-function configure_channels(){
+function manage_stations(){
         global $helper_schedule, $wpdb;
 	echo "<div class='wrap'>";
         
@@ -206,6 +206,7 @@ function php_get_categories(){
 			echo "alert('Invalid schedule: $sname');";	
 		}
 	}
+        die();
 }
 
 function php_receive_event(){
@@ -219,6 +220,7 @@ function php_receive_event(){
 			echo "alert('Invalid schedule: $sname');";		
 		}
 	}
+        die();
 }
 function php_delete_event(){
 	if(isset($_POST['schedule_name']) ){
@@ -231,6 +233,7 @@ function php_delete_event(){
 			echo "alert('Invalid schedule: $sname');";
 		}
 	}
+        die();
 }
 
 function global_get_programs($single=false){
@@ -252,6 +255,7 @@ function global_get_programs($single=false){
 			echo "alert('Invalid schedule: $sname');";
 		}
 	}
+        die();
 }
 
 function global_get_single_day(){
@@ -261,6 +265,7 @@ function global_get_single_day(){
 		$_GET['start_date'] = $_POST['start_date'];
 		include(dirname(__FILE__).'/schedule_viewer.php');
 	}
+        die();
 }
 
 add_action('admin_menu', 'add_pg_editor_page');
@@ -273,7 +278,7 @@ function schedule_editor_header(){
 function add_pg_editor_page(){
 	//global $schedule_class;
 	if(current_user_can('edit_plugins')){
-		add_menu_page('Schedules', 'Schedules', 7, __FILE__, 'configure_channels');
+		add_menu_page('Schedules', 'Schedules', 7, __FILE__, 'manage_stations');
 		$schedules = get_how_option('schedules');
 		add_submenu_page(__FILE__, 'Manage', 'Manage', 7, ABSPATH.PLUGINDIR.'/program_scheduler/schedule_editor.php');
 		add_submenu_page(__FILE__, 'View', 'View', 7, ABSPATH.PLUGINDIR.'/program_scheduler/schedule_viewer.php');

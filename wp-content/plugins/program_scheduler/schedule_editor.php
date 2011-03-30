@@ -43,12 +43,15 @@ echo "};";
 </script>
 
 <div class='wrap'>
+  <h2>
 <?php 
 if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
-	echo "<h2>Schedule Editor</h2>";
+	echo "Schedule Editor - ";
 }
-?>
 
+  echo $_GET['schedule_name'];
+?>
+  </h2>
 	<table class='calendar_top_table'>
 	<tr >
 	<td>&nbsp;
@@ -143,7 +146,7 @@ if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI']) || preg_match("
 }
 
 if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
-	$scheduler = new ProgramScheduler($_GET['schedule_name']);
+	$scheduler = ProgramScheduler::find_by_name($_GET['schedule_name']);
 	$rows = $scheduler->get_all_programs();
 	echo "<table >";
 	echo table_headers('Name', 'Start date', 'End date', 'Repeats');

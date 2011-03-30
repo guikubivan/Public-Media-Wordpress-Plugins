@@ -325,7 +325,7 @@ ul.listing_list li {
 }
 
 ul.listing_list li > a:first-child {
-	background: #eee url('/wp-content/themes/ipm/images/down-arrow.png') 605px center no-repeat;
+	background: #eee url('images/down-arrow.png') 605px center no-repeat;
 	padding: 3px;
 	padding-right:0;
 	display: block;
@@ -334,7 +334,7 @@ ul.listing_list li > a:first-child {
 }
 
 ul.listing_list li > a:first-child:hover {
-	background: #ddd url('/wp-content/themes/ipm/images/down-arrow.png') 605px center no-repeat;
+	background: #ddd url('images/down-arrow.png') 605px center no-repeat;
 }
 
 div.single_program_description {

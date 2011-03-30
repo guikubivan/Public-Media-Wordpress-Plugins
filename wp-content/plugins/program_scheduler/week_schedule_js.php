@@ -40,9 +40,10 @@ jQuery(function($){
         // firebug console output
         //----------------------------------------------------------------------
         function debug(text) {
-            if (window.console && window.console.log) {
-                window.console.log(text);
-            }
+          return false;
+          if (window.console && window.console.log) {
+              window.console.log(text);
+          }
         };
 
 
@@ -603,6 +604,7 @@ jQuery(function($){
                                                 var deleteButton = $("<span class='clickable' style='margin-left: 7px' >Close</span>").bind("click", function(e){
 <? endif; ?>
 							if(cur_id > -1){
+                                                                resetEvent(cur_id);
 								toggleFocus(cur_id);
 							}
 						});
@@ -1266,7 +1268,7 @@ jQuery(function($){
 <? else: ?>
 			function drawEvent(id){
 				events.container[id] = $('<div id="'+id+'" class="calendar_overlay " style="background-color: '+ events.color[id] +'; height: '+((events.erow[id]-events.srow[id]+1)*opts.cell_height + (events.erow[id]-events.srow[id]-1))+'px; width: '+events.width[id]+'px;"></div>');
-				if(events.category_color[id] != '-' ){
+				if(events.category_color[id] ){
 					setBackgroundColor(id, events.category_color[id]);
 				}else{
 					setBackgroundColor(id, events.color[id]);
@@ -1279,6 +1281,11 @@ jQuery(function($){
 				bindEvents(id);
 			}
 <? endif; ?>
+
+                        function resetEvent(id){
+                          var color = (events.category_color[id]) ? events.category_color[id] : events.color[id];
+                          $(events.container[id]).css('background-color', color);
+                        }
 
 			function getControls() {
 <? if($edit): ?>
@@ -1574,10 +1581,10 @@ jQuery(function($){
 				never_ends: [],
 				repeats: [],
 				color: [],
-				srow: [],
-				scol: [],
-				erow: [],
-				ecol: [],
+				srow: [],//start row
+				scol: [],//start coloumn
+				erow: [],//end row
+				ecol: [],//end coloumn
 				url: [],
 				blog_id: [],
 				post_id: []
