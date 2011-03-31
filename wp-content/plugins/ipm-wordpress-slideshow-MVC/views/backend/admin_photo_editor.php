@@ -1,9 +1,7 @@
 		<div  class='<?= $this->plugin_prefix ?>photo_container' id='photoContainer_<?=$photo->photo_id?>'>
 
 		<span id='deletePhotoButton_<?= $photo->photo_id ?>_<?= $slideshow_id ?>' title="Delete Photo" class='button' style='float:right; font-size: 200%;' 
-			onclick='
-				removePhotoItem(<?= $photo->photo_id ?>, <?= $slideshow_id ?>)
-			'>X</span>
+			onclick="removePhotoItem(<?= $photo->photo_id ?>, '<?= $slideshow_id ?>');">X</span>
 
 		<input type='hidden' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_cover' class='photo_in_slideshow_<?= $slideshow_id ?>' name='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_cover' value='<?=$photo->cover?>' /> 
 			

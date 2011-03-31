@@ -1,4 +1,32 @@
 <?php
+/*
+ * Defines a link between a photo and a slideshow.
+ * Maps directly to the wpss_slideshow_photo_relationship table
+ * 
+ * Each photo can have a certain set of properties that are specific to a slideshow.  This
+ *    model overrides the original properties of the IPM_photo object that it extends, but
+ *    providing a slideshow-specific version of that photo.  It also includes addition
+ *    methods and properties for dealing with the slideshow-photo link.
+ * 
+ * Methods: 
+ * get_photo() - gets the photo properties, including the slideshow specific properties
+ * get_photo_only() - only gets the general non-specific photo properties
+ * get_post_id_by_photo_id() - gets the id of the wordpress post(attachment) based on the slideshow-specific photo_id
+ * insert() - inserts the link/slideshow specific properties
+ * update() - updates the slideshow specific properties
+ * delete() - deletes the slideshow specific properties and the link between the slideshow and photo.  DOES NOT delete the photo itself
+ * add_to_slideshow() - adds the photo to a given slideshow_id
+ * remove_from_slideshow() - removes teh photo from the slideshow and deletes the slideshow specific data
+ * 
+ * Properties:
+ * $photo_id
+ * $slideshow_id
+ * $order_id
+ * 
+ * also, everything inhereted by the Photo it extends
+ * 
+ */
+
 
 class IPM_SlideshowPhoto extends IPM_Photo
 {
@@ -261,30 +289,29 @@ class IPM_SlideshowPhoto extends IPM_Photo
 						`photo_id` = '".$this->photo_id."'
 						AND `meta_id` = '1'
 					";
-					
-		$success  = $this->wpdb->get_results($query);
+		$success  = $this->wpdb->query($query);
 		
 		$query  = "DELETE FROM `".$photo_meta_rels."`
 					WHERE
 						`photo_id` = '".$this->photo_id."'
 						AND `meta_id` = '2'
 					";			
-		
 		if($success !== false)
-			$success  = $this->wpdb->get_results($query);
+			$success  = $this->wpdb->query($query);
+		
 		$query = "DELETE FROM `".$photo_meta_rels."`
 					WHERE
 						`photo_id` = '".$this->photo_id."'
 						AND `meta_id` = '3'
 					";				
 		if($success !== false)
-			$success  = $this->wpdb->get_results($query);
+			$success  = $this->wpdb->query($query);
 		
+		
+		$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
+		$query = "DELETE FROM ".$photo_table." WHERE `photo_id` = '".$this->photo_id."' ;";//INSERT PHOTO
 		if($success !== false)
-		{
-			$photo_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."photos";
-			$query = "DELETE FROM ".$photo_table." WHERE `photo_id` = '".$this->photo_id."' ;";//INSERT PHOTO
-		}
+			$success  = $this->wpdb->query($query);
 		
 		return $success;
 		

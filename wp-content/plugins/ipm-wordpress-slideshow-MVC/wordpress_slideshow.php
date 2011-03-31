@@ -21,13 +21,10 @@ if(file_exists(ABSPATH.PLUGINDIR.'/wfiu_utils/ipm-utils-class.php')){
 }
 
 
-
 if(!class_exists ('wordpress_slideshow')) {
-	//require_once(dirname(__FILE__).'/wordpress_slideshow_classes.php');
-	//$wp_slideshow = new wordpress_slideshow;
+	require_once(dirname(__FILE__).'/wordpress_slideshow_classes.php');
+	$wp_slideshow = new wordpress_slideshow();
 }
-
-
 
 if(!class_exists ('IPM_Photo')) {
 	require_once(dirname(__FILE__).'/models/photo.model.php');
@@ -58,10 +55,8 @@ add_action('media_upload_replace_wp_image', array(&$wp_slideshow,'new_image_choo
 add_action('media_upload_map', array(&$wp_slideshow,'show_map'));
 
 //admin javacript, css, etc..
- 
 add_action( "admin_print_scripts", array(&$slideshow_plugin, 'admin_print_scripts') );
 add_action( "admin_head", array(&$slideshow_plugin, 'admin_head_scripts') );
-//add_action('admin_menu', array(&$wp_slideshow, 'slideshowBox'), 1);//add slideshow box
 add_action('admin_menu', array(&$slideshow_plugin, 'show_editor_box'), 1);//add slideshow box
 
 //save and delete post hook
@@ -71,10 +66,12 @@ add_action('delete_post', array(&$wp_slideshow,'delete_photos'));
 add_filter('media_meta', array(&$wp_slideshow,'mediaItem'),  109, 2);//called at wp-admin/includes/media.php
 add_filter('attachment_fields_to_save', array(&$wp_slideshow,'save_photo_fixed_props'), 109, 2);//called at wp-admin/includes/media.php
 
-
+/*
 add_filter('manage_posts_columns', array(&$wp_slideshow,'add_column'));
 add_filter('manage_posts_custom_column', array(&$wp_slideshow,'do_column'), 10, 2);
-
+/*
+ * 
+ */
 $myutils = new IPM_Utils();
 function slideshow_manager_menu(){
 	global $wp_slideshow, $myutils;
@@ -92,16 +89,11 @@ add_action('admin_menu', 'slideshow_manager_menu');
 
 
 //*********************FRONTEND STUFF*********************************
-//add_action('the_content', array(&$wp_slideshow, 'replace_tags')); 
 add_action('the_content', array(&$slideshow_plugin, 'front_end')); 
-
-
-
 
 //this is the function that is called by the templates that shows the photos.
 function wpss_photos($stylesheet=''){
 	global $slideshow_plugin;
-	
 	$slideshow_plugin->show_photos($slideshow_plugin->convert_stylesheet($stylesheet));
 }
 
@@ -110,9 +102,7 @@ function wpss_post_image($stylesheet= '', $post_id='')
 {
 	global $slideshow_plugin;
 	$slideshow_plugin->get_post();
-	
 	if(!$post_id)$post_id = $slideshow_plugin->post->ID;
-	
 	$stylesheet = $stylesheet ? $stylesheet : get_option($slideshow_plugin->option_default_style_post_image);
 	$stylesheet = $slideshow_plugin->convert_stylesheet($stylesheet);
 	$post_slideshows = new IPM_PostSlideshows($slideshow_plugin);
@@ -149,9 +139,7 @@ function wpss_post_image($stylesheet= '', $post_id='')
 
 //****************************************************************
 
-
-
-
+//slideshow menu stuff... haven't touched it yet
 function wp_slideshow_menu(){
 	global $wp_slideshow, $wpdb, $post;
 

@@ -1,8 +1,7 @@
 
-
 <div class='<?=$this->plugin_prefix?>slideshow_container' id='slideshowContainer_<?=$slideshow->slideshow_id?>'>
 	<?//if(!$edit_mode){?>
-	<div class='button' style="float: right;" onclick='jQuery(this).parent().parent().fadeOut(500, function(){jQuery(this).remove();});'>Remove Slideshow</div>
+	<div class='button' style="float: right;" onclick='removeSlideshow("<?=$slideshow->slideshow_id?>")' >Remove Slideshow</div>
 	<div class='button slideshow_collapse_button' onclick="jQuery(this).siblings('div.slideshow_wrapper').toggle(); jQuery(this).html( jQuery(this).html()=='Collapse'?'Expand':'Collapse');" style="float: right;" >Collapse</div>
 	<?//}?>
 

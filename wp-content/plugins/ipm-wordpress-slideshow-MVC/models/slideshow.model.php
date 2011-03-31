@@ -58,15 +58,18 @@ class IPM_Slideshow
 		$this->get_photos();
 	}
 	
+	//doesn't yet handle the order correctly
 	public function get_photos()
 	{
 		$query = "SELECT DISTINCT *  
 			FROM `".$this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations`
-			WHERE `slideshow_id` = '".$this->slideshow_id."' ORDER BY `photo_order` ";
+			WHERE `slideshow_id` = '".$this->slideshow_id."' 
+			#ORDER BY `photo_order` ";
 		$result = $this->wpdb->get_results($query);
 		//$this->photos = $result;
+		$this->photos = array();
 		foreach($result as $key=>$row){
-			$this->photos[$row->photo_order] = new IPM_SlideshowPhoto($this->wpss, $row->photo_id);
+			$this->photos[/*$row->photo_order*/] = new IPM_SlideshowPhoto($this->wpss, $row->photo_id);
 		}
 	}
 	

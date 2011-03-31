@@ -4,12 +4,16 @@
  * This class is used primarily for scoping the action functions and holding globals
  */
 class wpss_main{
+	//a copy of the global wordpress $post variable
 	public $post;
 	
-	public $_post;
+	//wrappers for the $_POST and $_GET super globals in case you want to sanitize them in the custructor or whatever
+	public $_post; 
 	public $_get;
 	
-	public $tab_order = 200;
+	//public $tab_order = 200;
+	
+	//instance of the ajax controller so we can call the ajax functions whenever
 	public $ajax;
 	
 	public $plugin_prefix = 'wpss_';
@@ -17,11 +21,12 @@ class wpss_main{
 	
 	public $google_api_key = 'ABQIAAAAIVgh1deAtW1cu85uZMLCBhTnn3xAjQHqpFtU4TMbi6qQki1QvhSoa7FSZMKpfIEdNdXx68sI8xbwhA';
 	
-	//defaults left over from the original version
+	//default sylesheets left over from the original version
 	public $default_style_photo = 'wpss_program_single_new.xsl';
 	public $default_style_slideshow = 'wpss_program_single_new.xsl';
 	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
 	
+	//these are global options that can be pulled from the wordpress options table if need be.
 	public $option_default_style_photo = "";
 	public $option_default_style_slideshow = "";
 	public $option_default_style_post_image = "";
@@ -47,13 +52,13 @@ class wpss_main{
 		
 	}	
 	
+	//called by the the_content action on the front-end
 	public function front_end()
 	{
 		require_once(WPSSCONTROLLERS."front_end.controller.php");
 		$front_end = new IPM_FrontEnd($this);
 		return $front_end->replace_tags();
 	}
-	
 	
 	//wrapper to redirect the front-end global function "wpss_photos($stylesheet) to the function through the front-end class
 	function show_photos($stylesheet='')
@@ -63,6 +68,9 @@ class wpss_main{
 		$front_end->show_photos($stylesheet);
 	}
 	
+	
+	//some stylesheets used by templates, etc are set as .xsl files.  Since we're using PHP files instead, we can run the stylesheet
+	// name through this function instead of having to replace the stylesheet filename in EVERY instance across the site.
 	public function convert_stylesheet($stylesheet)
 	{
 		if(substr($stylesheet, -3) == "xsl")
@@ -74,6 +82,7 @@ class wpss_main{
 			
 	}
 	
+	//called in backend when you're trying to add photos to posts
 	public function media_upload()
 	{
 		require_once(WPSSCONTROLLERS."media_upload.controller.php");
@@ -95,19 +104,23 @@ class wpss_main{
 	
 	
 	
-	//must be called during runtime functions 
+	//must be called during runtime functions to get the wordpress post on the fly
 	public function get_post()
 	{
 		global $post;
 		$this->post = $post;
 	}
 		
+	//prints all the javascript functions needed by the admin-box
+	// called in the admin_head action
 	public function admin_head_scripts()
 	{
 		 echo $this->render_backend_view("admin_head_javascript.php", array());
 		
 	}
-		
+	
+	//registers scripts used in the admin section
+	// called in the admin_print_scripts action
 	public function admin_print_scripts()
 	{
 		$google_api_key = $this->google_api_key;
@@ -155,7 +168,7 @@ class wpss_main{
 		
 	
 	//generic render view function
-	private function render_view($view, $parameter, $end)
+	private function render_view($view, $parameter, $end= "")
 	{
 		ob_start();
 		if(is_array($parameter))
@@ -167,23 +180,17 @@ class wpss_main{
 		$output = ob_get_contents();
 		ob_end_clean();
 		
-		/*if($addslashes)
-		{
-			$output = addslashes($output);
-			$output = preg_replace_callback("<<!-- UNESCAPE \[(.*)\] -->>", "wordpress_slideshow::render_view_unescape_callback",  $output);
-		}*/
-		
 		return $output;
 	}
 	
-	//render view wrapper that only gets backend views
+	//render_view wrapper that only gets backend views
 	public function render_backend_view($view, $parameters = array())
 	{
 		$view = "backend/".$view;
 		$output = $this->render_view($view, $parameters, "backend");
 		return $output;
 	}
-	//render view wrapper that only gets backend views
+	//render_view wrapper that only gets backend views
 	public function render_frontend_view($view, $parameters = array())
 	{
 		$view = "frontend/".$view;

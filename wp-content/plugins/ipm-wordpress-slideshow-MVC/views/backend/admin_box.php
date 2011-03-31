@@ -22,24 +22,15 @@
 }
 </style>
 <div id="hourglass">&#8987;</div>
-<ul>
-	<? foreach($slideshow_editors as $key => $slideshow_editor)
-	{
-		?>
-		<li>
-			<?=$slideshow_editor?>
-		</li>	
-		<?
-	}
-	?>
-	
-</ul>
-
-
-
-
-
-
+<div>
+	<span class='wpss_required' >&nbsp;</span> Required fields
+</div>
+<div id="slideshow_content_box">
+<?= $content ?>
+</div>
+<div class='slideshow_box_footer' style='text-align:right;'>
+	<input class="button button-highlighted" id="wpss_save" type="submit" value="Save" name="save" />
+</div>
 
 
 

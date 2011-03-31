@@ -15,6 +15,8 @@ class IPM_FrontEnd
 		
 	}
 
+	//this function is what is used by the show_photos method in the main controller which is, 
+	//    in turn, called by the global wpss_photos function for use in templates or whatever.
 	function show_photos($stylesheet='')
 	{
 		$this->plugin->get_post();	
@@ -47,12 +49,12 @@ class IPM_FrontEnd
 		}
 	}
 	
-	
+	//check if the post content has short tags that can be replaced without actually printing the images 
 	private function post_has_tags(){
 		return $this->replace_tags(true); //$this->replace_photo_tags($this->plugin->post->post_content, true) || $this->replace_slideshow_tags($this->plugin->post->post_content, true);
 	}
 	
-	
+	//used to replace the short tags with photos/slideshows in the post content
 	function replace_tags($probe = false)
 	{
 			
