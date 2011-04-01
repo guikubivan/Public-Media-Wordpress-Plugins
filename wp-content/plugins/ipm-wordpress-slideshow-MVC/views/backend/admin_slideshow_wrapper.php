@@ -6,7 +6,7 @@
 		</select>
 	</div>
 </div>
-<ul>
+<ul id="slideshows_wrapper_ul">
 	<? foreach($slideshow_editors as $key => $slideshow_editor)
 	{
 		?>
@@ -18,3 +18,7 @@
 	?>
 	
 </ul>
+<span id='slideshow_button' class='button' style='margin-top:10px;' 
+		onclick="addSlideshow()"> 
+		Add Another Slideshow
+</span>

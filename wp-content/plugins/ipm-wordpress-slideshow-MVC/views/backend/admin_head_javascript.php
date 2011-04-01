@@ -24,6 +24,49 @@
           });
         <?php endif; ?>
         
+        
+		jQuery(document).ready(function(){
+			jQuery(".<?= $this->plugin_prefix ?>slideshow_container ul").sortable(
+			{
+				items: "li:not(.add_li)",
+				update: function(event, ui) {
+					var current_index = ui.item.attr("order");
+					jQuery(this).children("li").each(function(key, value){
+						jQuery(this).attr("order", key);
+					});
+					var slideshow_id = jQuery(this).attr("slideshow_id");
+					var new_index = ui.item.attr("order");
+									
+					reorder_slideshow( slideshow_id, current_index, new_index);
+				}
+			}
+			);
+		//	jQuery(".<?= $this->plugin_prefix ?>slideshow_container ul").disableSelection();
+		});
+		
+		
+		function reorder_slideshow(slideshow_id, current_index, new_index)
+		{
+			wpss_start_loading();
+		
+			var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
+		
+			mysack.method = 'POST';
+			mysack.setVar( "action", "action_change_photo_order" );
+			mysack.setVar( "slideshow_id", slideshow_id);
+			mysack.setVar( "current_index", current_index);
+			mysack.setVar( "new_index", new_index);
+			mysack.encVar( "cookie", document.cookie, false );
+			mysack.onCompletion = function () { 
+					wpss_stop_loading( mysack.response );
+				};
+			mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
+			mysack.runAJAX();
+			return true;
+		}
+		
+		
+		
 /*
 		function mapper_ajax_getCoords(station_location, latitude_id, longitude_id)
 		{//alert("hi mapper");
@@ -71,6 +114,44 @@
 			return true;
 		}
 		
+		//This is called when you hit the "Update This Photo" button
+		function setCoverImage(slideshow_id, photo_id)
+		{
+			if(slideshow_id != "single")
+			{
+				wpss_start_loading();
+			
+				var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
+			
+				mysack.method = 'POST';
+				mysack.setVar( "action", "action_set_cover_image" );
+				mysack.setVar( "photo_id", photo_id );
+				mysack.setVar( "slideshow_id", slideshow_id );
+				mysack.encVar( "cookie", document.cookie, false );
+				mysack.onCompletion = function () { 
+						var success = mysack.response;
+						if(success == 1)
+						{
+							jQuery(".wpss_cover_highlight").children("div").html("Make this the slideshow thumbnail"); 
+							jQuery(".wpss_cover_highlight").removeClass("wpss_cover_highlight");
+							jQuery("#img_"+slideshow_id+"_"+photo_id).parent().addClass("wpss_cover_highlight");
+							jQuery("#img_"+slideshow_id+"_"+photo_id).parent().children("div").html("This is the slideshow thumbnail");
+							msg = "Changed cover image" ;
+						}
+						else
+						{
+							msg = "Could not change cover image";
+						}
+						
+						wpss_stop_loading( msg + " " + mysack.response);
+					};
+				mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
+				mysack.runAJAX();
+				return true;
+			}
+		}
+		
+		
 		//called when pressing the "X" button on a photo
 		function removePhotoItem(photo_id, slideshow_id)
 		{
@@ -90,8 +171,15 @@
 				if(mysack.response == "1")
 				{
 					msg = "Successfully deleted photo";
-					if ( document.getElementById("photoContainer_"+photo_id).parentNode && document.getElementById("photoContainer_"+photo_id).parentNode.removeChild ) 
+					/*if ( document.getElementById("photoContainer_"+photo_id).parentNode && document.getElementById("photoContainer_"+photo_id).parentNode.removeChild ) 
+					{
 						document.getElementById("photoContainer_"+photo_id).parentNode.removeChild(document.getElementById("photoContainer_"+photo_id));
+						jQuery(
+					}*/
+					jQuery("#photoContainer_"+photo_id).fadeOut(500, function(){
+						jQuery("#photoContainer_"+photo_id).empty();
+						jQuery("#photoContainer_"+photo_id).remove();
+					});
 				}
 				else if(mysack.response == "0")
 				{
@@ -99,8 +187,10 @@
 				}
 				else 
 				{
-					jQuery("#slideshow_content_box").empty();
-					jQuery("#slideshow_content_box").html(mysack.response);
+					jQuery("#slideshow_content_box").fadeOut(1000, function(){
+						jQuery("#slideshow_content_box").empty();
+						jQuery("#slideshow_content_box").html(mysack.response);
+					});
 				}
 				wpss_stop_loading(msg + " " + mysack.response);
 			};
@@ -161,14 +251,14 @@
 			{ 
 				if(number_of_slideshows > 0)
 				{
-					jQuery("#slideshow_"+current_slideshow+"_add_button").before("<li>"+mysack.response+"</li>");
+					jQuery("#slideshows_wrapper_ul").append("<li>"+mysack.response+"</li>");
 				}
 				else
 				{
 					jQuery("#slideshow_content_box").empty();
 					jQuery("#slideshow_content_box").html(mysack.response);
 				}
-				wpss_stop_loading( "" );
+				wpss_stop_loading( mysack.response );
 			};
 				
 			mysack.onError = function() { alert('Ajax error in add the image to the slideshow.' )};

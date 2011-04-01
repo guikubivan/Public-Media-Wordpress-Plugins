@@ -18,6 +18,8 @@ class IPM_Ajax
 		add_action('wp_ajax_action_remove_slideshow', array(&$this, 'php_remove_slideshow'));
 		add_action('wp_ajax_action_replace_wp_photo', array(&$this, 'php_replace_wp_photo'));
 		add_action('wp_ajax_action_add_new_slideshow', array(&$this, 'php_add_new_slideshow') );
+		add_action('wp_ajax_action_set_cover_image', array(&$this, 'php_set_cover_image') );
+		add_action('wp_ajax_action_change_photo_order', array(&$this, 'php_change_photo_order') );
 	
 		
 	}
@@ -26,6 +28,37 @@ class IPM_Ajax
 	{}
 	public function php_get_slideshow()
 	{}
+	
+	public function php_set_cover_image()
+	{
+		$slideshow_id = $this->plugin->_post["slideshow_id"];
+		$photo_id = $this->plugin->_post["photo_id"];
+		
+		$slideshow = new IPM_Slideshow($this->plugin, $slideshow_id);
+		$thumb = new IPM_SlideshowPhoto($this->plugin, $photo_id);
+		$slideshow->set_thumbnail($thumb);
+		
+		if($success !== false)
+			die( "1" );
+		else
+			die( print_r($success, true) );
+		
+	}
+	
+	public function php_change_photo_order()
+	{
+		$slideshow_id = $this->plugin->_post["slideshow_id"];
+		$current_index = $this->plugin->_post["current_index"];
+		$new_index = $this->plugin->_post["new_index"];
+		$slideshow = new IPM_Slideshow($this->plugin, $slideshow_id);
+		$slideshow->change_order($current_index, $new_index);
+		$slideshow->save_photo_order();
+		//die(print_r($this->plugin->_post, true) );
+		
+		//die(print_r($slideshow->photos, true) );
+			
+	}
+	
 	function php_update_photo()
 	{
 		$photo_id = $this->plugin->_post['photo_id'];
@@ -131,17 +164,17 @@ class IPM_Ajax
 			
 			//save the whole shabang
 			$post_slideshows->save_slideshows();
-			$post_slideshows->get_slideshows();
-			//die("<pre>".print_r($post_slideshows, true)."</pre>");
-			//print out the slideshow editor
+		
 			$slideshow_editors = array( $this->plugin->render_backend_view("admin_slideshow_editor.php", array("photo_editors"=>array(), "slideshow"=>$new_slideshow) ) );
-			
 			if($original_number_of_slideshows == 0)
 			{
 				//if there was nothing before it, print out the wrapper, too
 				$slideshow_editor = $this->plugin->render_backend_view("admin_slideshow_wrapper.php", array("slideshow_editors"=>$slideshow_editors) );
 			}
-			
+			else
+			{
+				$slideshow_editor = $slideshow_editors[0];
+			}
 			die($slideshow_editor);
 		}
 		

@@ -34,18 +34,29 @@
 			<input type='hidden' id='slideshowItem[<?= $slideshow->slideshow_id ?>][longitude]' name='slideshowItem[<?= $slideshow->slideshow_id ?>][longitude]' ReadOnly size='4' value='<?=  $slideshow->longitude ?>' /><!--&#176; latitude--><!--&#176; longitude-->
 		</div>
 	
-		<ul>
-			<? foreach($photo_editors as $key => $photo_editor)
+		<ul slideshow_id="<?=$slideshow->slideshow_id?>" >
+			<? 
+			$count = 0;
+			foreach($photo_editors as $key => $photo_editor)
 			{
 			?>
-			<li>
+			<li order="<?= $count ?>" >
 				<?=$photo_editor?>
 			</li>		
 			<?	
+				$count ++;
 			}?>
-			<li id="slideshow_<?=$slideshow->slideshow_id?>_add_button" >
+			<li class="add_li" id="slideshow_<?=$slideshow->slideshow_id?>_add_button" >
 				<span id='addphoto_button_<?= $slideshow->slideshow_id ?>' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(<?= $slideshow->slideshow_id ?>);' tip='Add Media'>Add photo</span>
 			</li>
 		</ul>
+		
+		
+		
+		
 	</div>
 </div>
+<script type="text/javascript">
+	
+</script>
+	

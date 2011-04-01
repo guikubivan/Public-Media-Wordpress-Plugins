@@ -23,7 +23,7 @@
 .wpss_photo_container{
 	background-color: #54597B;
 
-	cursor:move;
+	/*cursor:move;*/
 	margin: 15px;
 	padding: 5px;
 	width: auto;

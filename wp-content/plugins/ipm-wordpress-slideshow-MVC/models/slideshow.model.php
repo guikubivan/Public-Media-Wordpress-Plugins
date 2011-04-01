@@ -1,4 +1,37 @@
 <?php
+
+/*
+ * This contains information specifically about a slideshow.
+ * It maps directly to the wpss_slideshows table
+ * 
+ * Methods:
+ * get_slideshow() - gets all the slideshow info
+ * get_photos() - populates the $photos attribute with an array of IPM_SlideshowPhoto items
+ * update()
+ * insert()
+ * attach_to_post() - attach the slideshow to a specific post... It's usually better to modify the
+ * 		slideshows attribute, the remove_slideshow(), and save_slideshows() in the IPM_PostSlideshow class
+ * set_thumbnail( IPM_SlideshowPhoto ) - set the thumbnail and update the slideshow
+ * 
+ * Attributes
+ * slideshow_id
+ * title
+ * photo_credit
+ * description
+ * geo_location  
+ * latitude
+ * longitude
+ * thumb_id
+ * thumb - IPM_SlideshowPhoto object
+ * photos - array of IPM_SlideshowPhoto objects
+ * 
+ * wpss - the main slideshow object
+ * wpdb - wrapper for the wordpress database object
+ * 
+ * 
+ */
+
+
 class IPM_Slideshow
 {
 	public $slideshow_id;
@@ -54,17 +87,20 @@ class IPM_Slideshow
 		
 		if(!empty($this->thumb_id) )
 			$this->thumb = new IPM_SlideshowPhoto($this->wpss, $this->thumb_id);
-		
 		$this->get_photos();
+		if(empty($this->thumb_id) && count($this->photos) > 0)
+		{
+			$this->thumb_id = $this->photos[0]->photo_id;
+			$this->thumb = $this->photos[0];
+		}
 	}
 	
-	//doesn't yet handle the order correctly
 	public function get_photos()
 	{
 		$query = "SELECT DISTINCT *  
 			FROM `".$this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations`
 			WHERE `slideshow_id` = '".$this->slideshow_id."' 
-			#ORDER BY `photo_order` ";
+			ORDER BY `photo_order` ";
 		$result = $this->wpdb->get_results($query);
 		//$this->photos = $result;
 		$this->photos = array();
@@ -74,7 +110,7 @@ class IPM_Slideshow
 	}
 	
 	public function update()
-	{
+	{		
 		$query = "UPDATE `".$this->wpdb->prefix.$this->wpss->plugin_prefix."slideshows`
 					SET
 						`title` = '".$this->title."',
@@ -124,19 +160,6 @@ class IPM_Slideshow
 		{	
 			$current_slideshows = array();
 			$tmp = get_post_meta($post_id , "slideshow_id", true);
-			/*if(is_array($tmp))
-			{
-				$current_slideshows[] = $tmp;
-			//	if(!in_array($this->slideshow_id, $tmp) )
-				$current_slideshows[] = $this->slideshow_id;
-			}
-			else
-			{
-				$current_slideshows[] = $tmp;
-				$current_slideshows[] = $this->slideshow_id;
-				
-			}*/
-			
 			$success = update_post_meta($post_id, "slideshow_id", $this->slideshow_id);
 			return $success;
 		}
@@ -145,14 +168,64 @@ class IPM_Slideshow
 			return false;
 		}
 	}
+	
+	public function save_photo_order()
+	{
+		foreach($this->photos as $key => $photo)
+		{
+			$photo->order = $key;
+			$query = "UPDATE `".$this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations`
+			SET `photo_order` = '".$key."'
+			WHERE 
+				`slideshow_id` = '".$this->slideshow_id."'
+				AND `photo_id` = '".$photo->photo_id."'
+			";
+			$result = $this->wpdb->query($query);
 		
 		
+		}  
+	}
+	
+	
+	public function change_order($current_index, $new_index)
+	{
+		foreach($this->photos as $photo)
+			echo $photo->photo_id . " ";
+		echo "\n";
+		
+		if($current_index > $new_index)
+		{
+			$tmp = $current_index;
+			$current_index = $new_index;
+			$new_index = $tmp;
+		}
+		
+		$photos = array_values($this->photos);
+		$photo = $photos[$current_index];
+		
+		$new_photos = array();
+		for($k = 0; $k < $current_index; $k ++)
+			$new_photos[] = $photos[$k];
+		for($k = $current_index +1; $k <= $new_index; $k++)
+			$new_photos[] = $photos[$k];
+		$new_photos[] = $photo;
+		for($k = $new_index + 1; $k < count($photos); $k++)
+			$new_photos[] = $photos[$k];
+		
+		$this->photos = $new_photos;
+		
+		foreach($this->photos as $photo)
+			echo $photo->photo_id . " ";
+		echo "\n";
+	}
+		
+	
 	
 	//thumbnail_id is a photo_id, rather than a post_id
 	public function set_thumbnail($thumbnail)
 	{
 		$this->thumb_id = $thumbnail->photo_id;
-		$this->thumbnail = $thumbnail;
+		$this->thumb = $thumbnail;
 		$success = $this->update();	
 		
 		return $success;

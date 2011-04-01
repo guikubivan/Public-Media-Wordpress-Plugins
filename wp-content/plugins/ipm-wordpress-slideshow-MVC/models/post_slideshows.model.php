@@ -92,7 +92,8 @@ class IPM_PostSlideshows
 		delete_post_meta($this->post_id, "slideshow_id");
 		foreach($this->slideshows as $slideshow)
 		{
-			$success = update_post_meta($this->post_id, "slideshow_id", $slideshow->slideshow_id);
+			echo $slideshow->slideshow_id;	
+			$success = add_post_meta($this->post_id, "slideshow_id", $slideshow->slideshow_id);
 		}
 		return $success;	
 	}
