@@ -13,6 +13,7 @@ class IPM_Ajax
 		add_action('wp_ajax_action_get_coordinates', array(&$this, 'php_get_coordinates'));
 		add_action('wp_ajax_action_get_slideshow', array(&$this, 'php_get_slideshow'));
 		add_action('wp_ajax_action_update_photo', array(&$this, 'php_update_photo'));
+		add_action('wp_ajax_action_update_slideshow', array(&$this, 'php_update_slideshow'));
 		add_action('wp_ajax_action_add_photo_to_slideshow', array(&$this, 'php_add_photo_to_slideshow'));
 		add_action('wp_ajax_action_remove_photo_from_slideshow', array(&$this, 'php_remove_photo_from_slideshow'));
 		add_action('wp_ajax_action_remove_slideshow', array(&$this, 'php_remove_slideshow'));
@@ -72,9 +73,21 @@ class IPM_Ajax
 		$photo->original_url = $this->plugin->_post['original_url'];
 		echo $photo->update();
 		
-		//print_r($photo);
-		//print_r($this->plugin->_post); 
+		die();
 		
+	}
+	function php_update_slideshow()
+	{
+		$slideshow_id = $this->plugin->_post['slideshow_id'];
+		$slideshow = new IPM_Slideshow($this->plugin, $slideshow_id);
+		
+		$slideshow->title = $this->plugin->_post['title'];
+		$slideshow->description = $this->plugin->_post['description'];
+		$slideshow->geo_location = $this->plugin->_post['geo_location'];
+		$slideshow->photo_credit = $this->plugin->_post['photo_credit'];
+		
+		$slideshow->update();
+		print_r($slideshow);
 		die();
 		
 	}
@@ -115,6 +128,7 @@ class IPM_Ajax
 			$post_id = $this->plugin->_post['post_id'];
 			
 			$post_slideshows = new IPM_PostSlideshows($this->plugin, "", $this->plugin->_post["post_id"]);
+			$post_slideshows->get_slideshows();
 			$new_slideshows = array();
 			foreach($post_slideshows->slideshows as $slideshow)
 			{
@@ -124,13 +138,22 @@ class IPM_Ajax
 				}
 			}
 			$post_slideshows->slideshows = $new_slideshows;
+			
 			$success = $post_slideshows->save_slideshows();
-			//die(print_r($post_slideshows, true) );
-			if(count($post_slideshows->slideshows) <= 0)
+			
+			if($success !== false && count($post_slideshows->slideshows) <= 0)
 			{
 				$new_editor = $this->plugin->render_backend_view("admin_no_slideshows.php", array());
 				die($new_editor);
-			}	 
+			}
+			else if ($success !== false)
+			{
+				die($slideshow_id);
+			}
+			else
+			{
+				die("0");	
+			}
 			
 			if($success)
 			{
@@ -257,33 +280,6 @@ class IPM_Ajax
 		
 	}
 	
-	public function php_replace_wp_photo(){
-	/*	global $wpdb;
-		$photo_id = $_POST['photo_id'];
-		$wp_photo_id = $_POST['wp_photo_id'];
-		$new_url = $_POST['new_url'];
-		$photo_credit = $_POST['photo_credit'];
-		$geo_location = $_POST['geo_location'];
-		$retStr = '';
-		if($photo_credit=='undefined' || $geo_location=='undefined'){
-			$photo = $this->getPhotoFixedProps($wp_photo_id);
-			$photo_credit = $photo['photo_credit'];
-			$geo_location = $photo['geo_location'];
-			$original_url = $photo['original_url'];
-		}
-		//$retStr = "var win = window.dialogArguments || opener || parent || top;";
-		if($photo_id && $wp_photo_id){
-			$result = $wpdb->query("UPDATE $this->t_p SET wp_photo_id=$wp_photo_id WHERE photo_id=$photo_id");
-			if($result){
-				$retStr .= "slideshowOrganizer.replaceSubItem(currentSlideshowID, $photo_id, '$new_url',\"".$photo_credit."\", \"".$geo_location."\", \"".$original_url."\");";
-			}else{
-				$retStr = 'alert("Photo could not be updated (possibly picked same photo?)");';
-			}
-		}
-
-		die($retStr);*/
-	}
-
 
 
 }

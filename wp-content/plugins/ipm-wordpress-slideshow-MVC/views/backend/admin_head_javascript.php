@@ -39,9 +39,7 @@
 									
 					reorder_slideshow( slideshow_id, current_index, new_index);
 				}
-			}
-			);
-		//	jQuery(".<?= $this->plugin_prefix ?>slideshow_container ul").disableSelection();
+			});
 		});
 		
 		
@@ -105,6 +103,28 @@
 			mysack.setVar( "original_url", jQuery("#slideshowItem_"+slideshow_id+"_photos_"+photo_id+"_original_url").val() );
 			mysack.setVar( "alt", jQuery("#slideshowItem_"+slideshow_id+"_photos_"+photo_id+"_alt").val() );
 		  	mysack.setVar( "caption", jQuery("#slideshowItem_"+slideshow_id+"_photos_"+photo_id+"_caption").val() );
+			mysack.encVar( "cookie", document.cookie, false );
+			mysack.onCompletion = function () { 
+					wpss_stop_loading( mysack.response );
+				};
+			mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
+			mysack.runAJAX();
+			return true;
+		}
+
+		function ajax_update_slideshow(slideshow_id)
+		{
+			wpss_start_loading();
+		
+			var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
+		
+			mysack.method = 'POST';
+			mysack.setVar( "action", "action_update_slideshow" );
+			mysack.setVar( "title", jQuery("#slideshow_"+slideshow_id+"_title").val() );
+			mysack.setVar( "photo_credit", jQuery("#slideshow_"+slideshow_id+"_photo_credit").val() );
+			mysack.setVar( "geo_location", jQuery("#slideshow_"+slideshow_id+"_geo_location").val() );
+		  	mysack.setVar( "description", jQuery("#slideshow_"+slideshow_id+"_description").val() );
+			mysack.setVar( "slideshow_id", slideshow_id );
 			mysack.encVar( "cookie", document.cookie, false );
 			mysack.onCompletion = function () { 
 					wpss_stop_loading( mysack.response );
@@ -214,15 +234,14 @@
 			mysack.onCompletion = function () 
 			{ 
 				var msg = "";
-				if(mysack.response == "1")
-				{
-					msg = "Successfully removed slideshow";
-					if ( document.getElementById("slideshowContainer_"+slideshow_id).parentNode && document.getElementById("slideshowContainer_"+slideshow_id).parentNode.removeChild ) 
-						document.getElementById("slideshowContainer_"+slideshow_id).parentNode.removeChild(document.getElementById("slideshowContainer_"+slideshow_id));
-				}
-				else if(mysack.response == "0")
+				if(mysack.response == "0")
 				{
 					msg = "Could not remove slideshow";
+				}
+				else if(mysack.response == slideshow_id)
+				{
+					msg = "Successfully removed slideshow";
+					jQuery("#slideshowContainer_34").parent().empty().remove();
 				}
 				else
 				{

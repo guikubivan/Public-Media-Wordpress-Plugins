@@ -16,29 +16,29 @@
 				
 				<div>
 					<label >Title:</label>
-					<input type='text'  id='slideshowItem_<?= $slideshow_id ?>_photos_<?= $photo->photo_id ?>_title' name='slideshowItem_<?= $slideshow_id ?>_photos_<?= $photo->photo_id ?>_title' size='20' value='<?= htmlentities($photo->title)?>' class='<?= $this->plugin_prefix ?>required photo_title' />
+					<input type='text'  id='slideshowItem_<?= $slideshow_id ?>_photos_<?= $photo->photo_id ?>_title' name='slideshow[<?= $slideshow_id ?>][photos][<?= $photo->photo_id ?>][title]' size='20' value='<?= htmlentities($photo->title)?>' class='<?= $this->plugin_prefix ?>required photo_title' />
 				</div>
 				<div>	
 					<label >Photo credit</label>
-					<input type='text' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_photo_credit' name='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_photo_credit' size='20' value='<?= htmlentities($photo->photo_credit) ?>'  title='Click to edit' class='editable <?= $this->plugin_prefix ?>required' />
+					<input type='text' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_photo_credit' name='slideshow[<?= $slideshow_id ?>][photos][<?= $photo->photo_id ?>][photo_credit]' size='20' value='<?= htmlentities($photo->photo_credit) ?>'  title='Click to edit' class='editable <?= $this->plugin_prefix ?>required' />
 				</div>
 				<div>
 					<label >Geo location</label>
-					<input type='text' name='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_geo_location' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_geo_location' size='20' value='<?= htmlentities($photo->geo_location) ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
+					<input type='text' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_geo_location' name='slideshow[<?= $slideshow_id ?>][photos][<?= $photo->photo_id ?>][geo_location]' size='20' value='<?= htmlentities($photo->geo_location) ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
 				</div>
 				<div>
 					<label >Original URL</label>
-					<input type='text' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_original_url' name='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_original_url' size='20' value='<?= htmlentities($photo->original_url) ?>'  title='Click to edit' class='editable' />
+					<input type='text' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_original_url' name='slideshow[<?= $slideshow_id ?>][photos][<?= $photo->photo_id ?>][original_url]' size='20' value='<?= htmlentities($photo->original_url) ?>'  title='Click to edit' class='editable' />
 				</div>
 				<div>
 					<label >Alt text <small>Specific to this Slideshow</small></label>
-					<input type='text' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_alt' name='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_alt' size='20' value='<?= htmlentities($photo->alt) ?>' />
+					<input type='text' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_alt' name='slideshow[<?= $slideshow_id ?>][photos][<?= $photo->photo_id ?>][alt]' size='20' value='<?= htmlentities($photo->alt) ?>' />
 					
 				</div>
 				
 				<div>
 					<label >Caption</label>
-					<textarea  name='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_caption' id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_caption' rows='2' style='width:300px' class='<?= $this->plugin_prefix ?>required' ><?= htmlentities($photo->caption) ?></textarea>
+					<textarea  id='slideshowItem_<?= $slideshow_id ?>_photos_<?=$photo->photo_id?>_caption' name='slideshow[<?= $slideshow_id ?>][photos][<?= $photo->photo_id ?>][caption]' rows='2' style='width:300px' class='<?= $this->plugin_prefix ?>required' ><?= htmlentities($photo->caption) ?></textarea>
 				</div>
 				
 				<div >

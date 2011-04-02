@@ -162,6 +162,45 @@ class wpss_main{
 
   		wp_print_scripts( array( 'sack' )); //Doesn't seem like I need this
 	}
+
+	public function save_slideshow($post_id, $post)
+	{
+		$this->get_post();
+		
+		$slideshows = $this->plugin->_post["slideshow"];
+		
+		if(is_array($slideshows))
+		{
+			foreach($slideshows as $key => $slideshow)
+			{
+					
+				if($key == "single")
+				{
+				}
+				else
+				{
+					$ipm_slideshow = new IPM_Slideshow($this, $key);
+					$ipm_slideshow->title = $slideshow['title'];	
+					$ipm_slideshow->photo_credit = $slideshow['photo_credit'];	
+					$ipm_slideshow->geo_location = $slideshow['geo_location'];	
+					$ipm_slideshow->description = $slideshow['description'];
+					$ipm_slideshow->update();
+					
+					foreach($slideshow['photos'] as $key => $photo)
+					{
+						$ipm_photo = new IPM_SlideshowPhoto($this, $key);
+						$ipm_photo->title = $photo['title'];
+						$ipm_photo->photo_credit = $photo['photo_credit'];
+						$ipm_photo->geo_location = $photo['geo_location'];
+						$ipm_photo->original_url = $photo['original_url'];
+						$ipm_photo->alt = $photo['alt'];
+						$ipm_photo->caption = $photo['caption'];
+					}		
+				}	
+			}
+		}		
+	}
+		
 		
 		
 		

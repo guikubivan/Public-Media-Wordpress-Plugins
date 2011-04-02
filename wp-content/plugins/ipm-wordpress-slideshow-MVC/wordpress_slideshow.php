@@ -60,8 +60,8 @@ add_action( "admin_head", array(&$slideshow_plugin, 'admin_head_scripts') );
 add_action('admin_menu', array(&$slideshow_plugin, 'show_editor_box'), 1);//add slideshow box
 
 //save and delete post hook
-add_action('save_post', array(&$wp_slideshow,'save_slideshow'), 1, 2);
-add_action('delete_post', array(&$wp_slideshow,'delete_photos'));
+add_action('save_post', array(&$slideshow_plugin,'save_slideshow'), 1, 2);
+//add_action('delete_post', array(&$wp_slideshow,'delete_photos'));
 
 add_filter('media_meta', array(&$wp_slideshow,'mediaItem'),  109, 2);//called at wp-admin/includes/media.php
 add_filter('attachment_fields_to_save', array(&$wp_slideshow,'save_photo_fixed_props'), 109, 2);//called at wp-admin/includes/media.php
