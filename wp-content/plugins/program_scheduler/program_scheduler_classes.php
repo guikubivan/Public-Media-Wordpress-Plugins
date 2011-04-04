@@ -270,6 +270,8 @@ if(!class_exists('SchedulerProgram') ){
 		private $Scheduler;
 		public $category_name;
 		public $category_color;
+                public $show_playlist;
+
 		public function __construct($Scheduler, $props = array()){
 			$this->Scheduler = &$Scheduler;
 			
@@ -466,7 +468,6 @@ if(!class_exists ('ProgramScheduler')) {
 		public $program;
 		public $scheduler_event;
 		public $schedule_name;
-                public $show_playlist;
 		public $max_year = 3000;
                 public $id;
 
@@ -477,7 +478,6 @@ if(!class_exists ('ProgramScheduler')) {
                   if(is_null($r))return $r;
 
                   $record->schedule_name = $r->name;
-                  $record->show_playlist = $r->show_playlist;
                   $record->id = $r->ID;
                   return $record;
                 }
@@ -489,19 +489,16 @@ if(!class_exists ('ProgramScheduler')) {
                   if(is_null($r))return $r;
 
                   $record->schedule_name = $r->name;
-                  $record->show_playlist = $r->show_playlist;
                   $record->id = $r->ID;
                   return $record;
                 }
 
 
-                public function __construct($schedule_name = '', $show_playlist=false){
+                public function __construct($schedule_name = ''){
 			//global $wpdb;
 			//$schedule_name = $this->clean_name($schedule_name);
 			$this->plugin_prefix .= $schedule_name ? $schedule_name . '_' : '';
 			$this->schedule_name  = $schedule_name;
-                        $this->show_playlist  = $show_playlist;
-
 
                         $this->t_s = "ps_stations";
 			$this->t_p = "ps_programs";
@@ -555,7 +552,6 @@ if(!class_exists ('ProgramScheduler')) {
 			$query = "CREATE TABLE $table (
 			ID INT(9) NOT NULL AUTO_INCREMENT,
 			name VARCHAR(255) NOT NULL,
-                        show_playlist TINYINT(1) DEFAULT 0,
 			PRIMARY KEY (ID),
                         UNIQUE KEY (name)
 			);";
@@ -576,6 +572,7 @@ if(!class_exists ('ProgramScheduler')) {
                         host_photo_url TEXT,
                         host_bio_link TEXT,
                         host_wordpress_username VARCHAR(255),
+                        show_playlist TINYINT(1) DEFAULT 0,
 			PRIMARY KEY (ID),
 			KEY (blog_id),
 			KEY (post_id),
@@ -650,7 +647,7 @@ if(!class_exists ('ProgramScheduler')) {
 
                 public function save_station(){
                   global $wpdb;
-                  $wpdb->insert($this->t_s, array("name" => $this->schedule_name, "show_playlist" => $this->show_playlist));
+                  $wpdb->insert($this->t_s, array("name" => $this->schedule_name));
                   if($wpdb->insert_id === false) return false;
                           
                   return true;
@@ -1064,11 +1061,13 @@ if(!class_exists ('ProgramScheduler')) {
 					//echo ($row->weekdays == 'weekly') ? $this->scheduler_event->get_day_of_week($row->start_date) : $row->weekdays;
 					
 					if($event_id_clause){
-						echo $row->description ? "\n<description>".$row->description."</description>" : '';
-						echo $row->url ? "\n<url>".$row->url."</url>" : '';
-						echo $row->blog_id ? "\n<blog_id>".$row->blog_id."</blog_id>" : '';
-						echo $row->post_id ? "\n<post_id>".$row->post_id."</post_id>" : '';
-						echo $row->category_name ? "\n<category_name>".$row->category_name."</category_name>" : '';
+                                          $properties = array('description', 'url', 'blog_id', 'post_id', 'category_name',
+                                                              'host_name', 'host_bio', 'host_photo_url', 'host_bio_link',
+                                                              'host_wordpress_username', 'show_playlist');
+                                          foreach($properties as $property){
+                                            eval("\$val = \$row->$property;");
+                                            if($val) echo "\n<$property>" . ent2ncr($val) . "</$property>";
+                                          }
 						//echo $row->category_color ? "\n<category_color>".$row->category_color."</category_color>" : '';
 						//echo "\n<category_name>None</category_name>";
 					}

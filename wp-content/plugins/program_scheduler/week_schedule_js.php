@@ -40,7 +40,7 @@ jQuery(function($){
         // firebug console output
         //----------------------------------------------------------------------
         function debug(text) {
-          return false;
+          //return false;
           if (window.console && window.console.log) {
               window.console.log(text);
           }
@@ -420,6 +420,13 @@ jQuery(function($){
 				events.blog_id[id] = (programsXML.getElementsByTagName("blog_id")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("blog_id")[xmlIndex].childNodes[0].nodeValue;
 				events.post_id[id] = (programsXML.getElementsByTagName("post_id")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("post_id")[xmlIndex].childNodes[0].nodeValue;
 				events.url[id] = (programsXML.getElementsByTagName("url")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("url")[xmlIndex].childNodes[0].nodeValue;
+
+                                events.host_name[id] = (programsXML.getElementsByTagName("host_name")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("host_name")[xmlIndex].childNodes[0].nodeValue;
+                                events.host_bio[id] = (programsXML.getElementsByTagName("host_bio")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("host_bio")[xmlIndex].childNodes[0].nodeValue;
+                                events.host_photo_url[id] = (programsXML.getElementsByTagName("host_photo_url")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("host_photo_url")[xmlIndex].childNodes[0].nodeValue;
+                                events.host_bio_link[id] = (programsXML.getElementsByTagName("host_bio_link")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("host_bio_link")[xmlIndex].childNodes[0].nodeValue;
+                                events.host_wordpress_username[id] = (programsXML.getElementsByTagName("host_wordpress_username")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("host_wordpress_username")[xmlIndex].childNodes[0].nodeValue;
+                                events.show_playlist[id] = (programsXML.getElementsByTagName("show_playlist")[xmlIndex] == undefined) ? false : programsXML.getElementsByTagName("show_playlist")[xmlIndex].childNodes[0].nodeValue == '1';
 <? if($edit): ?>
 				var end_mins = end.getHours()*60 + end.getMinutes();
 				var start_mins = start.getHours()*60 + start.getMinutes();
@@ -727,7 +734,13 @@ jQuery(function($){
 							category_color: events.category_color[id],
 							url: events.url[id],
 							blog_id: events.blog_id[id],
-							post_id: events.post_id[id]
+							post_id: events.post_id[id],
+                                                        host_name: events.host_name[id],
+                                                        host_bio: events.host_bio[id],
+                                                        host_photo_url: events.host_photo_url[id],
+                                                        host_bio_link: events.host_bio_link[id],
+                                                        host_wordpress_username: events.host_wordpress_username[id],
+                                                        show_playlist: events.show_playlist[id]
 							}
 
 				if(events.program_id[id]> -1) event.program_id = events.program_id[id];
@@ -781,6 +794,13 @@ jQuery(function($){
 					events.blog_id[id] = document.forms.event_details.elements.event_blog_id.value;
 					events.url[id] = document.forms.event_details.elements.event_url.value;
 
+                                        events.host_name[id] = document.forms.event_details.elements.host_name.value;
+                                        events.host_bio[id] = document.forms.event_details.elements.host_bio.value;
+                                        events.host_photo_url[id] = document.forms.event_details.elements.host_photo_url.value;
+                                        events.host_bio_link[id] = document.forms.event_details.elements.host_bio_link.value;
+                                        events.host_wordpress_username[id] = document.forms.event_details.elements.host_wordpress_username.value;
+                                        events.show_playlist[id] = document.forms.event_details.elements.show_playlist.value;
+
 					events.color[id] = document.forms.event_details.elements.event_color.value;
 					$(events.container[id]).css('background-color', events.color[id]);
 				}
@@ -819,11 +839,27 @@ jQuery(function($){
 				var fields = getFields(id);
 
 				for(i in fields){
-					$(form_div1).append(i.substr(0,1).toUpperCase() + i.substring(1).replace(/_/, ' ') + ': ');
-					$(form_div1).append('<br />');
+                                  var label = "<label for='" + i + "'>" +
+                                    i.substr(0,1).toUpperCase() +
+                                    i.substring(1).replace(/_/g, ' ') +
+                                    "</label>";
+                                  console.log(id);
+                                  fields[i].attr('id', i);
+                                  console.log(fields[i].attr('id'));
+                                  switch(i){
+                                    case 'show_playlist':
+                                      $(form_div1).append(fields[i]);
+                                      $(form_div1).append(label);
+                                      $(form_div1).append('<br />');
+                                      break;
+                                    default:
+                                      $(form_div1).append(label + ": ");
+                                      $(form_div1).append('<br />');
 
-					$(form_div1).append(fields[i]);
-					$(form_div1).append('<br />');
+                                      $(form_div1).append(fields[i]);
+                                      if(i!='event_name')$(form_div1).append('<br />');
+                                  }
+
 				}
 
 				var dateTimeFields = getDateTimeFields(id);
@@ -962,12 +998,19 @@ jQuery(function($){
 <? if($edit): ?>
 
 				var fields  = {
-					name: $('<input type="text" name="event_name" value="' + $(events.name[id]).text() + '"/>'),
-					description: $('<textarea style="width: 300px; height: 100px;" name="event_description" />'),
-					url: $('<input type="text" name="event_url" value="' + events.url[id] + '"/>'),
-					color: $('<input type="text" title="include the # for hex colors" size="10" name="event_color" value="' + events.color[id] + '" />'),
-					blog_id: $('<input type="text" size="9" MAXLENGTH="9"  name="event_blog_id" value="' + events.blog_id[id] + '" />'),
-					post_id: $('<input type="text" size="9" MAXLENGTH="9" name="event_post_id" value="' + events.post_id[id] + '" />'),
+					event_name: $('<input type="text" name="event_name" value="' + $(events.name[id]).text() + '"/>'),
+                                        show_playlist: $('<input type="checkbox" name="show_playlist" ' + (events.show_playlist[id] ? "CHECKED='CHECKED'" : '') + '"/>'),
+					event_description: $('<textarea style="width: 300px; height: 100px;" name="event_description" />'),
+					event_url: $('<input type="text" name="event_url" value="' + events.url[id] + '"/>'),
+                                        host_name: $('<input type="text" name="host_name" value="' + events.host_name[id] + '"/>'),
+                                        host_bio: $('<input type="text" name="host_bio" value="' + events.host_bio[id] + '"/>'),
+                                        host_photo_url: $('<input type="text" name="host_photo_url" value="' + events.host_photo_url[id] + '"/>'),
+                                        host_bio_link: $('<input type="text" name="host_bio_link" value="' + events.host_bio_link[id] + '"/>'),
+                                        host_wordpress_username: $('<input type="text" name="host_wordpress_username" value="' + events.host_wordpress_username[id] + '"/>'),
+
+					event_color: $('<input type="text" title="include the # for hex colors" size="10" name="event_color" value="' + events.color[id] + '" />'),
+					event_blog_id: $('<input type="text" size="9" MAXLENGTH="9"  name="event_blog_id" value="' + events.blog_id[id] + '" />'),
+					event_post_id: $('<input type="text" size="9" MAXLENGTH="9" name="event_post_id" value="' + events.post_id[id] + '" />'),
 				}
 
 
@@ -1339,6 +1382,14 @@ jQuery(function($){
 				if(events.post_id[id] == undefined)events.post_id[id] = '';
 				if(events.blog_id[id] == undefined)events.blog_id[id] = '';
 				if(events.url[id] == undefined) events.url[id] = '';
+                                
+                                if(events.host_name[id] == undefined) events.host_name[id] = '';
+                                if(events.host_bio[id] == undefined) events.host_bio[id] = '';
+                                if(events.host_photo_url[id] == undefined) events.host_photo_url[id] = '';
+                                if(events.host_bio_link[id] == undefined) events.host_bio_link[id] = '';
+                                if(events.host_wordpress_username[id] == undefined) events.host_wordpress_username[id] = '';
+                                if(events.show_playlist[id] == undefined) events.show_playlist[id] = false;
+
 				if(events.never_ends[id] == undefined) events.never_ends[id] = false;
 
 				/***************************************************/
@@ -1587,7 +1638,14 @@ jQuery(function($){
 				ecol: [],//end coloumn
 				url: [],
 				blog_id: [],
-				post_id: []
+				post_id: [],
+
+                                host_name: [],
+                                host_bio: [],
+                                host_photo_url: [],
+                                host_bio_link: [],
+                                host_wordpress_username: [],
+                                show_playlist: []
 			};
 
 			var cur_id = -1;

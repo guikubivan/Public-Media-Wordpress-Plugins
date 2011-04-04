@@ -83,7 +83,7 @@ function manage_stations(){
 	if(!empty($sname)){
           $schedules = $wpdb->get_results("SELECT * FROM ".$helper_schedule->t_s." ORDER BY name");
 
-          $scheduleObject = new ProgramScheduler($sname, !empty($_POST['show_playlist']) );
+          $scheduleObject = new ProgramScheduler($sname);
           if($scheduleObject->save_station()){
             echo "<div class='updated fade'>Schedule " . $sname . " added.</div>";
           }else{
@@ -148,7 +148,6 @@ function manage_stations(){
 
 	echo "<form action='' method='POST' />";
 	echo "<input type='text' name='schedule_name' value='Enter schedule name' onfocus=\"if(this.defaultValue==this.value) this.value = '';\" />";
-        echo "<br/><input type='checkbox' id='show_playlist' name='show_playlist' /> <label for='show_playlist'>Show playlist (if available)</label>";
 	echo "<br/><input type='submit' value='Create Schedule' />";
 	echo "</form>";
 	echo "</div>";
