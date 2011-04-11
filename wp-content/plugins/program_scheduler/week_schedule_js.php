@@ -426,7 +426,7 @@ jQuery(function($){
                                 events.host_photo_url[id] = (programsXML.getElementsByTagName("host_photo_url")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("host_photo_url")[xmlIndex].childNodes[0].nodeValue;
                                 events.host_bio_link[id] = (programsXML.getElementsByTagName("host_bio_link")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("host_bio_link")[xmlIndex].childNodes[0].nodeValue;
                                 events.host_wordpress_username[id] = (programsXML.getElementsByTagName("host_wordpress_username")[xmlIndex] == undefined) ? '' : programsXML.getElementsByTagName("host_wordpress_username")[xmlIndex].childNodes[0].nodeValue;
-                                events.show_playlist[id] = (programsXML.getElementsByTagName("show_playlist")[xmlIndex] == undefined) ? false : programsXML.getElementsByTagName("show_playlist")[xmlIndex].childNodes[0].nodeValue == '1';
+                                events.show_playlist[id] = (programsXML.getElementsByTagName("show_playlist")[xmlIndex] == undefined) ? '0' : programsXML.getElementsByTagName("show_playlist")[xmlIndex].childNodes[0].nodeValue;
 <? if($edit): ?>
 				var end_mins = end.getHours()*60 + end.getMinutes();
 				var start_mins = start.getHours()*60 + start.getMinutes();
@@ -799,7 +799,7 @@ jQuery(function($){
                                         events.host_photo_url[id] = document.forms.event_details.elements.host_photo_url.value;
                                         events.host_bio_link[id] = document.forms.event_details.elements.host_bio_link.value;
                                         events.host_wordpress_username[id] = document.forms.event_details.elements.host_wordpress_username.value;
-                                        events.show_playlist[id] = document.forms.event_details.elements.show_playlist.value;
+                                        events.show_playlist[id] = document.forms.event_details.elements.show_playlist.checked ? '1' : '0';
 
 					events.color[id] = document.forms.event_details.elements.event_color.value;
 					$(events.container[id]).css('background-color', events.color[id]);
@@ -842,13 +842,14 @@ jQuery(function($){
                                   var label = "<label for='" + i + "'>" +
                                     i.substr(0,1).toUpperCase() +
                                     i.substring(1).replace(/_/g, ' ') +
-                                    "</label>";
-                                  console.log(id);
-                                  fields[i].attr('id', i);
-                                  console.log(fields[i].attr('id'));
+                                    "</label>",
+                                    this_field = fields[i];
+                                  
+                                  
+                                  //console.log(this_field.attr('id'));
                                   switch(i){
                                     case 'show_playlist':
-                                      $(form_div1).append(fields[i]);
+                                      $(form_div1).append(this_field);
                                       $(form_div1).append(label);
                                       $(form_div1).append('<br />');
                                       break;
@@ -856,10 +857,10 @@ jQuery(function($){
                                       $(form_div1).append(label + ": ");
                                       $(form_div1).append('<br />');
 
-                                      $(form_div1).append(fields[i]);
+                                      $(form_div1).append(this_field);
                                       if(i!='event_name')$(form_div1).append('<br />');
                                   }
-
+this_field.attr('id', i);
 				}
 
 				var dateTimeFields = getDateTimeFields(id);
@@ -883,6 +884,12 @@ jQuery(function($){
 				var saveButton = $('<input id="'+id+'_save_button" type="button" value="Save" />');
 				$(saveButton).bind("click", function(e){
 					saveEventDetails(id);
+                                        //TO-DO: Delete all UI divs related to this event
+                                        //and redraw them again.
+                                        
+                                        //deleteInterfaceEvent(id, true);
+                                        //createEvent(id, events.srow[id], events.scol[id], events.erow[id], events.ecol[id]);
+                                        //drawEvent(id, false);
 				});
 				$(timeStuff).append(saveButton);
 				if(dateOnly == undefined){
@@ -998,12 +1005,12 @@ jQuery(function($){
 <? if($edit): ?>
 
 				var fields  = {
-					event_name: $('<input type="text" name="event_name" value="' + $(events.name[id]).text() + '"/>'),
-                                        show_playlist: $('<input type="checkbox" name="show_playlist" ' + (events.show_playlist[id] ? "CHECKED='CHECKED'" : '') + '"/>'),
-					event_description: $('<textarea style="width: 300px; height: 100px;" name="event_description" />'),
+					event_name: $('<input type="text" name="event_name" value="' + $(events.name[id]).text() + '" title="Note: Changing this field will affect all events related to this program"/>'),
+                                        show_playlist: $('<input type="checkbox" name="show_playlist" ' + (events.show_playlist[id]=="1" ? "CHECKED='CHECKED'" : '') + '"/>'),
+					description: $('<textarea style="width: 300px; height: 100px;" name="event_description" />'),
 					event_url: $('<input type="text" name="event_url" value="' + events.url[id] + '"/>'),
                                         host_name: $('<input type="text" name="host_name" value="' + events.host_name[id] + '"/>'),
-                                        host_bio: $('<input type="text" name="host_bio" value="' + events.host_bio[id] + '"/>'),
+                                        host_bio: $('<textarea style="width: 300px; height: 100px;" name="host_bio" />'),
                                         host_photo_url: $('<input type="text" name="host_photo_url" value="' + events.host_photo_url[id] + '"/>'),
                                         host_bio_link: $('<input type="text" name="host_bio_link" value="' + events.host_bio_link[id] + '"/>'),
                                         host_wordpress_username: $('<input type="text" name="host_wordpress_username" value="' + events.host_wordpress_username[id] + '"/>'),
@@ -1015,6 +1022,8 @@ jQuery(function($){
 
 
 				$(fields.description).val(events.description[id]);
+
+                                $(fields.host_bio).val(events.host_bio[id]);
 
 				$(fields.color).bind("keyup", function(e){
 					setBackgroundColor(cur_id, this.value);
@@ -1179,7 +1188,7 @@ jQuery(function($){
 
 
 
-			function deleteInterfaceEvent(id){
+			function deleteInterfaceEvent(id, ui_only){
 <? if($edit): ?>
 				if($(events.container[id]).hasClass('edit_single')){
 <? else: ?>
@@ -1187,13 +1196,17 @@ jQuery(function($){
 <? endif; ?>
 					toggleFocus(id);
 				}
-				//debug('deleting interface event ' + id);
-				$(events.container[id]).remove();
+                                if(events.container[id]){
+                                  debug('deleting container for event ' + id);
+                                  events.container[id].remove();
+                                }
 
 				//resetCells(events.srow[id], events.scol[id], events.erow[id], events.ecol[id]);
-				for(prop in events){
-					delete events[prop][id];
-				}
+                                if(!ui_only){
+                                  for(prop in events){
+                                          delete events[prop][id];
+                                  }
+                                }
 			}
 
 			function clearAllEvents(){
@@ -1298,6 +1311,7 @@ jQuery(function($){
 <? if($edit): ?>
 			function drawEvent(id, doToggle){
 				var color = (events.category_color[id]) ? events.category_color[id] : events.color[id];
+                                debug("Drawing event and creating container for " + id);
 				events.container[id] = $('<div id="'+id+'" class="calendar_overlay " style="background-color: '+ color +'; height: '+((events.erow[id]-events.srow[id]+1)*opts.cell_height + (events.erow[id]-events.srow[id]-1))+'px; width: '+events.width[id]+'px;"></div>');
 				$(obj).find('#'+events.srow[id]+'_'+events.scol[id]).find("div:first").prepend(events.container[id]);
 				events.controls[id] = getControls();
@@ -1388,7 +1402,7 @@ jQuery(function($){
                                 if(events.host_photo_url[id] == undefined) events.host_photo_url[id] = '';
                                 if(events.host_bio_link[id] == undefined) events.host_bio_link[id] = '';
                                 if(events.host_wordpress_username[id] == undefined) events.host_wordpress_username[id] = '';
-                                if(events.show_playlist[id] == undefined) events.show_playlist[id] = false;
+                                if(events.show_playlist[id] == undefined) events.show_playlist[id] = '0';
 
 				if(events.never_ends[id] == undefined) events.never_ends[id] = false;
 
@@ -1462,6 +1476,7 @@ jQuery(function($){
 				autoRefresh: false,
 				//selected: function(event, ui) { var a;},
 				stop: function(event, ui) {
+                                        //target seems to always be the selectable object, so we can't test if it was a event div
 					if(cur_id > -1 )return;
                                         target = ui.selectable == undefined ? event.target : ui.selectable
                                         target = $(target);
@@ -1505,6 +1520,7 @@ jQuery(function($){
 
 					if(! $(obj).find("#" + srow + '_' + scol).hasClass('selectable_cell') ){return;}
 					ecol = scol;
+                                        debug("Creating and drawing temporary event for selected region.")
 					createEvent(div_id, srow, scol, erow, ecol);
 					drawEvent(div_id, true);
 					//target.find('td.ui-selected').removeClass('selectable_cell');

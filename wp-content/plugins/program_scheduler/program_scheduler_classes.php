@@ -303,7 +303,7 @@ if(!class_exists('SchedulerProgram') ){
 			}
 			$query = substr($query, 0, -1);
 			$query .= " WHERE ID = " . $this->ID . ";";
-			
+                        //echo $query;
 			$result = $wpdb->query($query);	
 			if($result===false){
 				return 'Error updating: ' . $query;
@@ -997,7 +997,7 @@ if(!class_exists ('ProgramScheduler')) {
 				$event_id_clause = 'tt.ID = ' . $_POST[event_id];
 			}
 			if($content == 'full'){
-                          $fields = 'p.ID as program_id, tt.ID as event_id, name, url, description, blog_id, p.post_id, color, category_name, category_color, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date';
+                          $fields = 'p.ID as program_id, tt.ID as event_id, name, url, description, blog_id, p.post_id, color, category_name, category_color, show_playlist, host_name, host_photo_url, host_bio, host_bio_link, host_wordpress_username, weekdays, start_date, end_date, date_format(end_date, "%c/%d/%Y %k:%i:%s") as mod_end_date';
                         }else{
                           $fields = 'ID as program_id, name, color';
                         }
@@ -1011,8 +1011,8 @@ if(!class_exists ('ProgramScheduler')) {
 			$query = "SELECT DISTINCT $fields FROM $whichtables";
 
                         if($event_id_clause) $where[] = $event_id_clause;
-                        
-			if($event_id_clause && $date_clause) $where[] = $date_clause;
+
+                        if($date_clause) $where[] = $date_clause;
 
 			if( isset($_POST['content']) && $content != 'minimal' && !isset($_POST['program_id']) && !isset($_POST['event_id']) ){
                           $where[] = "(TIMEDIFF(TIME(ADDTIME(end_date, -1)), TIME(start_date) ) >= '00:15:00' AND TIME(ADDTIME(end_date, -1)) >= TIME(start_date))";
