@@ -10,7 +10,7 @@ $blog_id = 1;
 $station_id = "";//set to integer or ""
 
 #specify host or domain (needed for wp-includes/ms-settings.php:100)
-$_SERVER[ 'HTTP_HOST' ] = 'localhost';
+$_SERVER[ 'HTTP_HOST' ] = 'pablo.dyndns-office.com';
 
 #location of wp-load.php so we have access to database and $wpdb object
 $wp_load_loc = '/home/www/wordpress_3.1/wp-load.php';
@@ -31,28 +31,54 @@ try{
   die($wpdb->prefix."wfiu_playlist table not found, make sure plugin is activated in blog with id $blog_id\n");
 }
 
+global $file_date_string;
+foreach($argv as $key=>$file){
+  if($key==0) continue;
+  process_playlist_file($file);
+}
+echo "
+______________________
+|      LEGEND        |
+|   +  | item added  |
+|   ^  | item exists |
+______________________
+";
 
-$file = $argv[1];
 
-$handle = @fopen($file, "r");
-if ($handle) {
-  while (($buffer = fgets($handle, 4096)) !== false) {
-    $line = trim($buffer);
-    if(!empty($line)){
-      //echo ".";
-      parse_playlist_item($line);
+function process_playlist_file($file){
+  global $file_date_string;
+  $file_ts = filectime ($file);
+
+  $file_date_string = date("Y-m-d ", $file_ts);
+  echo basename($file) . ":\t";
+  //return;
+  $added = 0;
+  $skipped = 0;
+  $handle = @fopen($file, "r");
+  if ($handle) {
+    while (($buffer = fgets($handle, 4096)) !== false) {
+      $line = trim($buffer);
+      if(!empty($line)){
+        //echo ".";
+        if(parse_playlist_item($line)){
+          ++$added;
+        }else{
+          ++$skipped;
+        }
+      }
     }
+    echo " ($added added / $skipped skipped)";
+    echo "\n";
+    if (!feof($handle)) {
+      echo "Error: unexpected fgets() fail\n";
+    }
+    fclose($handle);
   }
-  echo "\n";
-  if (!feof($handle)) {
-    echo "Error: unexpected fgets() fail\n";
-  }
-  fclose($handle);
 }
 
 
 function parse_playlist_item($line){
-  global $station_id;
+  global $station_id, $file_date_string;
   $fields = explode("\t", $line);
   #echo sizeof($fields);
   #echo "|". implode("|", $fields) ."|\n";
@@ -70,7 +96,7 @@ function parse_playlist_item($line){
   }
   $fields[0] = $time_parts[0] . ":" . $time_parts[1] . ":00 " . $time_parts[2];
   
-  $item['start_time'] = date("Y-m-d H:i:s", strtotime(date("Y-m-d "). $fields[0]));
+  $item['start_time'] = date("Y-m-d H:i:s", strtotime($file_date_string. $fields[0]));
 
   #caculate seconds of track
   $item['duration'] = preg_split("/[:]+/", $fields[2]);
@@ -101,7 +127,7 @@ function parse_playlist_item($line){
 
   if(!empty($station_id))
     $item['station_id'] = $station_id;
-  insert_playlist_item($item);
+  return insert_playlist_item($item);
 
   #echo "\n|" . $fields[0]."|";
   #echo "\n\t|" . $item['duration']."|";
@@ -109,9 +135,16 @@ function parse_playlist_item($line){
 
 function insert_playlist_item($item){
   global $wpdb;
-  
+
+  $query = $wpdb->prepare("SELECT ID FROM " . $wpdb->prefix . "wfiu_playlist WHERE title = %s AND start_time = %s", $item['title'], $item['start_time']);
+  #echo $query . "\n";
+  if(sizeof($wpdb->get_results($query)) > 0){
+    echo "^";
+    return false;
+  }
   $wpdb->insert( $wpdb->prefix . "wfiu_playlist", $item);
   echo "+";
+  return true;
 }
 
 function combine_array_items($array){

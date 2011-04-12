@@ -14,7 +14,13 @@
 
 /*Globals
 *  WPScheduler.url
+*  WPScheduler.ajaxurl (for frontend)
 */
+
+if(typeof ajaxurl == 'undefined'){
+  ajaxurl = WPScheduler.ajaxurl;
+}
+
 
 <? include_once(dirname(__FILE__).'/utils_js.php'); ?>
 //<script type="text/javascript">
@@ -1160,7 +1166,7 @@ this_field.attr('id', i);
 					debug('current event id is : ' +cur_id + '(program id: ' + events.program_id[id] + ', event_id: '+events.event_id[id]+')');
 				}
 <? else: ?>
-  				ajax_get_program(opts.schedule_name, events.program_id[id], events.container[id], 'left');
+  				ajax_get_program(schedule_name, events.program_id[id], events.container[id], 'left');
 <? endif; ?>
 			}
 

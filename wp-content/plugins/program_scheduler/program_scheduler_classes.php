@@ -678,18 +678,22 @@ if(!class_exists ('ProgramScheduler')) {
 			return str_replace('-', '_', sanitize_title($schedule_name));
 		}
 		
-		function register_js_scripts(){
+		function register_scripts_and_styles(){
 			//wp_register_script('jquery-ui-selectable', $this->plugin_url.'ui.selectable.js', array('jquery-ui-core'));
-			wp_register_script('jquery-ui-datepicker', $this->plugin_url.'ui.datepicker.js', array('jquery-ui-core'));
+			wp_register_script('jquery-ui-datepicker', $this->plugin_url.'js/ui.datepicker.js', array('jquery-ui-core'));
 
-			wp_register_script('schedule_week_editor', $this->plugin_url.'week_schedule_edit_js.php', array('jquery-ui-datepicker', 'jquery-ui-selectable', 'sack'));
-                        wp_register_script('schedule_week_viewer', $this->plugin_url.'week_schedule_js.php', array('jquery-ui-datepicker', 'jquery-ui-selectable', 'sack'));
+			wp_register_script('schedule_week_editor', $this->plugin_url.'js/week_schedule_edit_js.php', array('jquery-ui-datepicker', 'jquery-ui-selectable', 'sack'));
+                        wp_register_script('schedule_week_viewer', $this->plugin_url.'js/week_schedule_js.php', array('jquery-ui-datepicker', 'sack'));
 
                         $js_params = array(
                           'url'=>get_bloginfo('url')
                         );
                         wp_localize_script( 'schedule_week_editor', 'WPScheduler', $js_params);
                         wp_localize_script( 'schedule_week_viewer', 'WPScheduler', $js_params);
+
+                        wp_register_style('ps_datepicker', $this->plugin_url.'css/datepicker.css');
+                        wp_register_style('ps_week_viewer', $this->plugin_url.'css/viewer.css', array("ps_datepicker"));
+                        
 		}
 		
 		function admin_print_scripts(){
@@ -697,36 +701,27 @@ if(!class_exists ('ProgramScheduler')) {
 				//wp_register_script('jquery-ui-datepicker', $this->plugin_url.'ui.datepicker.js', array('jquery-ui-core'));
 				
 				if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
-					echo '<link rel="stylesheet" href="'.$this->plugin_url.'datepicker.css" type="text/css" />'."\n";
-					echo '<link rel="stylesheet" href="'.$this->plugin_url.'editor.css" type="text/css" />'."\n";
+					echo '<link rel="stylesheet" href="'.$this->plugin_url.'/css/datepicker.css" type="text/css" />'."\n";
+					echo '<link rel="stylesheet" href="'.$this->plugin_url.'/css/editor.css" type="text/css" />'."\n";
 					wp_enqueue_script( 'schedule_week_editor' );
 				}else{
 					//wp_register_script('schedule_week_viewer', $this->plugin_url.'week_schedule_js.php', array('jquery-ui-datepicker', 'jquery-ui-selectable', 'sack'));
-					echo '<link rel="stylesheet" href="'.$this->plugin_url.'datepicker.css" type="text/css" />'."\n";
-					echo '<link rel="stylesheet" href="'.$this->plugin_url.'viewer.css" type="text/css" />'."\n";
+					echo '<link rel="stylesheet" href="'.$this->plugin_url.'/css/datepicker.css" type="text/css" />'."\n";
+					echo '<link rel="stylesheet" href="'.$this->plugin_url.'/css/viewer.css" type="text/css" />'."\n";
 					wp_enqueue_script( 'schedule_week_viewer' );
 					
-				}
-				//wp_register_script('schedule_admin', $this->plugin_url.'schedule_admin.js', array('jquery'));
+				}	
+		}
 
-				//wp_enqueue_script( 'jquery-ui-selectable' );
-				
-				
-				
-				//wp_enqueue_script( 'jquery-ui-datepicker' );
-				//wp_enqueue_script( 'sack' );
-				
-				
-				
-				
-				 //wp_print_scripts( array( 'sack' ));
-	
-		}
-		function configure_channels(){
-			echo "blah";	
-			
-		}
-		
+                function frontend_enque($in_footer){
+                  wp_register_script('jquery-ui-accordion', $this->plugin_url.'js/jquery.ui.accordion.min');
+                  wp_register_script('schedule_week_viewer_frontend', $this->plugin_url.'js/week_schedule_js.php', array('jquery-ui-datepicker', 'sack', 'jquery-ui-tabs', 'jquery-ui-accordion'), "", $in_footer);
+                  wp_localize_script( 'schedule_week_viewer_frontend', 'WPScheduler', array( 'url'=>get_bloginfo('url'), 'ajaxurl' => admin_url('admin-ajax.php') ) );
+
+                  wp_enqueue_script( 'schedule_week_viewer_frontend');
+
+                  wp_enqueue_style("ps_week_viewer");
+                }
 
 		function plugin_url(){
 			$result = get_bloginfo('url').'/wp-content/plugins/program_scheduler/';
@@ -1015,7 +1010,7 @@ if(!class_exists ('ProgramScheduler')) {
                         if($date_clause) $where[] = $date_clause;
 
 			if( isset($_POST['content']) && $content != 'minimal' && !isset($_POST['program_id']) && !isset($_POST['event_id']) ){
-                          $where[] = "(TIMEDIFF(TIME(ADDTIME(end_date, -1)), TIME(start_date) ) >= '00:15:00' AND TIME(ADDTIME(end_date, -1)) >= TIME(start_date))";
+                          $where[] = "( ABS( TIMEDIFF( TIME( ADDTIME(end_date, -1) ), TIME(start_date) ) ) >= '00:15:00' AND TIME(ADDTIME(end_date, -1)) >= TIME(start_date))";
 			}
                         
                         if($sql) $where[] = $sql;

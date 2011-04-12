@@ -325,7 +325,7 @@ ul.listing_list li {
 }
 
 ul.listing_list li > a:first-child {
-	background: #eee url('images/down-arrow.png') 605px center no-repeat;
+	background: #eee url('../images/down-arrow.png') 605px center no-repeat;
 	padding: 3px;
 	padding-right:0;
 	display: block;
@@ -334,7 +334,7 @@ ul.listing_list li > a:first-child {
 }
 
 ul.listing_list li > a:first-child:hover {
-	background: #ddd url('images/down-arrow.png') 605px center no-repeat;
+	background: #ddd url('../images/down-arrow.png') 605px center no-repeat;
 }
 
 div.single_program_description {
@@ -371,3 +371,76 @@ div.single_program_times div {
 	vertical-align: top;
 	margin-bottom: 5px;
 }
+
+/* Other views (single day) from Eoban */
+
+ul.listing_list li {
+	list-style-type:none !important;
+}
+
+ul.listing_list li a {
+	width: 603px !important;
+	background-position-x: 590px !important;
+}
+
+table.calendar_days th {
+	padding-left: 15px !important;
+	padding-bottom: 5px;
+}
+
+div#schedule-tabs ul#schedule-tabs-ul div {
+	border-bottom: 1px solid #bbb;
+	padding: 5px;
+	float:left;
+	margin-right: 5px;
+	width: 610px;
+}
+
+div#schedule-tabs ul#schedule-tabs-ul {
+	padding-bottom: 50px;
+}
+
+div#schedule-tabs ul#schedule-tabs-ul li {
+	padding: 4px;
+	margin-right: 2px;
+	display: inline;
+	border: 1px solid white;
+	border-bottom:0;
+}
+
+div#schedule-tabs ul#schedule-tabs-ul li.ui-state-active {
+	border: 1px solid #bbb;
+	border-bottom:1px solid white;
+	/* background:#eee; */
+}
+
+table#schedule_listing {
+	border-collapse:collapse;
+	text-align:left;
+	font-size: 14px;
+}
+
+table#schedule_listing tr th {
+	padding-bottom: 5px;
+	text-align: center;
+	font-size: 16px;
+}
+
+table#schedule_listing tr td {
+	padding: 7px;
+	border: 1px solid #ccc;
+}
+
+table#schedule_listing tr td div {
+	margin-bottom: 10px;
+}
+
+.ui-tabs .ui-tabs-hide {
+     display: none;
+}
+
+.ui-tabs-panel {
+	position:relative;
+	z-index:1;
+}
+/* END - Other views (single day) from Eoban */

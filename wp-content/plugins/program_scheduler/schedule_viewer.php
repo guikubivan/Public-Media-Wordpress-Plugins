@@ -3,6 +3,8 @@ global $start_date;
 global $eventHelper;
 global $scheduleObj;
 
+/* Deprecated */
+/*
 if(!function_exists('print_program_row') ){
 	function print_program_row ($row){
 		echo "<li><div class='program_name'>";
@@ -28,16 +30,18 @@ if(!function_exists('print_program_row') ){
 		
 	}
 }
-
-
+*/
 
 
 if(isset($_GET['schedule_name']) ){
 	$sname = $_GET['schedule_name'];
 	$scheduleObj = ProgramScheduler::find_by_name($sname);
-	if(!$scheduleObj->is_valid()){
-		echo "<strong>Schedule $sname does not exist.</strong>";
-	}
+
+	if(!is_null($scheduleObj) && !$scheduleObj->is_valid()){
+          echo "<strong>Schedule $sname does not exist.</strong>";
+	}else if(is_null($scheduleObj)){
+          $scheduleObj = new ProgramScheduler();
+        }
 }else{
 	die("<b>No schedule selected</b>");
 }
@@ -195,6 +199,7 @@ if(!function_exists('single_day_view')){
 
 if($_GET[mode] == 'single'){
   if(empty($sname))echo "No schedule given";
+  $sname = explode(",", $sname);
   single_day_view($sname);
 }else if($_GET[mode] == 'listing'){
         #uncomment to list all programs in all schedules
@@ -259,6 +264,7 @@ if($_GET[mode] == 'single'){
 	}
 	
 	if(!preg_match("/schedule_viewer\.php/", $_SERVER['REQUEST_URI']) ){
+                #only load it once for all schedules
 		require_once(dirname(__FILE__).'/load_week_schedule_all_js.php'); 
 	}
 }	
