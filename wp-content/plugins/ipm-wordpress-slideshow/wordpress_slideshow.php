@@ -67,10 +67,10 @@ add_action('admin_menu', 'slideshow_manager_menu');
 //*********************FRONTEND STUFF*********************************
 add_action('the_content', array(&$wp_slideshow, 'replace_tags')); 
 
-function wpss_photos($stylesheet=''){
+function wpss_photos($stylesheet='', $get_only = false){
 	global $wp_slideshow, $post;
 	if(!$wp_slideshow->post_has_tags($post->post_content)){
-		$wp_slideshow->show_photos($post->ID, $stylesheet);
+		return $wp_slideshow->show_photos($post->ID, $stylesheet, $get_only);
 	}
 }
 
