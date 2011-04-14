@@ -732,8 +732,10 @@ if(!class_exists ('ProgramScheduler')) {
 			$str = str_replace("'", '&#039;', $str);
 			return "alert(\"$str\");";
 		}
-				
+
+                #pass $test_only = true to only check whether this program occurs during the time allowed
 		function program_tablerow($program, $start_date, $doTime=true, $max_cell_height=800, $scale_height=false, $test_only = false){
+                  global $ps_query;
 			$start = strtotime($program->start_date);
 			$eventHelper = new SchedulerEvent('', '', '');
 			$end = $eventHelper->fix_end_time($start, $program->end_date);
@@ -766,7 +768,9 @@ if(!class_exists ('ProgramScheduler')) {
 				}
 			}
 			
-			if(!$valid)return false;
+			if(!$valid){
+                          return false;
+                        }
 			
 			if($test_only){
 				return true;
@@ -788,29 +792,33 @@ if(!class_exists ('ProgramScheduler')) {
 				$rowheight = "height: ${height}px;";
 			}
 			
-			echo "<tr style='${rowheight}background-color: ".$program->category_color."' >";
+			$string = "<tr style='${rowheight}background-color: ".$program->category_color."' >";
 			if($doTime){
-				echo "<td style='text-align:right;vertical-align: top;background-color: black; color:white; width:80px;' >" . date("h:i A", $start) . "</td>";
+				$string .= "<td style='text-align:right;vertical-align: top;background-color: black; color:white; width:80px;' >" . date("h:i A", $start) . "</td>";
 			}
-			echo "<td>";
-			echo "<span class='program_name'>$program->name</span>";
-			echo $program->url ? "<br /><a href='$program->url' target='_blank' class='program_url'>URL</a>" : '';
-			echo "</td>";
-			//echo "<td>$program->url</td>";
-			echo "<td>";
+			$string .= "<td>";
+			$string .= "<span class='program_name'>$program->name</span>";
+			$string .= $program->url ? "<br /><a href='$program->url' target='_blank' class='program_url'>URL</a>" : '';
+			$string .= "</td>";
+			//$string .= "<td>$program->url</td>";
+			$string .= "<td>";
 				if($program->weekdays){
 					foreach($when as $i =>$d) $when[$i] = $eventHelper->daysHash[$d-1];
 					$when = implode(', ', $when);
-					echo "<br /> Airs weekly on <span class='program_weekdays'>$when</span> from ";
-					echo date("h:i A", $start) . " to ";
-					echo date("h:i A", $end);
-					echo $program->schedule_name ? " on $program->schedule_name." : '';
+					$string .= "<br /> Airs weekly on <span class='program_weekdays'>$when</span> from ";
+					$string .= date("h:i A", $start) . " to ";
+					$string .= date("h:i A", $end);
+					$string .= $program->schedule_name ? " on $program->schedule_name." : '';
 				}else{
-					echo "<br /> Airs on " . date("l, F j, Y", $start) . " from " . date("h:i A", $start) . ' to ' . date("h:i A", $end);
+					$string .= "<br /> Airs on " . date("l, F j, Y", $start) . " from " . date("h:i A", $start) . ' to ' . date("h:i A", $end);
 				}
-			echo "</td>";
-			//echo "<td>$program->end_date</td>";
-			echo "</tr>";
+			$string .= "</td>";
+			//$string .= "<td>$program->end_date</td>";
+			$string .= "</tr>";
+
+                        if($ps_query['echo']){
+                          echo $string;
+                        }
 			return true;
 		}
 
@@ -1024,7 +1032,7 @@ if(!class_exists ('ProgramScheduler')) {
 
 			$results = $wpdb->get_results($query);
 			if( !isset($_POST['content']) ){
-				return $results;	
+				return $results;
 			}
 			
 			$programs = array();

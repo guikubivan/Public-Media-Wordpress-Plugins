@@ -60,9 +60,6 @@ if( is_admin() ){
 }
 add_action('admin_menu', 'add_pg_editor_page');
 
-//add_action( "admin_print_scripts-program_scheduler/schedule_editor.php", 'schedule_editor_header');
-
-
 /*******************************************
  ************Frontend-only functions********
  *******************************************/
@@ -85,10 +82,11 @@ if ( !is_admin() ) { // instruction to only load if it is not the admin area
  ************Universal functions********
  ***************************************/
 if(!function_exists('the_schedule') ){
-	function the_schedule($schedule_name, $mode='weekly'){
+	function the_schedule($schedule_name, $mode='weekly', $echo = true){
 		$_GET['schedule_name'] = $schedule_name;
                 #echo "<b>".$mode."</b>";
 		$_GET['mode'] = $mode;
+                $_GET['echo'] = $echo ? "1" : "0";
                 if($mode=='all'){
                   include(dirname(__FILE__).'/frontend/all.php');
                 }else{
@@ -137,18 +135,18 @@ function global_get_programs($single=false){
 }
 
 function global_get_single_day(){
+  global $wpdb;
 	if(isset($_POST['start_date']) ){
 		$_GET['schedule_name'] = '';
 		$_GET['mode'] = 'single';
 		$_GET['start_date'] = $_POST['start_date'];
-		include(dirname(__FILE__).'/schedule_viewer.php');
+                $names = $wpdb->get_col("SELECT name FROM ps_stations ORDER BY name;");
+                the_schedule(implode(",", $names), 'single');
+		#include(dirname(__FILE__).'/schedule_viewer.php');
 	}
         die();
 }
 
-function schedule_editor_header(){
-		echo '<link rel="stylesheet" href="'.get_bloginfo('url').'/wp-content/plugins/program_scheduler/editor.css" type="text/css" />'."\n";
-}
 /************END Universal functions ********/
 
 /************************************

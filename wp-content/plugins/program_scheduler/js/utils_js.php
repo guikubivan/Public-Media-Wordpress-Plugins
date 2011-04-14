@@ -74,7 +74,7 @@ function ajax_get_single_day(date_str){
 	mysack.onCompletion = function completed(){
 		htmlText = mysack.response;
 		if(htmlText){
-			jQuery("#both-single").html(htmlText);
+			jQuery("#tabs-single").html(htmlText);
 		}
 	};
 	

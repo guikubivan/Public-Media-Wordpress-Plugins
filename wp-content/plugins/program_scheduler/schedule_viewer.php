@@ -1,7 +1,67 @@
 <?php
+#globals used
 global $start_date;
 global $eventHelper;
 global $scheduleObj;
+global $ps_query;
+
+$ps_query = array();
+$ps_query['schedule_name'] = $_GET['schedule_name'];
+$ps_query['mode'] = $_GET['mode'];
+$ps_query['start_date'] = $_GET['start_date'];
+$ps_query['echo'] = empty($_GET['echo']) ? true : ($_GET['echo'] == "1" ? true : false);
+
+if(!function_exists('ps_program_name') ){
+  function ps_program_name(){
+    global $ps_query;
+    echo empty($ps_query['program']) ? 'N/A' : $ps_query['program']->name;
+  }
+
+  function ps_start_time($format){
+    global $ps_query;
+    if(empty($format))$format = "h:i:s A";
+    echo empty($ps_query['program']) ? 'N/A' : date($format, strtotime($ps_query['program']->start_date));
+  }
+
+  function ps_end_time($format){
+    global $ps_query;
+    if(empty($format))$format = "h:i:s A";
+    echo empty($ps_query['program']) ? 'N/A' : date($format, strtotime($ps_query['program']->start_date));
+  }
+
+  function ps_program_info_link(){
+    global $ps_query;
+    echo empty($ps_query['program']) ? '' : $ps_query['program']->url;
+  }
+
+  function ps_program_description(){
+    global $ps_query;
+    echo empty($ps_query['program']) ? '' : $ps_query['program']->description;
+  }
+
+  function ps_host_name(){
+    global $ps_query;
+    echo empty($ps_query['program']) ? '' : $ps_query['program']->host_name;
+  }
+
+  function ps_host_bio(){
+    global $ps_query;
+    echo empty($ps_query['program']) ? '' : $ps_query['program']->host_bio;
+  }
+
+  function ps_host_photo_url(){
+    global $ps_query;
+    echo empty($ps_query['program']) ? '' : $ps_query['program']->host_photo_url;
+  }
+
+  function ps_host_bio_link(){
+    global $ps_query;
+    echo empty($ps_query['program']) ? '' : $ps_query['program']->host_bio_link;
+  }
+}
+#Find your timezone by city at http://us.php.net/manual/en/timezones.america.php
+#date_default_timezone_set("America/New_York");#Eastern Time
+date_default_timezone_set("America/Denver");#Mountain Time
 
 /* Deprecated */
 /*
@@ -198,8 +258,15 @@ if(!function_exists('single_day_view')){
 }
 
 if($_GET[mode] == 'single'){
-  if(empty($sname))echo "No schedule given";
+  if(empty($sname)){
+    echo "No schedule given";
+    return;
+  }
+
   $sname = explode(",", $sname);
+  foreach($sname as $key=>$value){
+    $sname[$key] = trim($sname[$key]);
+  }
   single_day_view($sname);
 }else if($_GET[mode] == 'listing'){
         #uncomment to list all programs in all schedules
@@ -236,19 +303,22 @@ if($_GET[mode] == 'single'){
 	$end_date = $start_date;
 	//echo "end date: " .JFormatDateTime($end_date).
 	$programs = $scheduleObj->php_get_programs($start_date, $end_date, "(weekdays!='' OR WEEKDAY(start_date)=WEEKDAY('" . formatdatetime($start_date) . "') )");
-	
+
 	//echo "<table style='width: 100%;clear:both;'>";
 	$noPrograms= true;
-	
+
 	foreach($programs as $program){
 		if($scheduleObj->program_tablerow($program, $start_date, true, $max_cell_height, false, true)){
+                        $ps_query['program'] = $program;#global
 			$noPrograms = false;
-			echo  $scheduleObj->get_link_name($program);
+                        if($ps_query['echo']){
+                          echo  $scheduleObj->get_link_name($program);
+                        }
 			break;
 		}
 	}
-	if($noPrograms){
-		echo "";
+	if($noPrograms && $ps_query['echo']){
+		echo "N/A";
 	}
 	//echo "</table>";
 
