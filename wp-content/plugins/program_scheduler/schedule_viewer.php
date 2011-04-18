@@ -4,6 +4,7 @@ global $start_date;
 global $eventHelper;
 global $scheduleObj;
 global $ps_query;
+global $sname; #single day
 
 $ps_query = array();
 $ps_query['schedule_name'] = $_GET['schedule_name'];
@@ -123,140 +124,6 @@ $max_cell_height = 800;
 
 $eventHelper = new SchedulerEvent('', '', '');
 
-if(!function_exists('single_program_div') ){
-	function single_program_div($schedule, $program, $ismodule=false){
-		$eventHelper = new SchedulerEvent('', '', '');
-		$str = '';
-		$style = ($program->category_color && (!$ismodule)) ? "style='background-color: " . $program->category_color . "; " : '';
-		$style .= $style ? "'" : '';
-		$class = $ismodule ? 'single_program_module' : 'single_program';
-		$str .= "<div class='$class' $style >";
-		//$name_style = $ismodule ? "style='font-size: x-small;'" : '';
-		$str .= "<span class='single_program_main_name'  $name_style onclick=\"ajax_get_program('$schedule', ".$program->program_id.", this, 'right')\"> " . $program->name . "</span>";
-		$start = strtotime($program->start_date);
-		$end = $eventHelper->fix_end_time($start, $program->end_date);
-		
-		$stime = (intval(date('i', $start)) > 0) ? $stime = date('g:i a', $start) : date("g a", $start);
-		$etime = (intval(date('i', $end)) > 0) ? $etime = date('g:i a', $end) : date("g a", $end);
-		$str .= " <span class='single_program_time' $name_style >" . $stime . ' - ' . $etime . '</span>';
-		$str .= "</div>";
-		return $str;
-	}
-}
-
-if(!function_exists('single_day_view')){
-  function single_day_view($stations){//station name or array of station names
-    global $start_date, $eventHelper, $scheduleObj;
-
-    if(!is_array($stations))$stations = array($stations);
-
-    $minutes_delta = 30;#minutes at each time step
-    $end_date = $start_date + 86400;
-
-    $schedules = array();
-    foreach($stations as $index => $sname){
-      $schedules[$index] = array("object" => ProgramScheduler::find_by_name($sname));
-      $schedules[$index]['programs'] = $schedules[$index]['object']->php_get_programs($start_date, $end_date);
-    }
-
-    echo "<div id='single_wrapper' >";
-    //echo "<div style='width: 33%;float:left;text-align: left;'>";
-
-    //echo "</div>";
-    echo "<div style='text-align: center;'>";
-    if(preg_match("/admin\.php/", $_SERVER['REQUEST_URI'])){
-            echo "<a style='padding-right: 10px;' href='?page=".$_GET['page']."&mode=single&schedule_name=".$_GET['schedule_name']."&start_date=".urlencode(date("Y-m-d", $start_date-86400))."' ><<</a>";
-    }else{
-            echo "<span style='padding-right: 10px;' class='clickable' onclick=\"single_change_date(-1);\" > << </span>";
-    }
-    echo "<span id='single_date'>" . date("l", $start_date)." " . date("F j, Y", $start_date) . "</span>";
-
-    if(preg_match("/admin\.php/", $_SERVER['REQUEST_URI'])){
-            echo "<a style='padding-left: 10px;' href='?page=".$_GET['page']."&mode=single&schedule_name=".$_GET['schedule_name']."&start_date=".urlencode(date("Y-m-d", $start_date+86400))."' > >> </a>";
-    }else{
-            echo "<span style='padding-left: 10px;' class='clickable' onclick=\"single_change_date(+1);\" > >> </span>";
-    }
-    echo "</div>";
-
-    echo "<table style='clear:both' class='single'>";
-    echo table_headers(array_merge(array('&nbsp;'), $stations));
-    $noPrograms= true;
-    $time = $start_date + 1800;
-    $color1 = '';
-
-    for($i=0; $i<48; ++$i) {
-
-      #End of current timeslot in minutes of the day
-      $mins_thresh = intval(date('H', $time)) * 60 + intval(date('i', $time));
-
-      $hour = (($i % 2) == 0) ? date('g a', $time) : '&nbsp;';
-      $style = (($i % 2) == 0) ? "style='border-top: 1px solid #E7B35C;'" : '';
-      echo "<tr><td $style class='time'>$hour</td>";
-
-      foreach($schedules as $index => $sched_pair){
-        $programs = $sched_pair['programs'];
-        $this_program = current($programs);
-        
-        $start = strtotime($this_program->start_date);//timestamp
-        $smins = intval(date('H', $start)) * 60 + intval(date('i', $start));//minutes of the day
-        $end = $eventHelper->fix_end_time($start, $this_program->end_date) - 1;//timestamp
-        $emins = intval(date('H', $end)) * 60 + intval(date('i', $end));//minutes of the day
-        $module = (($emins - $smins) >= 15) ? false : true;
-        $str1 = '';
-        /*echo "\nstart: $start\n";
-        echo "\nsmins: $smins\n";
-        echo "\nend: $end\n";
-        echo "\nemins: $emins\n";*/
-
-
-        
-        #While program starts before the end of the current time slot ends AND
-        #ends after the beginning of current time slote
-        while ( ($smins < $mins_thresh) && ($emins > ($mins_thresh -$minutes_delta)) ) {
-          if (!$this_program->name)break;
-          if ($sched_pair['object']->program_tablerow($this_program, $start_date, true, $max_cell_height, true, true)) {
-
-            if (($this_program->category_color != $color1) && !$module) {
-              $color1 = $this_program->category_color;
-            }
-            $str1 .= single_program_div($sched_pair['object']->schedule_name, $this_program, $module);
-          }
-          if ( !next($programs) ){ break;}
-          $this_program = current($programs);
-          $start = strtotime($this_program->start_date);
-          $smins = intval(date('H', $start)) * 60 + intval(date('i', $start));
-          $end = $eventHelper->fix_end_time($start, $this_program->end_date) - 1;
-          $emins = intval(date('H', $end)) * 60 + intval(date('i', $end));
-          $module = (($emins - $smins) >= 15) ? false : true;
-        }
-
-        $class1 = $str1 ? "class='single_program_cell'" : '';
-
-        echo $color1 ? "<td style='background-color: $color1' $class1 >" : "<td $class1 >";
-        echo $str1 ? $str1 : '&nbsp;';
-        echo "</td>";
-      }
-
-      echo "</tr>";
-
-      $time += 1800;
-    }
-
-    echo "</table>";
-
-    if($cats = $scheduleObj->get_categories()){
-            echo "<div style='width: 100%; text-align: left; margin-top: 5px;padding: 10px; font-size: 13px'>";
-            foreach($cats as $cat){
-                    echo "<span style='border: 1px solid grey; margin-right: 2px; padding-right: 8px; background-color:" . $cat->category_color . "'>&nbsp; </span> <span style='margin-right: 13px;'>" .  $cat->category_name  . '</span>';
-            }
-            echo "</div>";
-    }
-    echo "</div>";
-
-
-  }
-}
-
 if($_GET[mode] == 'single'){
   if(empty($sname)){
     echo "No schedule given";
@@ -267,7 +134,7 @@ if($_GET[mode] == 'single'){
   foreach($sname as $key=>$value){
     $sname[$key] = trim($sname[$key]);
   }
-  single_day_view($sname);
+  include(dirname(__FILE__).'/frontend/single_day.php');
 }else if($_GET[mode] == 'listing'){
         #uncomment to list all programs in all schedules
 	#$airtimes = $scheduleObj->get_listing('');

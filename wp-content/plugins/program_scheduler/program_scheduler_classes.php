@@ -733,7 +733,8 @@ if(!class_exists ('ProgramScheduler')) {
 			return "alert(\"$str\");";
 		}
 
-                #pass $test_only = true to only check whether this program occurs during the time allowed
+                #pass $test_only = true to only check whether this program occurs during the date allowed,
+                #primarily checks the repeating days field
 		function program_tablerow($program, $start_date, $doTime=true, $max_cell_height=800, $scale_height=false, $test_only = false){
                   global $ps_query;
 			$start = strtotime($program->start_date);
