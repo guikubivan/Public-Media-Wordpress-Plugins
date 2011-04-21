@@ -198,16 +198,18 @@ table.single {
 	width: 100%;
 /*	position:relative;
 	top: 5px; */
-	border: 1px solid black;
-	border-left:0;
-
+        border-color: black;
+        border-style: solid;
+        border-width: 0 0 1px 0px;
 }
 
-table.single tr th {
-	border: 1px solid #fff !important;
+table.single th.pm_header {
+        border-color: black;
+        border-style: solid;
+        border-width: 0 0 1px 0;
 }
 
-table.single tr td, table.single tr th {
+table.single tr td {
 	border-right: 1px solid grey;
 	padding: 0px;
 	border-collapse: collapse;

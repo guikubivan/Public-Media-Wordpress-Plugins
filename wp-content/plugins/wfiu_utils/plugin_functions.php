@@ -230,7 +230,8 @@ if(!function_exists('table_headers')) {
 			if(is_array($item) ){
 				$retStr .= "<th $item[0] >$item[1]</th>\n";//style='width:$percent%'
 			}else{
-				$retStr .= "<th >$item</th>\n";//style='width:$percent%'
+                          $class = $item == "&nbsp;" || empty($item) ? "" : "class='pm_header'";
+				$retStr .= "<th $class>$item</th>\n";//style='width:$percent%'
 			}
 		}
 		$retStr .= "</tr>\n";
