@@ -1,24 +1,17 @@
 <?
-global $sname;
+/*********
+REQUIRED VARIABLES
+  $sname - station name
+  $start_date - date we are looking at
+*********/
 
 #TO-DO: pull playlists if $program->show_playlist == 1
 if(!function_exists('single_program_div') ){
-	function single_program_div($schedule, $program, $ismodule=false){
-		$eventHelper = new SchedulerEvent('', '', '');
-		$str = '';
-		$style = ($program->category_color && (!$ismodule)) ? "style='background-color: " . $program->category_color . "; " : '';
-		$style .= $style ? "'" : '';
-		$class = $ismodule ? 'single_program_module' : 'single_program';
-		$str .= "<div class='$class' $style >";
-		//$name_style = $ismodule ? "style='font-size: x-small;'" : '';
-		$str .= "<span class='single_program_main_name'  $name_style onclick=\"ajax_get_program('$schedule', ".$program->program_id.", this, 'right')\"> " . $program->name . "</span>";
-		$start = strtotime($program->start_date);
-		$end = $eventHelper->fix_end_time($start, $program->end_date);
-
-		$stime = (intval(date('i', $start)) > 0) ? $stime = date('g:i a', $start) : date("g a", $start);
-		$etime = (intval(date('i', $end)) > 0) ? $etime = date('g:i a', $end) : date("g a", $end);
-		$str .= " <span class='single_program_time' $name_style >" . $stime . ' - ' . $etime . '</span>';
-		$str .= "</div>";
+	function single_program_div($sname, $program, $ismodule=false){
+                ob_start();
+                include(dirname(__FILE__). '/single_day_program.php');
+                $str = ob_get_contents();
+                ob_end_clean();
 		return $str;
 	}
 }
