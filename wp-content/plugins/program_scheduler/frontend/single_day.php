@@ -1,6 +1,7 @@
 <?
 global $sname;
 
+#TO-DO: pull playlists if $program->show_playlist == 1
 if(!function_exists('single_program_div') ){
 	function single_program_div($schedule, $program, $ismodule=false){
 		$eventHelper = new SchedulerEvent('', '', '');

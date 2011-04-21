@@ -6,6 +6,10 @@ global $scheduleObj;
 global $ps_query;
 global $sname; #single day
 
+#Find your timezone by city at http://us.php.net/manual/en/timezones.america.php
+#date_default_timezone_set("America/New_York");#Eastern Time
+date_default_timezone_set("America/Denver");#Mountain Time
+
 $ps_query = array();
 $ps_query['schedule_name'] = $_GET['schedule_name'];
 $ps_query['mode'] = $_GET['mode'];
@@ -60,9 +64,6 @@ if(!function_exists('ps_program_name') ){
     echo empty($ps_query['program']) ? '' : $ps_query['program']->host_bio_link;
   }
 }
-#Find your timezone by city at http://us.php.net/manual/en/timezones.america.php
-#date_default_timezone_set("America/New_York");#Eastern Time
-date_default_timezone_set("America/Denver");#Mountain Time
 
 /* Deprecated */
 /*

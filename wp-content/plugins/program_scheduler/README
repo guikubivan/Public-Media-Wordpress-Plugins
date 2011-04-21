@@ -1,0 +1,28 @@
+Template functions
+
+the_schedule(station_name, mode, $echo = true)
+  * station_name is the name of the station/schedule.
+    - Required when mode is "weekly", "single", or "now".
+    - When mode is "single", use a comma separated string of schedule names.
+    - Optional when mode is "listing". If station_name is given, it will only retrieve programs for that schedule, otherwise, it will retrieve all.
+    - Should be empty("") when mode is "all".
+  * mode can be one of:
+    - "all" - Retrieves comprehensive view of schedules.
+    - "weekly" - Week view of single schedule
+    - "single" - Daily view for one or more schedules.
+    - "listing" - List of programs and respective air dates across all schedules
+    - "now" - Current program name
+  * echo only works for when mode is "now". When true, it will output and populate hook functions. When false, it will also populate the hook functions, but won't output anything. Defaults to true.
+
+
+Hook functions for when you call the_schedule(station_name, "now", true/false):
+
+* ps_program_name()
+* ps_start_time()
+* ps_end_time()
+* ps_program_info_link()
+* ps_program_description()
+* ps_host_name()
+* ps_host_bio()
+* ps_host_photo_url()
+* ps_host_bio_link()
