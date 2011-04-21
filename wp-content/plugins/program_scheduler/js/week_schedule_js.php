@@ -1481,7 +1481,7 @@ this_field.attr('id', i);
 			obj.selectable({ filter: "td.selectable_cell",
 				autoRefresh: false,
 				//selected: function(event, ui) { var a;},
-                                cancel: "div.calendar_overlay ",
+                                cancel: "div.calendar_overlay, div.event_details",
 				stop: function(event, ui) {
                                         //target seems to always be the selectable object, so we can't test if it was a event div
 					if(cur_id > -1 )return;
