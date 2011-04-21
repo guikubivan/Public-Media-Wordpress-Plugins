@@ -1193,7 +1193,7 @@ this_field.attr('id', i);
   
 
 
-
+                        //ui_only is not used right now
 			function deleteInterfaceEvent(id, ui_only){
 <? if($edit): ?>
 				if($(events.container[id]).hasClass('edit_single')){
@@ -1202,17 +1202,17 @@ this_field.attr('id', i);
 <? endif; ?>
 					toggleFocus(id);
 				}
-                                if(events.container[id]){
-                                  debug('deleting container for event ' + id);
-                                  events.container[id].remove();
-                                }
+				debug('deleting container for event ' + id);
+                                //if(events.container[id]){
+                                events.container[id].remove();
+                                //}
 
 				//resetCells(events.srow[id], events.scol[id], events.erow[id], events.ecol[id]);
-                                if(!ui_only){
-                                  for(prop in events){
-                                          delete events[prop][id];
-                                  }
-                                }
+                                //if(!ui_only){
+				for(prop in events){
+					delete events[prop][id];
+				}
+                                //}
 			}
 
 			function clearAllEvents(){
@@ -1640,34 +1640,34 @@ this_field.attr('id', i);
 				};
 
 			var events  = {
-				event_id: [],
-				controls: [],
-				container: [],
-				width: [],
-				program_id: [],
-				name: [],
-				description: [],
-				category_name: [],
-				category_color: [],
-				start_date: [],
-				end_date: [],
-				never_ends: [],
-				repeats: [],
-				color: [],
-				srow: [],//start row
-				scol: [],//start coloumn
-				erow: [],//end row
-				ecol: [],//end coloumn
-				url: [],
-				blog_id: [],
-				post_id: [],
+                          event_id: [],
+                          controls: [],
+                          container: [],
+                          width: [],
+                          program_id: [],
+                          name: [],
+                          description: [],
+                          category_name: [],
+                          category_color: [],
+                          start_date: [],
+                          end_date: [],
+                          never_ends: [],
+                          repeats: [],
+                          color: [],
+                          srow: [],//start row
+                          scol: [],//start coloumn
+                          erow: [],//end row
+                          ecol: [],//end coloumn
+                          url: [],
+                          blog_id: [],
+                          post_id: [],
 
-                                host_name: [],
-                                host_bio: [],
-                                host_photo_url: [],
-                                host_bio_link: [],
-                                host_wordpress_username: [],
-                                show_playlist: []
+                          host_name: [],
+                          host_bio: [],
+                          host_photo_url: [],
+                          host_bio_link: [],
+                          host_wordpress_username: [],
+                          show_playlist: []
 			};
 
 			var cur_id = -1;
