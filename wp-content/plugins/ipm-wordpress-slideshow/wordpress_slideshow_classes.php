@@ -1336,7 +1336,7 @@ jQuery(document).ready(function() {
 
 		foreach($photo as $name => $value){
 			if($value){
-				$str .= "<$name>". ent2ncr($value)."</$name>\n";
+				$str .= "<$name>". ent2ncr(esc_html($value))."</$name>\n";
 			}								
 		}
 		$str .= "</$root_tag>\n";
@@ -1363,7 +1363,7 @@ jQuery(document).ready(function() {
 		unset($sProps['update']);
 		foreach($sProps as $name => $value){
 			if($value){
-				$str .= "<$name>".ent2ncr($value)."</$name>\n";
+				$str .= "<$name>".ent2ncr(esc_html($value))."</$name>\n";
 			}
 		}
 		//slideshow thumb photo
@@ -1416,7 +1416,7 @@ jQuery(document).ready(function() {
 	}
 
 
-	function show_photos($post_id, $stylesheet=''){
+	function show_photos($post_id, $stylesheet='', $get_only){
 		global $wpdb;
 		if($slideshows=get_post_meta($post_id,$this->fieldname, false)){
 			$stylesheet = $stylesheet ? $stylesheet : get_option($this->option_default_style_slideshow);
@@ -1440,15 +1440,17 @@ jQuery(document).ready(function() {
 		@$proc->importStyleSheet($xsl); // attach the xsl rules
 		$output = @$proc->transformToXML($xml);
 		//echo "<pre>".print_r($xml_text, true)."</pre>";
-		if($output){
-			echo $output;
+		if($output && !$get_only){
+                  echo $output;
+                }else if($output){
+                  return $output;
 		}else{
-			if($stylesheet = "")
-				echo "Error. The Slideshow Stylesheets have not been defined.";
-			else
-				echo "Unknown error.";
+                  if($stylesheet = "")
+                    echo "Error. The Slideshow Stylesheets have not been defined.";
+                  else
+                    echo "Unknown error.";
 		}
-
+                
 	}
 
 
