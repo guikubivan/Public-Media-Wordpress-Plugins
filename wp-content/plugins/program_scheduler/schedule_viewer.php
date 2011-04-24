@@ -135,7 +135,7 @@ if($_GET[mode] == 'single'){
   foreach($sname as $key=>$value){
     $sname[$key] = trim($sname[$key]);
   }
-  include(dirname(__FILE__).'/frontend/single_day.php');
+  include(dirname(__FILE__).'/frontend/single_day/default.php');
 }else if($_GET[mode] == 'listing'){
         #uncomment to list all programs in all schedules
 	#$airtimes = $scheduleObj->get_listing('');
@@ -180,7 +180,7 @@ if($_GET[mode] == 'single'){
                         $ps_query['program'] = $program;#global
 			$noPrograms = false;
                         if($ps_query['echo']){
-                          echo  $scheduleObj->get_link_name($program);
+                          include(dirname(__FILE__) . "/frontend/now/default.php");
                         }
 			break;
 		}

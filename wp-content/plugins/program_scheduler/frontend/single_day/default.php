@@ -9,7 +9,7 @@ REQUIRED VARIABLES
 if(!function_exists('single_program_div') ){
 	function single_program_div($sname, $program, $ismodule=false){
                 ob_start();
-                include(dirname(__FILE__). '/single_day_program.php');
+                include(dirname(__FILE__). '/../program/default.php');
                 $str = ob_get_contents();
                 ob_end_clean();
 		return $str;

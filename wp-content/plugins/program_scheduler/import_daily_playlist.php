@@ -3,7 +3,7 @@
 /*****************************************************
  * Required variables - change to match your setup **
  *****************************************************/
-#blog id where playlist tables are
+#blog id where playlist tables are, will be ignored if install is not multi-site
 $blog_id = 1;
 
 #station id for the scheduler
@@ -20,7 +20,8 @@ if($argc ==1)
   die("Usage: ./import_daily_playlist.php file_name\n");
 
 require_once($wp_load_loc);
-switch_to_blog($blog_id);
+
+if(is_multisite()) switch_to_blog($blog_id);
 
 try{
 

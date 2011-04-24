@@ -8,7 +8,7 @@ REQUIRED VARIABLES
 *********/
 global $wpdb, $start_date;
 
-$playlists_blog = 1;
+$playlists_blog = 1;#not used if not multi-blog install
 
 //print_r($program);
 
@@ -41,13 +41,15 @@ if($program->show_playlist == "1"):
   $program_start = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $start) ));
   $program_end = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $end) ));
   $cur_datetime = formatdatetime(time());
-  switch_to_blog($playlists_blog);
+  if(is_multisite()) switch_to_blog($playlists_blog);
+
   $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE start_time >= %s AND start_time < %s AND start_time <= %s",
           $program_start, $program_end, $cur_datetime);
   $playlist = $wpdb->get_results($query);
-  restore_current_blog();
+  if(is_multisite()) restore_current_blog();
+  
   if(sizeof($playlist) > 0):
-    include(dirname(__FILE__) . "/playlist.php");
+    include(dirname(__FILE__) . "/../playlist/default.php");
   endif;
 endif; ?>
 </div>

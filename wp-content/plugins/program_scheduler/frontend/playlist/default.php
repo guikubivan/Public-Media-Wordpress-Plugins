@@ -19,5 +19,6 @@ REQUIRED VARIABLES
 </tr>
 
 <? endforeach; ?>
+
 </table>
 
