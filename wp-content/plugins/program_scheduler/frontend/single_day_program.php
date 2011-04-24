@@ -35,21 +35,19 @@ $class = $ismodule ? 'single_program_module' : 'single_program';
   <span class='single_program_time' <?= $name_style ?>>
     <?= $stime ?> - <?= $etime ?>
   </span>
-<? if($program->show_playlist == "1"):
-    #echo date("Y-m-d ",$start_date);
-    $program_start = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $start) ));
-    $program_end = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $end) ));
-    $cur_datetime = formatdatetime(time());
-    switch_to_blog($playlists_blog);
-    $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE start_time >= %s AND start_time < %s AND start_time <= %s",
-            $program_start, $program_end, $cur_datetime);
-    echo $query;
-    $results = $wpdb->get_results($query);
-    print_r($results);
-    restore_current_blog();
-  ?>
-  <div>Playlists
-    
-  </div>
-<? endif; ?>
+<?
+if($program->show_playlist == "1"):
+  #echo date("Y-m-d ",$start_date);
+  $program_start = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $start) ));
+  $program_end = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $end) ));
+  $cur_datetime = formatdatetime(time());
+  switch_to_blog($playlists_blog);
+  $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE start_time >= %s AND start_time < %s AND start_time <= %s",
+          $program_start, $program_end, $cur_datetime);
+  $playlist = $wpdb->get_results($query);
+  restore_current_blog();
+  if(sizeof($playlist) > 0):
+    include(dirname(__FILE__) . "/playlist.php");
+  endif;
+endif; ?>
 </div>

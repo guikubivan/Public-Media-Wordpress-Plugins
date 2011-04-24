@@ -49,7 +49,7 @@ if(!function_exists('single_day_view')){
       #hour in format such as "1 pm" if it's even
       $hour = (($i % $hour_modulus) == 0) ? date('g a', $next_row_time -  $tr_seconds_delta) : '&nbsp;';
       $style = (($i % $hour_modulus) == 0) ? "style='border-top: 1px solid #E7B35C;'" : '';
-      echo "<tr><td $style class='time'>$hour</td>";
+      echo "<tr class='ps_time_row'><td $style class='time'>$hour</td>";
 
 
       foreach($schedules as $index => $sched_pair){

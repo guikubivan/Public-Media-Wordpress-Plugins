@@ -209,7 +209,7 @@ table.single th.pm_header {
         border-width: 0 0 1px 0;
 }
 
-table.single tr td {
+table.single tr.ps_time_row>td {
 	border-right: 1px solid grey;
 	padding: 0px;
 	border-collapse: collapse;
