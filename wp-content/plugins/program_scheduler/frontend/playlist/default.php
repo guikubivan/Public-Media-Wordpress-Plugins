@@ -37,7 +37,7 @@ VALID ATTRIBUTES
       <?= date("h:i a", $start_at); ?> -
       </td>
       <td>
-        <div style="float: right;"><span>Buy Now</span></div>
+        <div style="float: right;"><span class="canclick">Buy Now</span></div>
         <strong><?= $item->composer; ?>: <?= $item->title; ?></strong><br/>
         <i><?= $item->artist ?></i><br/>
         <?= $item->label ?> <?= $item->label_id ?>

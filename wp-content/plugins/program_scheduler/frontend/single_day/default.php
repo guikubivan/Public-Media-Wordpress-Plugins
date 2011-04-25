@@ -7,7 +7,6 @@ REQUIRED VARIABLES
   $eventHelper - SchedulerEvent instance
 *********/
 
-#TO-DO: pull playlists if $program->show_playlist == 1
 if(!function_exists('single_program_div') ){
 	function single_program_div($sname, $program, $ismodule=false){
                 ob_start();
@@ -18,6 +17,10 @@ if(!function_exists('single_program_div') ){
 	}
 }
 
+$stations = explode(",", $sname);
+foreach($stations as $key=>$value){
+  $stations[$key] = trim($stations[$key]);
+}
 ?>
 
 
@@ -28,7 +31,7 @@ if(!function_exists('single_program_div') ){
       <<
     </a>
 <? else: ?>
-    <span style='padding-right: 10px;' class='clickable' onclick="single_change_date(-1);" >
+    <span style='padding-right: 10px;' class='clickable' onclick="single_change_date(-1, '<?= $sname ?>');" >
       <<
     </span>
 <? endif; ?>
@@ -41,20 +44,32 @@ if(!function_exists('single_program_div') ){
       >>
     </a>
 <? else: ?>
-    <span style='padding-left: 10px;' class='clickable' onclick="single_change_date(+1);" >
+    <span style='padding-left: 10px;' class='clickable' onclick="single_change_date(+1, '<?= $sname ?>');" >
       >>
     </span>
 <? endif; ?>
   </div>
+  <table style='clear:both' class='single'>
     <? /******** BRAINS OF THE WHOLE THING **********/ ?>
-    <? if(is_array($sname)) $sname = $sname[0];
+    <tr>
+    <?
+      foreach($stations as $station){
+        echo "<td><strong>$station</strong></td>";
+      }
+    ?>
+    </tr>
+    <tr>
+    <?
+      foreach($stations as $station){
+        echo "<td>";
 
-       $mySchedule = ProgramScheduler::find_by_name($sname);
-       $end_date = $start_date + 24*60*60;
-       $programs = $mySchedule->php_get_programs($start_date, $end_date);
+        $scheduleObj = ProgramScheduler::find_by_name($station);
+        #echo "<td>$station - ".$scheduleObj->id."</td>";
+        $end_date = $start_date + 24*60*60;
+        $programs = $scheduleObj->php_get_programs($start_date, $end_date);
 
-       
-       foreach($programs as $this_program){
+
+        foreach($programs as $this_program){
            #print_r($this_program);
            $ps_query['program'] = $this_program;
            $start = strtotime($this_program->start_date);//timestamp
@@ -64,11 +79,14 @@ if(!function_exists('single_program_div') ){
            $module = false;
            if(($emins - $smins) < 15) $module = true;
 
-           echo single_program_div($sname, $this_program, $module);
-       }
+           echo single_program_div($station, $this_program, $module);
+        }
+        echo "</td>";
+      }
     ?>
     <? /******** End BRAINS OF THE WHOLE THING ******/ ?>
-
+    </tr>
+  </table>
     
 <? if($cats = $scheduleObj->get_categories()): ?>
     <div style='width: 100%; text-align: left; margin-top: 5px;padding: 10px; font-size: 13px'>

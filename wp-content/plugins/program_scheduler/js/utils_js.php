@@ -59,13 +59,13 @@ function ajax_get_program(schedule_name, id, element, leftright){
 	return true;
 }
 
-function ajax_get_single_day(date_str){
+function ajax_get_single_day(date_str, schedule_name){
 	var mysack = new sack(ajaxurl);
 	mysack.execute = 0;
 	mysack.method = 'POST';
 	mysack.setVar( "action", "action_single_day" );
 	mysack.setVar( 'start_date', date_str );
-
+        mysack.setVar('schedule_name', schedule_name);
 
 
 	mysack.encVar( "cookie", document.cookie, false );
@@ -219,11 +219,11 @@ function update_single_date(myDate){
 	return;
 }
 
-function single_change_date(offset){
+function single_change_date(offset, schedule_name){
 	var currentDate = parse_date_single();
 	currentDate.setDate(currentDate.getDate()+offset);
 	//update_single_date(currentDate);
 	newDateStr = num2day[currentDate.getDay()] + ' ' + month_names[currentDate.getMonth()] + ' ' + currentDate.getDate() + ', ' + currentDate.getFullYear();
-	ajax_get_single_day(newDateStr);
+	ajax_get_single_day(newDateStr, schedule_name);
 	update_date(find_previous_day(1,currentDate));	
 }

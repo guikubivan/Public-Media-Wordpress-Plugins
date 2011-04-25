@@ -137,11 +137,11 @@ function global_get_programs($single=false){
 function global_get_single_day(){
   global $wpdb;
 	if(isset($_POST['start_date']) ){
-		$_GET['schedule_name'] = '';
 		$_GET['mode'] = 'single';
 		$_GET['start_date'] = $_POST['start_date'];
-                $names = $wpdb->get_col("SELECT name FROM ps_stations ORDER BY name;");
-                the_schedule(implode(",", $names), 'single');
+                #$names = $wpdb->get_col("SELECT name FROM ps_stations ORDER BY name;");
+                #the_schedule(implode(",", $names), 'single');
+                the_schedule($_POST['schedule_name'], 'single');
 		#include(dirname(__FILE__).'/schedule_viewer.php');
 	}
         die();

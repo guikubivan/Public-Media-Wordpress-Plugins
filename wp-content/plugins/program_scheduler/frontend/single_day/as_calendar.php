@@ -6,7 +6,6 @@ REQUIRED VARIABLES
   $scheduleObj - ProgramScheduler object referencing current station/schedule
 *********/
 
-#TO-DO: pull playlists if $program->show_playlist == 1
 if(!function_exists('single_program_div') ){
 	function single_program_div($sname, $program, $ismodule=false){
                 ob_start();

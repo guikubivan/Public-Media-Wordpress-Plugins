@@ -1,9 +1,10 @@
 <?php
 
 $granularity = 2; //in divisions per hour
-
+global $cell_width;
 //$singleDay = 4;
-$cell_width = isset($singleDay) ? 300 : 80;
+if(!isset($cell_width))$cell_width = isset($singleDay) ? 300 : 80;
+
 $cell_height = 30;
 $cal_height = ($cell_height) * $granularity * 24;//in pixels
 $cal_width = isset($singleDay) ? $cell_width : $cell_width * 7;

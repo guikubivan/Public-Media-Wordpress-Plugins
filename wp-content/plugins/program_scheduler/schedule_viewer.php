@@ -131,10 +131,6 @@ if($_GET[mode] == 'single'){
     return;
   }
 
-  $sname = explode(",", $sname);
-  foreach($sname as $key=>$value){
-    $sname[$key] = trim($sname[$key]);
-  }
   include(dirname(__FILE__).'/frontend/single_day/default.php');
 }else if($_GET[mode] == 'listing'){
         #uncomment to list all programs in all schedules
