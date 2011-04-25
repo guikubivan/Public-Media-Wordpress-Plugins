@@ -21,8 +21,8 @@ if(!function_exists('single_program_div') ){
 ?>
 
 
-<div id='single_wrapper'>
-  <div style='text-align: center;'>
+<div id='single_wrapper' style="width:99%;">
+  <div style="text-align:center;">
 <? if(preg_match("/admin\.php/", $_SERVER['REQUEST_URI'])): ?>
     <a style='padding-right: 10px;' href='?page=<? echo $_GET['page'] ?>&mode=single&schedule_name=<? echo $_GET['schedule_name'] ?>&start_date=<? echo urlencode(date("Y-m-d", $start_date-86400)); ?>' >
       <<
@@ -45,10 +45,9 @@ if(!function_exists('single_program_div') ){
       >>
     </span>
 <? endif; ?>
-
+  </div>
     <? /******** BRAINS OF THE WHOLE THING **********/ ?>
-    <table style='clear:both' class='single'>
-    <? if(is_array($name))$sname = current($sname);
+    <? if(is_array($sname)) $sname = $sname[0];
 
        $mySchedule = ProgramScheduler::find_by_name($sname);
        $end_date = $start_date + 24*60*60;
@@ -57,6 +56,7 @@ if(!function_exists('single_program_div') ){
        
        foreach($programs as $this_program){
            #print_r($this_program);
+           $ps_query['program'] = $this_program;
            $start = strtotime($this_program->start_date);//timestamp
            $smins = intval(date('H', $start)) * 60 + intval(date('i', $start));//minutes of the day
            $end = $eventHelper->fix_end_time($start, $this_program->end_date) - 1;//timestamp
@@ -67,7 +67,6 @@ if(!function_exists('single_program_div') ){
            echo single_program_div($sname, $this_program, $module);
        }
     ?>
-    </table>
     <? /******** End BRAINS OF THE WHOLE THING ******/ ?>
 
     
@@ -78,6 +77,6 @@ if(!function_exists('single_program_div') ){
   <? endforeach; ?>
     </div>
 <? endif; ?>
-  </div>
+  
 </div>
 

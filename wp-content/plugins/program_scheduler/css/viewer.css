@@ -1,3 +1,21 @@
+/*Utitily classes */
+.canclick {
+	cursor: pointer;
+}
+
+.clickable {
+	padding-left: 5px;
+	color: blue;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.hide {
+  display: none;
+}
+
+/*END Utility classes */
+
 .calendar_canvas {
 	background-color: #EAFFD0;
 	border-collapse: collapse;
@@ -47,15 +65,6 @@ td.hour_cell {
 	width: 58px;
 	/*overflow: hidden;*/
 }
-
-
-
-.clickable {
-	padding-left: 5px;
-	color: blue;
-	cursor: pointer;
-	text-decoration: underline;
-} 
 
 .single_close_button {
 	position:absolute;
@@ -187,7 +196,7 @@ ul.listing_ul li {
 }
 
 #schedule_listing tr td {
-	border-bottom: 1px solid grey;
+	border-bottom: 1px solid #CCCCCC;
 	padding: 5px;
 }
 
@@ -210,7 +219,7 @@ table.single th.pm_header {
 }
 
 table.single tr.ps_time_row>td {
-	border-right: 1px solid grey;
+	border-right: 1px solid #CCCCCC;
 	padding: 0px;
 	border-collapse: collapse;
 	vertical-align: top;
@@ -236,7 +245,7 @@ div.single_program {
 	height: 100%;
 	margin: 0px;
 	padding: 3px;
-	border-top: 1px solid grey;
+	border-top: 3px solid #029A9A;
 	position: relative;
 	
 }
@@ -265,7 +274,6 @@ div.single_filler {
 
 .single_program_name, .single_program_main_name {
 	font-size: 14px;
-	cursor: pointer;
 }
 
 .single_program_name:hover {
@@ -317,6 +325,20 @@ div.single_filler {
 	right: 0px;
 }
 
+div.ps_host_info {
+  border-top: 1px solid #CCCCCC;
+}
+
+.ps_host_photo {
+  float: left;
+  padding: 2px;
+  
+}
+
+.ps_host_photo img {
+  height: 50px;
+  width: 50px;
+}
 /******/
 
 /* programs a-z list styles */
@@ -446,3 +468,24 @@ table#schedule_listing tr td div {
 	z-index:1;
 }
 /* END - Other views (single day) from Eoban */
+
+/* Playlist css */
+table.ps_playlist{
+  width: 100%;
+}
+
+table.ps_playlist tr td {
+  vertical-align: top;
+  padding: 2px;
+}
+
+tr.ps_playlist_item td {
+  border-top: 1px solid #CCCCCC;
+}
+
+.show_hide_playlist {
+  color: #029A9A;
+  float: right;
+}
+
+/* END Playlist css */
