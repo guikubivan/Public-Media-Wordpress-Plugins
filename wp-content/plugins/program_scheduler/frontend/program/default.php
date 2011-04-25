@@ -5,12 +5,12 @@ REQUIRED VARIABLES
   $program - program properties object
   $ismodule - bool
   $start_date - date we are looking at
+  $scheduleObj - ProgramScheduler object referencing current station/schedule
 *********/
-global $wpdb, $start_date;
+global $wpdb, $start_date, $scheduleObj;
 
 $playlists_blog = 1;#not used if not multi-blog install
 
-//print_r($program);
 
 $eventHelper = new SchedulerEvent('', '', '');
 $style = ($program->category_color && (!$ismodule)) ? "style='background-color: " . $program->category_color . "; " : '';
@@ -43,8 +43,13 @@ if($program->show_playlist == "1"):
   $cur_datetime = formatdatetime(time());
   if(is_multisite()) switch_to_blog($playlists_blog);
 
-  $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE start_time >= %s AND start_time < %s AND start_time <= %s",
-          $program_start, $program_end, $cur_datetime);
+  $query = $wpdb->prepare("SELECT DISTINCT s.id FROM " . $scheduleObj->t_s . " AS s JOIN " . $scheduleObj->t_e . " AS e ON s.id = e.id");
+  $station_clause = "";
+  if(sizeof($wpdb->get_results($query)) > 1) $station_clause = "AND station_id = %d";
+  
+  $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE start_time >= %s AND start_time < %s AND start_time <= %s $station_clause",
+          $program_start, $program_end, $cur_datetime, $scheduleObj->id);
+
   $playlist = $wpdb->get_results($query);
   if(is_multisite()) restore_current_blog();
   

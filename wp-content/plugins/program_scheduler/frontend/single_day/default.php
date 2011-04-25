@@ -3,6 +3,8 @@
 REQUIRED VARIABLES
   $sname - station name
   $start_date - date we are looking at
+  $scheduleObj - ProgramScheduler object referencing current station/schedule
+  $eventHelper - SchedulerEvent instance
 *********/
 
 #TO-DO: pull playlists if $program->show_playlist == 1
@@ -15,104 +17,6 @@ if(!function_exists('single_program_div') ){
 		return $str;
 	}
 }
-
-if(!function_exists('single_day_view')){
-  function single_day_view($stations){//station name or array of station names
-    global $start_date, $eventHelper, $scheduleObj;
-    #echo date('l jS \of F Y h:i:s A', $start_date);
-    if(!is_array($stations))$stations = array($stations);
-
-    $tr_seconds_delta = 30*60;#seconds at each table row
-    $rows = 24*(60*60/$tr_seconds_delta);
-    $hour_modulus = $rows/24;
-    $end_date = $start_date + 24*60*60;
-
-    $schedules = array();
-    $programs = array();
-    foreach($stations as $index => $sname){
-      $schedules[$index] = array("object" => ProgramScheduler::find_by_name($sname));
-      $programs[$index] = $schedules[$index]['object']->php_get_programs($start_date, $end_date);
-    }
-
-
-    #print_r($programs);
-    echo table_headers(array_merge(array('&nbsp;'), $stations));
-    $noPrograms= true;
-    $next_row_time = $start_date + $tr_seconds_delta;
-    $color = '';
-
-    for($i=0; $i<$rows; ++$i) {
-
-      #End of current timeslot in minutes of the day
-      $mins_thresh = intval(date('H', $next_row_time)) * 60 + intval(date('i', $next_row_time));
-
-      #hour in format such as "1 pm" if it's even
-      $hour = (($i % $hour_modulus) == 0) ? date('g a', $next_row_time -  $tr_seconds_delta) : '&nbsp;';
-      $style = (($i % $hour_modulus) == 0) ? "style='border-top: 1px solid #E7B35C;'" : '';
-      echo "<tr class='ps_time_row'><td $style class='time'>$hour</td>";
-
-
-      foreach($schedules as $index => $sched_pair){
-        $module = false;
-        $temp_string = '';
-        $this_program = current($programs[$index]);
-        if($this_program !== false){
-          $start = strtotime($this_program->start_date);//timestamp
-          $smins = intval(date('H', $start)) * 60 + intval(date('i', $start));//minutes of the day
-          $end = $eventHelper->fix_end_time($start, $this_program->end_date) - 1;//timestamp
-          $emins = intval(date('H', $end)) * 60 + intval(date('i', $end));//minutes of the day
-          if(($emins - $smins) < 15) $module = true;
-          /*echo "\nstart: $start\n";
-          echo "\nsmins: $smins\n";
-          echo "\nend: $end\n";
-          echo "\nemins: $emins\n";*/
-
-          #While program starts before the end of the current time slot ends AND
-          #ends after the beginning of current time slot
-          if( ($smins < $mins_thresh)){
-            while ( ($smins < $mins_thresh)){
-              #echo "<b>-smins: $smins-</b>\n";
-              #echo "<b>-thres: $mins_thresh-</b>\n";
-              if (empty($this_program->name))break;
-              $is_valid = $sched_pair['object']->program_tablerow($this_program, $start_date, true, $max_cell_height, true, true);
-              #echo "<b>-isvalid? ".($is_valid? '1':'0')."-</b>";
-              if ($is_valid) {
-
-                if (($this_program->category_color != $color) && !$module) {
-                  $color = $this_program->category_color;
-                }
-                $temp_string .= single_program_div($sched_pair['object']->schedule_name, $this_program, $module);
-              }
-              if (next($programs[$index]) === false){ break;}
-              $this_program = current($programs[$index]);
-              $start = strtotime($this_program->start_date);
-              $smins = intval(date('H', $start)) * 60 + intval(date('i', $start));
-              $end = $eventHelper->fix_end_time($start, $this_program->end_date) - 1;
-              $emins = intval(date('H', $end)) * 60 + intval(date('i', $end));
-              $module = (($emins - $smins) >= 15) ? false : true;
-            }
-          }
-        }
-        #TODO: when no programming is scheduled, add horizontal line (code below adds horizontal lines right away and infinitely
-        #else{
-        #  $temp_string = "<div class='single_program'>&nbsp;</div>";
-        #}
-        $class = $temp_string ? "class='single_program_cell'" : '';
-        $style = $color ? "style='background-color: $color'" : "";
-        echo "<td $style $class >";
-        echo $temp_string ? $temp_string : '&nbsp;';
-        echo "</td>";
-      }
-
-      echo "</tr>";
-
-      $next_row_time += $tr_seconds_delta;
-    }
-
-
-  }
-}
-
 
 ?>
 
@@ -144,7 +48,25 @@ if(!function_exists('single_day_view')){
 
     <? /******** BRAINS OF THE WHOLE THING **********/ ?>
     <table style='clear:both' class='single'>
-    <? single_day_view($sname); ?>
+    <? if(is_array($name))$sname = current($sname);
+
+       $mySchedule = ProgramScheduler::find_by_name($sname);
+       $end_date = $start_date + 24*60*60;
+       $programs = $mySchedule->php_get_programs($start_date, $end_date);
+
+       
+       foreach($programs as $this_program){
+           #print_r($this_program);
+           $start = strtotime($this_program->start_date);//timestamp
+           $smins = intval(date('H', $start)) * 60 + intval(date('i', $start));//minutes of the day
+           $end = $eventHelper->fix_end_time($start, $this_program->end_date) - 1;//timestamp
+           $emins = intval(date('H', $end)) * 60 + intval(date('i', $end));//minutes of the day
+           $module = false;
+           if(($emins - $smins) < 15) $module = true;
+
+           echo single_program_div($sname, $this_program, $module);
+       }
+    ?>
     </table>
     <? /******** End BRAINS OF THE WHOLE THING ******/ ?>
 
