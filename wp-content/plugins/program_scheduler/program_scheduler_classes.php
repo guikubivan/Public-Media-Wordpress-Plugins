@@ -199,9 +199,19 @@ if(!class_exists ('SchedulerEvent')) {
 				$ret .= " AND Time('$start_date') < Time(end_date)";
 			}else if(!$option){//make end_date -1
 			//SELECT ADDTIME('2007-12-31 23:59:59.999999', '1 1:1:1.000002');
+                                /* Expected cases
+                                 * Time of $start_date is 1:00, end_date is 0:00 (midnight)
+                                 *  - true: Time('$start_date') < Time(ADDTIME(end_date, -1)
+                                 * Time of $end_date is 0:00, start_date is 0:00
+                                 *  - false: Time(ADDTIME('$end_date', -1)) > Time(start_date)
+                                 * Time of start_date is 0:00, end_date is 0:00 - 23:58
+                                 *  - true: TIME(ADDTIME(start_date,-1)) > TIME(end_date)
+                                 *  -- Not sure what this does, so I removed it from the query.
+                                 */
 
-				$ret .= " AND Time('$start_date') < Time(ADDTIME(end_date, -1)) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) )";
-				//$ret .= " AND ( Time('$start_date') < Time(ADDTIME(end_date, -1)) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) ) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) )";
+                                $ret .= " AND Time('$start_date') < Time(ADDTIME(end_date, -1)) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date))";
+				#$ret .= " AND Time('$start_date') < Time(ADDTIME(end_date, -1)) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) )";
+				#$ret .= " AND ( Time('$start_date') < Time(ADDTIME(end_date, -1)) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) ) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) )";
 			}
 			return $ret;
 		}
@@ -877,15 +887,24 @@ if(!class_exists ('ProgramScheduler')) {
 			$results = $wpdb->get_results($query);
 			return $results;
 		}
-		
+
+                #Returns air times for a program and station
 		function get_listing($ID='', $station_id=''){
 			global $wpdb;
 			
                         $query = "SELECT DISTINCT s.name as schedule_name, tt.ID as event_id, p.ID, p.name, url, description, blog_id, p.post_id, color, category_name, category_color, weekdays, start_date, end_date FROM $this->t_e as tt JOIN $this->t_p as p ON (p.ID=tt.program_id) LEFT JOIN $this->t_pc as cr ON (p.ID=cr.program_id) LEFT JOIN $this->t_c as c ON (cr.category_id = c.ID) LEFT JOIN ps_stations as s ON (s.ID=tt.station_id)";
-                        if(!empty($station_id)) $query .= " WHERE s.ID=$station_id";
-                        if(!empty($ID)) $query .= empty($station_id) ? " WHERE p.ID=$ID" : " AND p.ID=$ID";
+                        $where = array();
+                        if(!empty($station_id)){
+                          $where[] = "s.ID=$station_id";
+                        }else if($this->id){
+                          $where[] = " s.ID=" . $this->id;
+                        }
+                        if(!empty($ID)) $where[] = "p.ID=$ID";
+
+                        if(sizeof($where)>0) $query .= " WHERE " . implode(" AND ", $where);
+                        
 			$query .= " ORDER BY p.name, schedule_name, WEEKDAY(start_date), Time(start_date);";
-			//echo $query."\n";
+			#echo $query."\n";
                         $results = $wpdb->get_results($query);
 			return $results;
 		}
@@ -947,6 +966,21 @@ if(!class_exists ('ProgramScheduler')) {
 			$str .= "</div>";
 			return $str;
 		}
+
+                #$start_date is timestamp
+                function get_program_playing_at($start_date){
+                  $end_date = $start_date;
+                  //echo "end date: " .JFormatDateTime($end_date).
+                  $programs = $this->php_get_programs($start_date, $end_date, "(weekdays!='' OR WEEKDAY(start_date)=WEEKDAY('" . formatdatetime($start_date) . "') )");
+                  //print_r($programs);
+                  foreach($programs as $program){
+                          if($this->program_tablerow($program, $start_date, true, $max_cell_height, false, true)){
+                                  return $program;
+                          }
+                  }
+
+                  return null;
+                }
 		
 		function php_get_program($ID){
 			global $wpdb;

@@ -95,7 +95,7 @@ if(!function_exists('print_program_row') ){
 */
 
 
-if(isset($_GET['schedule_name']) ){
+if(isset($_GET['schedule_name']) && !isset($scheduleObj)){
 	$sname = $_GET['schedule_name'];
 	$scheduleObj = ProgramScheduler::find_by_name($sname);
 
@@ -108,31 +108,26 @@ if(isset($_GET['schedule_name']) ){
 	die("<b>No schedule selected</b>");
 }
 
-if(current_user_can('edit_plugins')){
-/*
-<div class='schedule_menu' style='text-align:left;'>
-<a href='?page=<?php echo $_GET['page']; ?>&mode=single&schedule_name=<?php echo $_GET['schedule_name']; ?>' >Single day</a> 
-<a href='?page=<?php echo $_GET['page']; ?>&mode=listing&schedule_name=<?php echo $_GET['schedule_name']; ?>' >Listing</a> 
-<a href='?page=<?php echo $_GET['page']; ?>&mode=weekly&schedule_name=<?php echo $_GET['schedule_name']; ?>' >Weekly</a> 
-<a href='?page=<?php echo $_GET['page']; ?>&mode=now&schedule_name=<?php echo $_GET['schedule_name']; ?>' >Now Playing</a> 
-</div>
-*/
-}
-
 $start_date = strtotime($_GET['start_date']) ? strtotime($_GET['start_date']) : strtotime('today');
 
 $max_cell_height = 800;
 
 $eventHelper = new SchedulerEvent('', '', '');
 
-if($_GET[mode] == 'single'){
+
+if($_GET['mode'] == 'program-ajax'){
+  $program_id = $_POST['program_id'];
+  include(dirname(__FILE__) . "/frontend/program/ajax.php");
+
+}else if($_GET['mode'] == 'single'){
+  
   if(empty($sname)){
     echo "No schedule given";
     return;
   }
 
   include(dirname(__FILE__).'/frontend/single_day/default.php');
-}else if($_GET[mode] == 'listing'){
+}else if($_GET['mode'] == 'listing'){
         #uncomment to list all programs in all schedules
 	#$airtimes = $scheduleObj->get_listing('');
         $airtimes = $scheduleObj->get_listing('', $scheduleObj->id);
@@ -162,29 +157,19 @@ if($_GET[mode] == 'single'){
 	}
 
 	echo "</div>";
-}else if($_GET[mode] == 'now'){
+}else if($_GET['mode'] == 'now'){
 	$start_date = time();
-	$end_date = $start_date;
-	//echo "end date: " .JFormatDateTime($end_date).
-	$programs = $scheduleObj->php_get_programs($start_date, $end_date, "(weekdays!='' OR WEEKDAY(start_date)=WEEKDAY('" . formatdatetime($start_date) . "') )");
-
-	//echo "<table style='width: 100%;clear:both;'>";
-	$noPrograms= true;
-
-	foreach($programs as $program){
-		if($scheduleObj->program_tablerow($program, $start_date, true, $max_cell_height, false, true)){
-                        $ps_query['program'] = $program;#global
-			$noPrograms = false;
-                        if($ps_query['echo']){
-                          include(dirname(__FILE__) . "/frontend/now/default.php");
-                        }
-			break;
-		}
-	}
-	if($noPrograms && $ps_query['echo']){
+        $program = $scheduleObj->get_program_playing_at($start_date);
+        if(!is_null($program)){
+          $ps_query['program'] = $program;#global
+          if($ps_query['echo']){
+            include(dirname(__FILE__) . "/frontend/now/default.php");
+          }
+	}else{
+          if($ps_query['echo']){
 		echo "N/A";
-	}
-	//echo "</table>";
+          }
+        }
 
 }else{
 	include(dirname(__FILE__).'/schedule_editor.php');

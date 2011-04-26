@@ -119,13 +119,15 @@ function global_get_programs($single=false){
 	if(isset($_POST['schedule_name']) ){
 		$sname = $_POST['schedule_name'];
 		//echo $sname;
-		$scheduleObject = ProgramScheduler::find_by_name($sname);
-		if($scheduleObject && $scheduleObject->is_valid()){//if not null
+		$scheduleObj = ProgramScheduler::find_by_name($sname);
+		if($scheduleObj && $scheduleObj->is_valid()){//if not null
+                        $_GET['schedule_name'] = $_POST['schedule_name'];
 			unset($_POST['schedule_name']);
 			if($single){
-				$scheduleObject->php_get_program($_POST['program_id']);
+                          $_GET['mode'] = 'program-ajax';
+                          include(dirname(__FILE__).'/schedule_viewer.php');
 			}else{
-				$scheduleObject->php_get_programs();
+				$scheduleObj->php_get_programs();
 			}
 		}else{
 			echo "alert('Invalid schedule: $sname');";
