@@ -1,23 +1,25 @@
 #!/usr/bin/php -q
 <?php
 /*****************************************************
- * Required variables - change to match your setup **
+ * Required variables - change to match your setup ***
  *****************************************************/
 #blog id where playlist tables are, will be ignored if install is not multi-site
-$blog_id = 1;
+$blog_id = 1;#7
 
 #station id for the scheduler
-$station_id = "";//set to integer or ""
+$station_id = "";//set to integer or "" #1
 
 #specify host or domain (needed for wp-includes/ms-settings.php:100)
 $_SERVER[ 'HTTP_HOST' ] = 'pablo.dyndns-office.com';
 
 #location of wp-load.php so we have access to database and $wpdb object
 $wp_load_loc = '/home/www/wordpress_3.1/wp-load.php';
-/*******end required variables*************************/
+/*****************************************************
+ *******end required variables************************
+ *****************************************************/
 
 if($argc ==1)
-  die("Usage: ./import_daily_playlist.php file_name\n");
+  die("Usage: import_daily_playlist.php [--today] [file1 file2 ...] \n");
 
 require_once($wp_load_loc);
 
@@ -32,26 +34,88 @@ try{
   die($wpdb->prefix."wfiu_playlist table not found, make sure plugin is activated in blog with id $blog_id\n");
 }
 
+/*  START EXECUTION */
+echo str_repeat("=", 25) . "\nPLAYLIST IMPORT SCRIPT STARTED AT: " . date("r") . "\n";
+
 global $file_date_string;
-foreach($argv as $key=>$file){
+
+$files = Array();
+foreach($argv as $key=>$val){
   if($key==0) continue;
-  process_playlist_file($file);
+  if($val == '--today'){
+    $today_f = fetch_todays_file();
+    if(is_null($today_f)){
+      die("ERROR: Could not donwload today's playlist (url exists?)\n");
+    }else{
+      $files = Array($today_f);
+    }
+    break;
+  }else{
+    $files[] = $val;
+  }
 }
-echo "
+
+$count = 0;
+echo "\nPROCESSING PLAYLIST FILE(S)\n";
+foreach($files as $file){
+  if(file_exists($file)){
+    process_playlist_file($file);
+    ++$count;
+  }else{
+    echo "File \"$file\" does not exist on the filesystem...skipping.\n";
+  }
+}
+
+if($count > 0){
+  echo "
 ______________________
 |      LEGEND        |
 |   +  | item added  |
 |   ^  | item exists |
 ______________________
 ";
+}
+
+echo "DONE\n" . str_repeat("=", 25) . "\n";
+
+
+function fetch_todays_file(){
+  $user_info = posix_getpwuid(posix_getuid());
+  $home_dir = $user_info['dir'];
+  $temp_folder = $home_dir . "/temp";
+  if(!file_exists($temp_folder) || is_file($temp_folder)){
+    mkdir($temp_folder);
+  }
+
+  $file_name = "playlist.txt";
+  $download_file = "$temp_folder/$file_name";
+  $remote_playlist = "http://pablo.dyndns-office.com/$file_name";
+
+  $command = "curl -f -o " . escapeshellarg($download_file) . " " .  escapeshellarg($remote_playlist);
+  echo "\nRETRIEVING TODAYS PLAYLIST FILE\n";
+  echo $command . "\n";
+  exec($command);
+  if(file_exists($download_file)) return $download_file;
+
+  return null;
+}
 
 
 function process_playlist_file($file){
   global $file_date_string;
-  $file_ts = filectime ($file);
+  $time_string = basename($file);
+  $filename = basename($base);
+  preg_match("/(.*)\.[A-Za-z]$/", $filename, $matches);
+  $time_string = $matches[1];
+
+  $file_ts = strtotime($time_string);
+  if($file_ts === FALSE){
+    $file_ts = filectime($file);
+  }
 
   $file_date_string = date("Y-m-d ", $file_ts);
-  echo basename($file) . ":\t";
+
+  echo basename($file) . "($file_date_string):\t";
   //return;
   $added = 0;
   $skipped = 0;
@@ -152,4 +216,4 @@ function combine_array_items($array){
   return preg_replace(array('/\s{2,}/','/\s,/'), array(" ", ","), trim(implode(' ', $array) ));
 
 }
-?> 
+?>
