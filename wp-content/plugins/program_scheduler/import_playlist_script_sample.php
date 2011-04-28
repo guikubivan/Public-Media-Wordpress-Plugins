@@ -3,11 +3,12 @@
 /*****************************************************
  * Required variables - change to match your setup ***
  *****************************************************/
+$playlists_url_directory = "http://pablo.dyndns-office.com/";
 #blog id where playlist tables are, will be ignored if install is not multi-site
-$blog_id = 1;#7
+$playlists_blog_id = 7;
 
 #station id for the scheduler
-$station_id = "";//set to integer or "" #1
+$station_id = 1;//set to integer or "" for no schedule
 
 #specify host or domain (needed for wp-includes/ms-settings.php:100)
 $_SERVER[ 'HTTP_HOST' ] = 'pablo.dyndns-office.com';
@@ -18,12 +19,13 @@ $wp_load_loc = '/home/www/wordpress_3.1/wp-load.php';
  *******end required variables************************
  *****************************************************/
 
+
 if($argc ==1)
   die("Usage: import_daily_playlist.php [--today] [file1 file2 ...] \n");
 
 require_once($wp_load_loc);
 
-if(is_multisite()) switch_to_blog($blog_id);
+if(is_multisite()) switch_to_blog($playlists_blog_id);
 
 try{
 
@@ -31,11 +33,12 @@ try{
   if(sizeof($results)==0)
     Throw new Exception();
 }catch(Exception $e) {
-  die($wpdb->prefix."wfiu_playlist table not found, make sure plugin is activated in blog with id $blog_id\n");
+  die($wpdb->prefix."wfiu_playlist table not found, make sure plugin is activated in blog with id $playlists_blog_id\n");
 }
 
 /*  START EXECUTION */
-echo str_repeat("=", 25) . "\nPLAYLIST IMPORT SCRIPT STARTED AT: " . date("r") . "\n";
+date_default_timezone_set("America/New_York");
+echo str_repeat("=", 25) . "\nPLAYLIST IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
 
 global $file_date_string;
 
@@ -80,6 +83,7 @@ echo "DONE\n" . str_repeat("=", 25) . "\n";
 
 
 function fetch_todays_file(){
+  global $playlists_url_directory;
   $user_info = posix_getpwuid(posix_getuid());
   $home_dir = $user_info['dir'];
   $temp_folder = $home_dir . "/temp";
@@ -87,9 +91,9 @@ function fetch_todays_file(){
     mkdir($temp_folder);
   }
 
-  $file_name = "playlist.txt";
+  $file_name = date("Ymd") . ".txt";
   $download_file = "$temp_folder/$file_name";
-  $remote_playlist = "http://pablo.dyndns-office.com/$file_name";
+  $remote_playlist = $playlists_url_directory . $file_name;
 
   $command = "curl -f -o " . escapeshellarg($download_file) . " " .  escapeshellarg($remote_playlist);
   echo "\nRETRIEVING TODAYS PLAYLIST FILE\n";
@@ -103,19 +107,20 @@ function fetch_todays_file(){
 
 function process_playlist_file($file){
   global $file_date_string;
-  $time_string = basename($file);
-  $filename = basename($base);
-  preg_match("/(.*)\.[A-Za-z]$/", $filename, $matches);
-  $time_string = $matches[1];
 
-  $file_ts = strtotime($time_string);
-  if($file_ts === FALSE){
+  $filename = basename($file);
+
+  preg_match("/(\d{4})(\d{2})(\d{2})\.txt$/i", $filename, $matches);
+
+  if(sizeof($matches) == 4){
+    $file_ts = mktime(0, 0, 0, $matches[2], $matches[3], $matches[1]);
+  }else{
     $file_ts = filectime($file);
   }
-
+  
   $file_date_string = date("Y-m-d ", $file_ts);
 
-  echo basename($file) . "($file_date_string):\t";
+  echo $filename . "($file_date_string):\t";
   //return;
   $added = 0;
   $skipped = 0;
