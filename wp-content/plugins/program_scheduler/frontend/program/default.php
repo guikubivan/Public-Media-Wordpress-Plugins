@@ -45,7 +45,7 @@ if($program->show_playlist == "1"):
   $program_start = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $start) ));
   $program_end = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $end) ));
   $cur_datetime = formatdatetime(time());
-  if(is_multisite()) switch_to_blog($playlists_blog);
+  #if(is_multisite()) switch_to_blog($playlists_blog);
 
   $query = $wpdb->prepare("SELECT DISTINCT s.id FROM " . $scheduleObj->t_s . " AS s JOIN " . $scheduleObj->t_e . " AS e ON s.id = e.id");
   $station_clause = "";
@@ -55,7 +55,7 @@ if($program->show_playlist == "1"):
           $program_start, $program_end, $cur_datetime, $scheduleObj->id);
 
   $playlist = $wpdb->get_results($query);
-  if(is_multisite()) restore_current_blog();
+  #if(is_multisite()) restore_current_blog();
   
   if(sizeof($playlist) > 0):
     include(dirname(__FILE__) . "/../playlist/default.php");
