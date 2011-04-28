@@ -48,7 +48,7 @@ foreach($argv as $key=>$val){
   if($val == '--today'){
     $today_f = fetch_todays_file();
     if(is_null($today_f)){
-      die("ERROR: Could not donwload today's playlist (url exists?)\n");
+      die("ERROR: Could not download today's playlist (url exists?)\n");
     }else{
       $files = Array($today_f);
     }
