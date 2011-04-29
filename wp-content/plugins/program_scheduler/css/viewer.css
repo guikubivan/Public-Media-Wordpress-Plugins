@@ -330,7 +330,7 @@ div.ps_host_info {
 }
 
 .ps_host_photo {
-  float: left;
+  /*float: left;*/
   padding: 2px;
   
 }

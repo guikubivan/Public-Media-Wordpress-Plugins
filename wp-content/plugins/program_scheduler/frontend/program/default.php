@@ -64,20 +64,20 @@ endif; ?>
 
 <? if($program->host_name): ?>
 <div class="ps_host_info">
+  <table>
+    <tr>
   <? if($program->host_photo_url): ?>
-  <div class="ps_host_photo">
-    <img src="<?= $program->host_photo_url ?>" />
-  </div>
+      <td class="ps_host_photo"><img src="<?= $program->host_photo_url ?>" /></td>
   <? endif; ?>
-  <div>
-    <i>About the host -</i><br/>
-    <span class="ps_host_name"><?= $program->host_name ?></span><br/>
-    <div class="ps_host_description">
-      <?= $program->host_bio ?>
-      
-    </div>
-
-  </div>
+      <td>
+        <i>About the host -</i><br/>
+        <span class="ps_host_name"><?= $program->host_name ?></span><br/>
+        <div class="ps_host_description">
+          <?= $program->host_bio ?>
+        </div>
+      </td>
+    </tr>
+  </table>
 </div>
 
 <? endif; ?>

@@ -71,8 +71,12 @@ foreach($stations as $key=>$value){
 
         foreach($programs as $this_program){
            #print_r($this_program);
-           $ps_query['program'] = $this_program;
+           $is_valid = $scheduleObj->program_tablerow($this_program, $start_date, true, null, true, true);
+
+           if($is_valid === false) continue;
+           
            $start = strtotime($this_program->start_date);//timestamp
+           $ps_query['program'] = $this_program;
            $smins = intval(date('H', $start)) * 60 + intval(date('i', $start));//minutes of the day
            $end = $eventHelper->fix_end_time($start, $this_program->end_date) - 1;//timestamp
            $emins = intval(date('H', $end)) * 60 + intval(date('i', $end));//minutes of the day
