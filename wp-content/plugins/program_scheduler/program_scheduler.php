@@ -34,16 +34,24 @@ METHODS
 
 */
 
+global $helper_schedule, $ps_page_option_name, $ps_query;
+
+$ps_page_option_name = "program_scheduler_page";
+$ps_default_schedule_option_name = "program_scheduler_default_id";
+
+$ps_query = array();
+
 require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/plugin_functions.php');
 if(!class_exists('ProgramSchedule')) {
   require_once(ABSPATH.PLUGINDIR.'/program_scheduler/program_scheduler_classes.php');
-  global $helper_schedule;
+
   $helper_schedule = new ProgramScheduler();
   add_action('init', array(&$helper_schedule, 'register_scripts_and_styles'));
   //add_action( "admin_head", array(&$helper_schedule, 'admin_head') );
 }
 
-register_activation_hook(ABSPATH.PLUGINDIR."/program_scheduler/".basename(__FILE__), array(&$helper_schedule, 'create_tables'));
+register_activation_hook(ABSPATH.PLUGINDIR."/program_scheduler/".basename(__FILE__), array(&$helper_schedule, 'create_tables_and_flush_rules'));
+register_deactivation_hook(ABSPATH.PLUGINDIR."/program_scheduler/".basename(__FILE__), 'ps_flush_rewrite_rules');
 
 //add_action('wp_head', 'ps_frontend_include');
 add_action('wp_ajax_action_send_categories', 'php_get_categories');
@@ -60,6 +68,17 @@ if( is_admin() ){
 }
 add_action('admin_menu', 'add_pg_editor_page');
 
+// hook ps_add_query_schedule_vars function into query_vars
+add_filter('query_vars', 'ps_add_query_schedule_vars');
+
+// hook add_rewrite_rules function into ps_add_schedule_rewrite_rules
+add_filter('rewrite_rules_array', 'ps_add_schedule_rewrite_rules');
+
+add_filter( "the_content", "ps_maybe_show_schedule");
+
+#We flush rules at activation and when page name is change in settings
+
+
 /*******************************************
  ************Frontend-only functions********
  *******************************************/
@@ -70,9 +89,19 @@ if ( !is_admin() ) { // instruction to only load if it is not the admin area
   }
 
   #Note: you need to use wp_head
-  function ps_frontend_enqueue($in_footer = false){
-    global $helper_schedule;
-    $helper_schedule->frontend_enque($in_footer);
+  function ps_frontend_enqueue($in_footer = false, $force = false){
+    global $post,
+            $helper_schedule, $ps_page_option_name;
+    $valid = false;
+    if(is_singular()){
+      if($post->post_name == get_option($ps_page_option_name)){
+        $valid = true;
+      }
+    }
+    
+    if($valid || $force){
+      $helper_schedule->frontend_enque($in_footer);
+    }
   }
 }
 /************End frontend-only functions********/
@@ -81,6 +110,73 @@ if ( !is_admin() ) { // instruction to only load if it is not the admin area
 /***************************************
  ************Universal functions********
  ***************************************/
+function ps_single_day_url($schedule_name, $timestamp){
+  global $ps_query;
+  return get_bloginfo('url') . "/schedule/" . ($ps_query['use_default'] ? '' : $sname . "/") . "daily/" . urlencode(date("Y-m-d", $timestamp));
+}
+
+function ps_flush_rewrite_rules(){
+  global $wp_rewrite;
+  $wp_rewrite->flush_rules();
+}
+
+function ps_add_query_schedule_vars($vars) {
+  array_push($vars, 'ps_sname');
+  array_push($vars, 'ps_mode');
+  array_push($vars, 'ps_date');
+  return $vars;
+}
+
+#Rewrite rules if option 'program_schduler_page' is set and we're not in the process of deactivating the plugin
+function ps_add_schedule_rewrite_rules($rules) {
+    global $ps_page_option_name;
+    $page_name = get_option($ps_page_option_name);
+    if($page_name && ($_GET['action'] != 'deactivate')){
+        $newrules = array('(' . $page_name . ')/([^/]*)?/?(weekly|daily)/?([\d\-]*)$' => 'index.php?pagename=$matches[1]&ps_sname=$matches[2]&ps_mode=$matches[3]&ps_date=$matches[4]');
+        #$newrules['(project)/(\d*)$'] = 'index.php?pagename=$matches[1]&id=$matches[2]';
+        $rules = $newrules + $rules;
+    }
+    return $rules;
+}
+
+function ps_maybe_show_schedule($content){
+  global $wpdb, $post, $wp_query,
+          $helper_schedule, $ps_page_option_name, $ps_default_schedule_option_name, $ps_query;
+
+  if(is_singular() && ($schedule_page_name = get_option($ps_page_option_name) ) ){
+
+      if($post->post_name == $schedule_page_name){
+        $sname = urldecode($wp_query->query_vars['ps_sname']);
+        $ps_mode = urldecode($wp_query->query_vars['ps_mode']);
+        $ps_date = urldecode($wp_query->query_vars['ps_date']);
+
+        if($ps_mode == 'daily')$ps_mode = 'single';
+        
+        
+        if(empty($sname)){
+          $sid = get_option($ps_default_schedule_option_name);
+          if($sid) $ps_query['use_default'] = true;
+          $sid_clause = $sid ? "WHERE ID= $sid" : '';
+          $query = "SELECT name FROM " . $helper_schedule->t_s . " $sid_clause ORDER BY name LIMIT 1;";
+
+          $scheduleRow = $wpdb->get_results($query);
+          if(sizeof($scheduleRow) > 0) $sname = $scheduleRow[0]->name;
+        }
+
+        if(!empty($sname)){
+          $_GET['mode'] = $ps_mode;
+          $_GET['start_date'] = $ps_date;
+          #echo $_GET['start_date'];
+          #echo strtotime($_GET['start_date']);
+
+          the_schedule($sname, $ps_mode);
+        }
+      }
+  }
+  
+  return $content;
+}
+
 if(!function_exists('the_schedule') ){
 	function the_schedule($schedule_name, $mode='weekly', $echo = true){
 		$_GET['schedule_name'] = $schedule_name;

@@ -83,7 +83,7 @@ if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
 					$cur_day += 86400;
 					continue;
 				}
-				$days[] = "<span class='day'>" . date('D',$cur_day) . "</span><br /><span class=\"day_".$i."\"><a href='#both-single' >" . date('M j', $cur_day) . "</a></span>";
+				$days[] = "<span class='day'>" . date('D',$cur_day) . "</span><br /><span class=\"day_".$i."\"><a href='" . ps_single_day_url($_GET['schedule_name'], $cur_day) . "' >" . date('M j', $cur_day) . "</a></span>";
 				$cur_day += 86400;
 			}
 			echo table_headers($days);?>

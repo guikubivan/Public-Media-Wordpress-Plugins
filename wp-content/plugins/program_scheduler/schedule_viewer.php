@@ -10,7 +10,6 @@ global $sname; #single day
 #date_default_timezone_set("America/New_York");#Eastern Time
 date_default_timezone_set("America/Denver");#Mountain Time
 
-$ps_query = array();
 $ps_query['schedule_name'] = $_GET['schedule_name'];
 $ps_query['mode'] = $_GET['mode'];
 $ps_query['start_date'] = $_GET['start_date'];
@@ -183,8 +182,9 @@ if($_GET['mode'] == 'program-ajax'){
 	}
 	
 	if(!preg_match("/schedule_viewer\.php/", $_SERVER['REQUEST_URI']) ){
-                #only load it once for all schedules
-		require_once(dirname(__FILE__).'/load_week_schedule_all_js.php'); 
+          if(!empty($_GET['schedule_name'])){
+            require_once(dirname(__FILE__).'/load_week_schedule_js.php');
+          }
 	}
 }	
 

@@ -51,3 +51,8 @@ foreach($schedules as $schedule)$names[] = $schedule->name;
 </div><!--tabs top-page-->
 
 <div class="clear"></div>
+
+<?
+#only load it once for all schedules
+require_once(dirname(__FILE__).'/../load_week_schedule_all_js.php');
+?>

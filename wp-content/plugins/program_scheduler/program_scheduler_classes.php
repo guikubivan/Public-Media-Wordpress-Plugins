@@ -553,7 +553,7 @@ if(!class_exists ('ProgramScheduler')) {
 			//$wpdb->query("DROP TABLE $table;") ? "Error when deleting $table \n<br />" : '';
 		}
 		
-		function create_tables(){
+		function create_tables_and_flush_rules(){
 			global $wpdb;
 			//need mysql >= 5.0.3
                         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -650,9 +650,10 @@ if(!class_exists ('ProgramScheduler')) {
                         UNIQUE KEY(program_id, tag_id)
 			);";
 			dbDelta($query);
-			
+
+                        ps_flush_rewrite_rules();
+
 			return true;			
-			
 		}
 
                 public function save_station(){

@@ -118,29 +118,7 @@ if(!function_exists('single_day_view')){
 
 
 <div id='single_wrapper'>
-  <div style='text-align: center;'>
-<? if(preg_match("/admin\.php/", $_SERVER['REQUEST_URI'])): ?>
-    <a style='padding-right: 10px;' href='?page=<? echo $_GET['page'] ?>&mode=single&schedule_name=<? echo $_GET['schedule_name'] ?>&start_date=<? echo urlencode(date("Y-m-d", $start_date-86400)); ?>' >
-      <<
-    </a>
-<? else: ?>
-    <span style='padding-right: 10px;' class='clickable' onclick="single_change_date(-1);" >
-      <<
-    </span>
-<? endif; ?>
-    <span id='single_date'>
-      <? echo date("l", $start_date)." " . date("F j, Y", $start_date); ?>
-    </span>
-
-<? if(preg_match("/admin\.php/", $_SERVER['REQUEST_URI'])): ?>
-    <a style='padding-left: 10px;' href='?page=<? echo $_GET['page']; ?>&mode=single&schedule_name=<? echo $_GET['schedule_name'] ?>&start_date=<? echo urlencode(date("Y-m-d", $start_date+86400))?>' >
-      >>
-    </a>
-<? else: ?>
-    <span style='padding-left: 10px;' class='clickable' onclick="single_change_date(+1);" >
-      >>
-    </span>
-<? endif; ?>
+  <? include(dirname(__FILE__) . "/navigation.php"); ?>
 
     <? /******** BRAINS OF THE WHOLE THING **********/ ?>
     <table style='clear:both' class='single'>
