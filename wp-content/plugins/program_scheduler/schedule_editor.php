@@ -7,7 +7,7 @@ if(!isset($cell_width))$cell_width = isset($singleDay) ? 300 : 80;
 
 $cell_height = 30;
 $cal_height = ($cell_height) * $granularity * 24;//in pixels
-$cal_width = isset($singleDay) ? $cell_width : $cell_width * 7;
+$cal_width = isset($singleDay) ? $cell_width : $cell_width * 7 + 7;#+1 for each border between days
 
 //echo JFormatDateTime($start_date) ."\n<br />";
 if(!isset($start_date) ){

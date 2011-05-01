@@ -200,13 +200,22 @@ function update_date(myDate){
 	jQuery(".calendar_year:first").text(myDate.getFullYear());
 	for(i=0;i<7;++i){
 		if(jQuery(".day_" + i + ':first').text()){
-			jQuery(".day_" + i).text(month_names[myDate.getMonth()] + ' ' + myDate.getDate());
+                        //http://pablo.dyndns-office.com/wp_test/schedule/daily/2011-03-28
+                        var link_obj = jQuery(".day_" + i).find("a");
+
+                        link_obj.attr("href", update_single_day_url(link_obj.attr("href"), myDate));
+                        link_obj.text(month_names[myDate.getMonth()] + ' ' + myDate.getDate());
 			if(isSingle){
 				jQuery(".day_" + i).parent().find('span.day').text(num2day[myDate.getDay()]);
 			}
 			myDate.setDate(myDate.getDate()+1);
 		}
 	}
+}
+
+function update_single_day_url(oldUrl, dateObj){
+  var matches = oldUrl.match(/(.*\/)([\d-]+)\/?$/);
+  return matches[1] + dateObj.getFullYear() + '-' + (dateObj.getMonth() +1) + '-' + dateObj.getDate();
 }
 
 function parse_date_single(){

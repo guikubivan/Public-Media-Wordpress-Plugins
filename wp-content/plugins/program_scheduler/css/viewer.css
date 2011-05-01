@@ -31,7 +31,8 @@
 }
 
 .calendar_days th {
-	width: 14.286%;
+  text-align: center;
+  width: 14.286%;/* = (100 / 7) */
 }
 
 .calendar_hours{
@@ -40,23 +41,30 @@
 	vertical-align: top;
 }
 
+.calendar_top_table {
+  width: auto !important;
+}
+
+
 .calendar_top_table td, .calendar_top_table tr{
 	vertical-align: top;
 }
 
-.calendar_top_table td {
-	padding: 0px;
+.calendar_top_table, .calendar_top_table table, .calendar_top_table td {
+	padding: 0 !important;
+        margin: 0 !important;
 }
 
 .schedule_menu {
 	display: none;
 }
-
+/* Probably don't want to do this for all these tags on page
 table, td, tr, th, div {
 	margin: 0px;
 	padding: 0px;
 	border-spacing: 0px 0px;
 }
+*/
 
 
 td.hour_cell {
@@ -152,7 +160,7 @@ div.event_controls{
 
  }
 .calendar_cell_hour {
-	border-top: 1px solid #000000;
+	border-top: 1px solid #000000 !important;
 }
 
 .loading_div {
@@ -202,6 +210,12 @@ ul.listing_ul li {
 
 /******/
 
+/***SINGLE DAY CSS ****/
+
+#single_wrapper table{
+  border: none;
+
+}
 
 table.single {
 	width: 100%;
@@ -339,7 +353,7 @@ div.ps_host_info {
   height: 50px;
   width: 50px;
 }
-/******/
+/***END SINGLE DAY CSS ****/
 
 /* programs a-z list styles */
 
@@ -489,3 +503,4 @@ tr.ps_playlist_item td {
 }
 
 /* END Playlist css */
+

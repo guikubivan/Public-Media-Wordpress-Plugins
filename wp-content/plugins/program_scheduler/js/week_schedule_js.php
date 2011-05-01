@@ -1202,7 +1202,7 @@ this_field.attr('id', i);
 <? endif; ?>
 					toggleFocus(id);
 				}
-				debug('deleting container for event ' + id);
+				//debug('deleting container for event ' + id);
                                 //if(events.container[id]){
                                 events.container[id].remove();
                                 //}

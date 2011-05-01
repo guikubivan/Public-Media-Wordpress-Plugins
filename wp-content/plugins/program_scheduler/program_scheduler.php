@@ -115,28 +115,11 @@ function ps_single_day_url($schedule_name, $timestamp){
   return get_bloginfo('url') . "/schedule/" . ($ps_query['use_default'] ? '' : $sname . "/") . "daily/" . urlencode(date("Y-m-d", $timestamp));
 }
 
-function ps_flush_rewrite_rules(){
-  global $wp_rewrite;
-  $wp_rewrite->flush_rules();
-}
-
 function ps_add_query_schedule_vars($vars) {
   array_push($vars, 'ps_sname');
   array_push($vars, 'ps_mode');
   array_push($vars, 'ps_date');
   return $vars;
-}
-
-#Rewrite rules if option 'program_schduler_page' is set and we're not in the process of deactivating the plugin
-function ps_add_schedule_rewrite_rules($rules) {
-    global $ps_page_option_name;
-    $page_name = get_option($ps_page_option_name);
-    if($page_name && ($_GET['action'] != 'deactivate')){
-        $newrules = array('(' . $page_name . ')/([^/]*)?/?(weekly|daily)/?([\d\-]*)$' => 'index.php?pagename=$matches[1]&ps_sname=$matches[2]&ps_mode=$matches[3]&ps_date=$matches[4]');
-        #$newrules['(project)/(\d*)$'] = 'index.php?pagename=$matches[1]&id=$matches[2]';
-        $rules = $newrules + $rules;
-    }
-    return $rules;
 }
 
 function ps_maybe_show_schedule($content){
@@ -164,12 +147,7 @@ function ps_maybe_show_schedule($content){
         }
 
         if(!empty($sname)){
-          $_GET['mode'] = $ps_mode;
-          $_GET['start_date'] = $ps_date;
-          #echo $_GET['start_date'];
-          #echo strtotime($_GET['start_date']);
-
-          the_schedule($sname, $ps_mode);
+          include(dirname(__FILE__) . "/frontend/schedule.php");
         }
       }
   }
@@ -251,6 +229,23 @@ function global_get_single_day(){
  ************Admin functions ********
  ************************************/
 if( is_admin() ){
+
+  function ps_flush_rewrite_rules(){
+    global $wp_rewrite;
+    $wp_rewrite->flush_rules();
+  }
+
+  #Rewrite rules if option 'program_schduler_page' is set and we're not in the process of deactivating the plugin
+  function ps_add_schedule_rewrite_rules($rules) {
+      global $ps_page_option_name;
+      $page_name = get_option($ps_page_option_name);
+      if($page_name && ($_GET['action'] != 'deactivate')){
+          $newrules = array('(' . $page_name . ')/([^/]*)?/?(weekly|daily)/?([\d\-]*)$' => 'index.php?pagename=$matches[1]&ps_sname=$matches[2]&ps_mode=$matches[3]&ps_date=$matches[4]');
+          #$newrules['(project)/(\d*)$'] = 'index.php?pagename=$matches[1]&id=$matches[2]';
+          $rules = $newrules + $rules;
+      }
+      return $rules;
+  }
 
   function php_receive_event(){
           if(isset($_POST['schedule_name']) ){
