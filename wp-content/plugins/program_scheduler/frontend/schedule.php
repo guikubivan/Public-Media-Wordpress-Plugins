@@ -6,8 +6,6 @@ REQUIRED VARIABLES
   $ps_date
 *********/
 
-$_GET['mode'] = $ps_mode;
-$_GET['start_date'] = $ps_date;
 #echo $_GET['start_date'];
 #echo strtotime($_GET['start_date']);
 

@@ -50,7 +50,7 @@ if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
 	echo "Schedule Editor - ";
 }
 
-  echo $_GET['schedule_name'];
+if(!$ps_query['in_loop']) echo $_GET['schedule_name'];
 ?>
   </h2>
 	<table class='calendar_top_table'>

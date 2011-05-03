@@ -40,6 +40,7 @@ $ps_page_option_name = "program_scheduler_page";
 $ps_default_schedule_option_name = "program_scheduler_default_id";
 
 $ps_query = array();
+if(get_option($ps_default_schedule_option_name)) $ps_query['use_default'] = true;
 
 require_once(ABSPATH.PLUGINDIR.'/wfiu_utils/plugin_functions.php');
 if(!class_exists('ProgramSchedule')) {
@@ -100,7 +101,9 @@ if ( !is_admin() ) { // instruction to only load if it is not the admin area
     }
     
     if($valid || $force){
-      $helper_schedule->frontend_enque($in_footer);
+      $helper_schedule->frontend_enque(null, null, $in_footer);
+    }else{
+      $helper_schedule->frontend_enque(array(), array("ps_now", "ps_program"), $in_footer);
     }
   }
 }
@@ -112,7 +115,7 @@ if ( !is_admin() ) { // instruction to only load if it is not the admin area
  ***************************************/
 function ps_single_day_url($schedule_name, $timestamp){
   global $ps_query;
-  return get_bloginfo('url') . "/schedule/" . ($ps_query['use_default'] ? '' : $sname . "/") . "daily/" . urlencode(date("Y-m-d", $timestamp));
+  return get_bloginfo('url') . "/schedule/" . ($ps_query['use_default']===true ? '' : $sname . "/") . "daily/" . urlencode(date("Y-m-d", $timestamp));
 }
 
 function ps_add_query_schedule_vars($vars) {
@@ -126,6 +129,8 @@ function ps_maybe_show_schedule($content){
   global $wpdb, $post, $wp_query,
           $helper_schedule, $ps_page_option_name, $ps_default_schedule_option_name, $ps_query;
 
+  $ps_query['in_loop'] = true;
+
   if(is_singular() && ($schedule_page_name = get_option($ps_page_option_name) ) ){
 
       if($post->post_name == $schedule_page_name){
@@ -138,7 +143,6 @@ function ps_maybe_show_schedule($content){
         
         if(empty($sname)){
           $sid = get_option($ps_default_schedule_option_name);
-          if($sid) $ps_query['use_default'] = true;
           $sid_clause = $sid ? "WHERE ID= $sid" : '';
           $query = "SELECT name FROM " . $helper_schedule->t_s . " $sid_clause ORDER BY name LIMIT 1;";
 
@@ -147,6 +151,9 @@ function ps_maybe_show_schedule($content){
         }
 
         if(!empty($sname)){
+          $_GET['mode'] = $ps_mode;
+          $_GET['start_date'] = $ps_date;
+          $_GET['schedule_name'] = $sname;
           include(dirname(__FILE__) . "/frontend/schedule.php");
         }
       }

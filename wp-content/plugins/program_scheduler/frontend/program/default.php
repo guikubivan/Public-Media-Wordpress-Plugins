@@ -24,9 +24,10 @@ $end = $eventHelper->fix_end_time($start, $program->end_date);
 $stime = (intval(date('i', $start)) > 0) ? $stime = date('g:i a', $start) : date("g a", $start);
 $etime = (intval(date('i', $end)) > 0) ? $etime = date('g:i a', $end) : date("g a", $end);
 //$name_style = $ismodule ? "style='font-size: x-small;'" : '';
+$program_css_id = $scheduleObj->id . "_" . date('Hi', $start);
 ?>
-
-<div class='<?= $class ?>' <?= $style ?> >
+<a name="<?= $program_css_id ?>"></a>
+<div id="<?= $program_css_id ?>" class='<?= $class ?>' <?= $style ?> >
   <span <?= $name_style ?>>
     <?= $stime ?> - <?= $etime ?>
   </span>
@@ -41,25 +42,7 @@ $etime = (intval(date('i', $end)) > 0) ? $etime = date('g:i a', $end) : date("g 
 <? endif; ?>
 <?
 if($program->show_playlist == "1"):
-  #echo date("Y-m-d ",$start_date);
-  $program_start = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $start) ));
-  $program_end = formatdatetime(strtotime(date("Y-m-d ",$start_date) . date("H:i:s", $end) ));
-  $cur_datetime = formatdatetime(time());
-  #if(is_multisite()) switch_to_blog($playlists_blog);
-
-  $query = $wpdb->prepare("SELECT DISTINCT s.id FROM " . $scheduleObj->t_s . " AS s JOIN " . $scheduleObj->t_e . " AS e ON s.id = e.id");
-  $station_clause = "";
-  if(sizeof($wpdb->get_results($query)) > 1) $station_clause = "AND station_id = %d";
-  
-  $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE start_time >= %s AND start_time < %s AND start_time <= %s $station_clause",
-          $program_start, $program_end, $cur_datetime, $scheduleObj->id);
-
-  $playlist = $wpdb->get_results($query);
-  #if(is_multisite()) restore_current_blog();
-  
-  if(sizeof($playlist) > 0):
-    include(dirname(__FILE__) . "/../playlist/default.php");
-  endif;
+  include(dirname(__FILE__) . "/../playlist/default.php");
 endif; ?>
 
 <? if($program->host_name): ?>
@@ -67,7 +50,7 @@ endif; ?>
   <table>
     <tr>
   <? if($program->host_photo_url): ?>
-      <td class="ps_host_photo"><img src="<?= $program->host_photo_url ?>" /></td>
+      <td><img class="ps_host_photo" src="<?= $program->host_photo_url ?>" /></td>
   <? endif; ?>
       <td>
         <i>About the host -</i><br/>

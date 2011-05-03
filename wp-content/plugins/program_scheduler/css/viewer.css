@@ -1,3 +1,7 @@
+@import url("playlist.css");
+@import url("program.css");
+@import url("now.css");
+
 /*Utitily classes */
 .canclick {
 	cursor: pointer;
@@ -339,20 +343,6 @@ div.single_filler {
 	right: 0px;
 }
 
-div.ps_host_info {
-  border-top: 1px solid #CCCCCC;
-}
-
-.ps_host_photo {
-  /*float: left;*/
-  padding: 2px;
-  
-}
-
-.ps_host_photo img {
-  height: 50px;
-  width: 50px;
-}
 /***END SINGLE DAY CSS ****/
 
 /* programs a-z list styles */
@@ -482,25 +472,3 @@ table#schedule_listing tr td div {
 	z-index:1;
 }
 /* END - Other views (single day) from Eoban */
-
-/* Playlist css */
-table.ps_playlist{
-  width: 100%;
-}
-
-table.ps_playlist tr td {
-  vertical-align: top;
-  padding: 2px;
-}
-
-tr.ps_playlist_item td {
-  border-top: 1px solid #CCCCCC;
-}
-
-.show_hide_playlist {
-  color: #029A9A;
-  float: right;
-}
-
-/* END Playlist css */
-

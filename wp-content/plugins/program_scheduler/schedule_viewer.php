@@ -21,16 +21,16 @@ if(!function_exists('ps_program_name') ){
     echo empty($ps_query['program']) ? 'N/A' : $ps_query['program']->name;
   }
 
-  function ps_start_time($format){
+  function ps_start_time($format = ''){
     global $ps_query;
-    if(empty($format))$format = "h:i:s A";
+    if(empty($format))$format = "g:i A";
     echo empty($ps_query['program']) ? 'N/A' : date($format, strtotime($ps_query['program']->start_date));
   }
 
-  function ps_end_time($format){
+  function ps_end_time($format=''){
     global $ps_query;
-    if(empty($format))$format = "h:i:s A";
-    echo empty($ps_query['program']) ? 'N/A' : date($format, strtotime($ps_query['program']->start_date));
+    if(empty($format))$format = "g:i A";
+    echo empty($ps_query['program']) ? 'N/A' : date($format, strtotime($ps_query['program']->end_date));
   }
 
   function ps_program_info_link(){
@@ -103,7 +103,7 @@ if(isset($_GET['schedule_name']) && !isset($scheduleObj)){
 	}else if(is_null($scheduleObj)){
           $scheduleObj = new ProgramScheduler();
         }
-}else{
+}else if(!isset($_GET['schedule_name'])){
 	die("<b>No schedule selected</b>");
 }
 

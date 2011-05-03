@@ -28,6 +28,7 @@ foreach($stations as $key=>$value){
   <? include(dirname(__FILE__) . "/navigation.php"); ?>
   <table style='clear:both' class='single'>
     <? /******** BRAINS OF THE WHOLE THING **********/ ?>
+<? if(!$ps_query['in_loop'] || (sizeof($stations) > 1)): ?>
     <tr>
     <?
       foreach($stations as $station){
@@ -35,6 +36,7 @@ foreach($stations as $key=>$value){
       }
     ?>
     </tr>
+<? endif; ?>
     <tr>
     <?
       foreach($stations as $station){
@@ -76,6 +78,6 @@ foreach($stations as $key=>$value){
   <? endforeach; ?>
     </div>
 <? endif; ?>
-  
+
 </div>
 

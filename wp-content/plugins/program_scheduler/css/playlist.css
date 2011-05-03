@@ -1,0 +1,17 @@
+table.ps_playlist{
+  width: 100%;
+}
+
+table.ps_playlist tr td {
+  vertical-align: top;
+  padding: 2px;
+}
+
+tr.ps_playlist_item td {
+  border-top: 1px solid #CCCCCC;
+}
+
+.show_hide_playlist {
+  color: #029A9A;
+  float: right;
+}

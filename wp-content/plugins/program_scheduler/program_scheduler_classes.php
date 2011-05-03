@@ -704,6 +704,8 @@ if(!class_exists ('ProgramScheduler')) {
 
                         wp_register_style('ps_datepicker', $this->plugin_url.'css/datepicker.css');
                         wp_register_style('ps_week_viewer', $this->plugin_url.'css/viewer.css', array("ps_datepicker"));
+                        wp_register_style('ps_now', $this->plugin_url.'css/now.css');
+                        wp_register_style('ps_program', $this->plugin_url.'css/program.css');
                         
 		}
 		
@@ -724,14 +726,25 @@ if(!class_exists ('ProgramScheduler')) {
 				}	
 		}
 
-                function frontend_enque($in_footer){
+                function frontend_enque($scripts_a = null, $styles_a = null, $in_footer = false){
                   wp_register_script('jquery-ui-accordion', $this->plugin_url.'js/jquery.ui.accordion.min');
                   wp_register_script('schedule_week_viewer_frontend', $this->plugin_url.'js/week_schedule_js.php', array('jquery-ui-datepicker', 'sack', 'jquery-ui-tabs', 'jquery-ui-accordion'), "", $in_footer);
                   wp_localize_script( 'schedule_week_viewer_frontend', 'WPScheduler', array( 'url'=>get_bloginfo('url'), 'ajaxurl' => admin_url('admin-ajax.php') ) );
 
-                  wp_enqueue_script( 'schedule_week_viewer_frontend');
+                  if(is_null($scripts_a)){
+                    $scripts_a = array('schedule_week_viewer_frontend');
+                  }
 
-                  wp_enqueue_style("ps_week_viewer");
+                  if(is_null($styles_a)){
+                    $styles_a = array('ps_week_viewer');
+                  }
+
+                  foreach($scripts_a as $s)
+                    wp_enqueue_script($s);
+
+                  foreach($styles_a as $s)
+                    wp_enqueue_style($s);
+                  
                 }
 
 		function plugin_url(){

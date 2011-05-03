@@ -47,15 +47,23 @@ REQUIRED VARIABLES
   </div>
 
 <script type="text/javascript">
-  jQuery('#single_day_datepicker_<?= $scheduleObj->id; ?>').datepicker({
-  showOn: 'button',
-  showAnim: 'fadeIn',
-  buttonImage: WPScheduler.url + '/wp-content/plugins/program_scheduler/images/calendar.gif',
-  buttonImageOnly: true,
-  onSelect: function(dateText) {
-    var d = new Date(dateText);
-    
-    window.location = update_single_day_url('<?= ps_single_day_url($sname, time()); ?>', d);
+jQuery(document).ready(function($){
+  var matches = window.location.toString().match(/#(\d_\d+)$/);
+  if(matches && (jQuery("#" + matches[1]).find(".ps_playlist").length > 0 )){
+    jQuery("#" + matches[1]).find(".ps_playlist").toggleClass('hide');
   }
+
+  jQuery('#single_day_datepicker_<?= $scheduleObj->id; ?>').datepicker({
+    showOn: 'button',
+    showAnim: 'fadeIn',
+    buttonImage: WPScheduler.url + '/wp-content/plugins/program_scheduler/images/calendar.gif',
+    buttonImageOnly: true,
+    onSelect: function(dateText) {
+      var d = new Date(dateText);
+
+      window.location = update_single_day_url('<?= ps_single_day_url($sname, time()); ?>', d);
+    }
+  });
+
 });
 </script>

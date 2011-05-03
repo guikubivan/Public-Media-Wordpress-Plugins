@@ -1,0 +1,9 @@
+.ps_now_wrapper {
+  border: 1px solid black;
+  width: 300px;
+}
+
+.ps_now_wrapper .ps_host_name {
+  font-size: 16px;
+  font-weight: bold;
+}
