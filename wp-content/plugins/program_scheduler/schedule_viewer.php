@@ -15,58 +15,8 @@ $ps_query['mode'] = $_GET['mode'];
 $ps_query['start_date'] = $_GET['start_date'];
 $ps_query['echo'] = empty($_GET['echo']) ? true : ($_GET['echo'] == "1" ? true : false);
 
-if(!function_exists('ps_program_name') ){
-  function ps_program_name(){
-    global $ps_query;
-    echo empty($ps_query['program']) ? 'N/A' : $ps_query['program']->name;
-  }
-
-  function ps_start_time($format = ''){
-    global $ps_query;
-    if(empty($format))$format = "g:i A";
-    echo empty($ps_query['program']) ? 'N/A' : date($format, strtotime($ps_query['program']->start_date));
-  }
-
-  function ps_end_time($format=''){
-    global $ps_query;
-    if(empty($format))$format = "g:i A";
-    echo empty($ps_query['program']) ? 'N/A' : date($format, strtotime($ps_query['program']->end_date));
-  }
-
-  function ps_program_info_link(){
-    global $ps_query;
-    echo empty($ps_query['program']) ? '' : $ps_query['program']->url;
-  }
-
-  function ps_program_description(){
-    global $ps_query;
-    echo empty($ps_query['program']) ? '' : $ps_query['program']->description;
-  }
-
-  function ps_host_name(){
-    global $ps_query;
-    echo empty($ps_query['program']) ? '' : $ps_query['program']->host_name;
-  }
-
-  function ps_host_bio(){
-    global $ps_query;
-    echo empty($ps_query['program']) ? '' : $ps_query['program']->host_bio;
-  }
-
-  function ps_host_photo_url(){
-    global $ps_query;
-    echo empty($ps_query['program']) ? '' : $ps_query['program']->host_photo_url;
-  }
-
-  function ps_host_bio_link(){
-    global $ps_query;
-    echo empty($ps_query['program']) ? '' : $ps_query['program']->host_bio_link;
-  }
-}
-
 /* Deprecated */
-/*
-if(!function_exists('print_program_row') ){
+/*if(!function_exists('print_program_row') ){
 	function print_program_row ($row){
 		echo "<li><div class='program_name'>";
 		echo $row[url] ? "<a href='$row[url]' >$row[name] </a>" : $row['name'];
@@ -161,6 +111,7 @@ if($_GET['mode'] == 'program-ajax'){
         $program = $scheduleObj->get_program_playing_at($start_date);
         if(!is_null($program)){
           $ps_query['program'] = $program;#global
+          require_once(dirname(__FILE__) . "/hooks/program.php");
           if($ps_query['echo']){
             include(dirname(__FILE__) . "/frontend/now/default.php");
           }

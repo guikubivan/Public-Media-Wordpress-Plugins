@@ -114,8 +114,13 @@ if ( !is_admin() ) { // instruction to only load if it is not the admin area
  ************Universal functions********
  ***************************************/
 function ps_single_day_url($schedule_name, $timestamp){
-  global $ps_query;
-  return get_bloginfo('url') . "/schedule/" . ($ps_query['use_default']===true ? '' : $sname . "/") . "daily/" . urlencode(date("Y-m-d", $timestamp));
+  global $ps_query, $ps_page_option_name;
+  $schedule_page_name = get_option($ps_page_option_name);
+  if($schedule_page_name){
+  return get_bloginfo('url') . "/" . $schedule_page_name . "/" . ($ps_query['use_default']===true ? '' : $sname . "/") . "daily/" . urlencode(date("Y-m-d", $timestamp));
+  }
+
+  return '';
 }
 
 function ps_add_query_schedule_vars($vars) {
