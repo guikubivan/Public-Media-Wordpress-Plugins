@@ -111,14 +111,14 @@ jQuery(function($){
 				var checkboxesDiv = $("<div />");
 
 				var table = "<table style='float: left'><tr>";
-				for(i in days){
-					j = parseInt(i)+1;
+                                $.each(days, function(i, value) {
+					j = i+1;
 					checked = '';
 					if(jQuery.inArray(j, vals) > -1){
 						checked = 'checked="checked"';
 					}
-					table += '<td style="text-align:center">'+ days[i] + '<br /><input type="checkbox" name="event_repeats" '+checked+' value="'+j+'"></td>';
-				}
+					table += '<td style="text-align:center">'+value + '<br /><input type="checkbox" name="event_repeats" '+checked+' value="'+j+'"></td>';
+				});
 
 				table += "</tr></table>";
 				$(checkboxesDiv).append(table);
@@ -154,19 +154,21 @@ jQuery(function($){
 				days.push('Sa');
 				days.push('Su');
 				var vals = events.repeats[id].toString().split('');
-				for(i in vals)vals[i] = parseInt(vals[i]);
+                                $.each(vals, function(i, value) {
+                                  vals[i] = parseInt(value);
+                                });
 				//alert("vals: " + vals);
 				var checkboxesDiv = $("<div />");
 
 				var table = "<table style='float: left'><tr>";
-				for(i in days){
-					j = parseInt(i)+1;
+				$.each(days, function(i, value) {
+					j = i+1;
 					checked = '';
 					if((jQuery.inArray(j, vals) > -1)){
 						checked = 'checked="checked"';
 					}
-					table += '<td style="text-align:center">'+ days[i] + '<br /><input <?if(!$edit) echo 'disabled="disabled"';?> type="checkbox" name="event_repeats" '+checked+' value="'+j+'"></td>';
-				}
+					table += '<td style="text-align:center">'+ value + '<br /><input <?if(!$edit) echo 'disabled="disabled"';?> type="checkbox" name="event_repeats" '+checked+' value="'+j+'"></td>';
+				});
 				table += "</tr></table>";
 				$(checkboxesDiv).append(table);
 <? if($edit): ?>
@@ -251,9 +253,9 @@ jQuery(function($){
 				if(categories.name.length > 0){
 					debug('Updating categories-select');
 					var sel_text = '<select name="event_category_name"><option value="">none</option>';
-					for(index in categories.name){
-						sel_text += '<option value="' + categories.name[index] + '">' + categories.name[index] + '</option>';
-					}
+					$.each(categories.name, function(index, value) {
+						sel_text += '<option value="' + value + '">' + value + '</option>';
+					});
 					sel_text += '<option value="other">other</option></select>';
 
 					cat_select = $(sel_text);
@@ -699,9 +701,9 @@ jQuery(function($){
 							program_id: programsXML.getElementsByTagName("ID")[xmlIndex].childNodes[0].nodeValue
 				}
 
-				for(prop in event){
-					mysack.setVar( prop, event[prop] );
-				}
+                                $.each(event, function(prop, value) {
+					mysack.setVar( prop, value );
+				});
 				mysack.encVar( "cookie", document.cookie, false );
 				mysack.onError = function() { alert('Ajax error in sending event.' )};
 
@@ -754,9 +756,9 @@ jQuery(function($){
 				//alert(event.name);
 				//alert(event.event_id);
 				//return;
-				for(prop in event){
-					mysack.setVar( prop, event[prop] );
-				}
+                                $.each(event, function(prop, value) {
+					mysack.setVar( prop, value );
+				});
 				mysack.encVar( "cookie", document.cookie, false );
 				mysack.onError = function() { alert('Ajax error in sending event.' )};
 				mysack.onCompletion = function setProgramID(){
@@ -844,14 +846,11 @@ jQuery(function($){
 
 				var fields = getFields(id);
 
-				for(i in fields){
+                                $.each(fields, function(i, this_field) {
                                   var label = "<label for='" + i + "'>" +
                                     i.substr(0,1).toUpperCase() +
                                     i.substring(1).replace(/_/g, ' ') +
                                     "</label>",
-                                    this_field = fields[i];
-                                  
-                                  
                                   //console.log(this_field.attr('id'));
                                   switch(i){
                                     case 'show_playlist':
@@ -866,22 +865,23 @@ jQuery(function($){
                                       $(form_div1).append(this_field);
                                       if(i!='event_name')$(form_div1).append('<br />');
                                   }
-this_field.attr('id', i);
-				}
+                                  this_field.attr('id', i);
+				});
 
 				var dateTimeFields = getDateTimeFields(id);
 				var timeStuff = $("<div style='float:left;' />");
 				var extra;
-				for(i in dateTimeFields){
+                                $.each(dateTimeFields, function(i, this_field) {
+				//for(i in dateTimeFields){
 					$(timeStuff).append(i.substr(0,1).toUpperCase() + i.substring(1).replace(/_/, ' ') + ': ');
 					$(timeStuff).append('<br />');
-					if(dateTimeFields[i] instanceof Array) {
-						extra = dateTimeFields[i][1];
-						dateTimeFields[i] = dateTimeFields[i][0];
-						$(timeStuff).append(dateTimeFields[i]);
+					if(this_field instanceof Array) {
+						extra = this_field[1];
+						this_field = this_field[0];
+						$(timeStuff).append(this_field);
 						$(timeStuff).append(extra);
 					}else{
-						$(timeStuff).append(dateTimeFields[i]);
+						$(timeStuff).append(this_field);
 					}
 
 					$(timeStuff).append('<div style="clear:both" /> <br />');
@@ -1098,20 +1098,21 @@ this_field.attr('id', i);
 				var timeStuff = $("<div style='float:left;' />");
 				var doDateTimeStuff = false;
 				var extra;
-				for(i in fields){
+
+				$.each(fields, function(i, this_field){
 					if(i=='start_date'){
 						doDateTimeStuff = true;
 					}
 					if(doDateTimeStuff){
 						$(timeStuff).append(i.substr(0,1).toUpperCase() + i.substring(1).replace(/_/, ' ') + ': ');
 						$(timeStuff).append('<br />');
-						if(fields[i] instanceof Array) {
-							extra = fields[i][1];
-							fields[i] = fields[i][0];
-							$(timeStuff).append(fields[i]);
+						if(this_field instanceof Array) {
+							extra = this_field[1];
+							fields[i] = this_field[0];
+							$(timeStuff).append(this_field);
 							$(timeStuff).append(extra);
 						}else{
-							$(timeStuff).append(fields[i]);
+							$(timeStuff).append(this_field);
 						}
 
 						$(timeStuff).append('<div style="clear:both" /> <br />');
@@ -1120,10 +1121,10 @@ this_field.attr('id', i);
 						$(form_div1).append(i.substr(0,1).toUpperCase() + i.substring(1).replace(/_/, ' ') + ': ');
 						$(form_div1).append('<br />');
 
-						$(form_div1).append(fields[i]);
+						$(form_div1).append(this_field);
 						$(form_div1).append('<br />');
 					}
-				}
+				});
 
 				$(form).append(form_div1);
 				$(form).append(timeStuff);
@@ -1132,13 +1133,13 @@ this_field.attr('id', i);
 <? endif; ?>
 
 			function removeFocusAll(){
-				for(var div_id in events.event_id){
-					//alert(div_id);
-					<?if ($edit): ?>if($(events.container[div_id]).hasClass('edit_single')){ <? endif; ?>
-						$(events.container[div_id]).removeClass('edit_single');
-						$(events.container[div_id]).next().remove();
-					<?if ($edit): ?>}<? endif; ?>
-				}
+                            $.each(events.event_id, function(div_id, value){
+                                //alert(div_id);
+                                <?if ($edit): ?>if($(events.container[div_id]).hasClass('edit_single')){ <? endif; ?>
+                                        $(events.container[div_id]).removeClass('edit_single');
+                                        $(events.container[div_id]).next().remove();
+                                <?if ($edit): ?>}<? endif; ?>
+                            });
 			}
 
 			function toggleFocus(id){
@@ -1209,17 +1210,17 @@ this_field.attr('id', i);
 
 				//resetCells(events.srow[id], events.scol[id], events.erow[id], events.ecol[id]);
                                 //if(!ui_only){
-				for(prop in events){
+                                $.each(events, function(prop, value){
 					delete events[prop][id];
-				}
+				});
                                 //}
 			}
 
 			function clearAllEvents(){
 				removeFocusAll();
-				for(var div_id in events.event_id){
+                                $.each(events.event_id, function(div_id, value){
 					deleteInterfaceEvent(div_id);
-				}
+				});
 			}
                         
 			function increase_event_width(id, ncols){
@@ -1252,10 +1253,10 @@ this_field.attr('id', i);
 				var prev_day = events.scol[id]+1;
 				var prevID = id;
 				var newIds = [];
-				for(i in days){
+                                $.each(days, function(i, value){
 					days[i] = parseInt(days[i]);
 					if(days[i] == prev_day){
-						continue;
+						return true;
 					}
 					col = parseInt(days[i])-1;
 					if(col == -1) col = 6;
@@ -1266,7 +1267,7 @@ this_field.attr('id', i);
 					matrixStart = matrixLoc2Date(col, events.srow[id]);//returns Date object
 					if(matrixStart >= end){
 						debug('------' +newId + ' starts after event ends, omitting...');
-						continue;
+						return true;
 					}
 					debug(prev_day + ' and ' + days[i]);
                                         //debug(days[i] + ' and ' + prev_day);
@@ -1287,7 +1288,7 @@ this_field.attr('id', i);
 							}
 						}
 						prev_day = days[i];
-						continue;
+						return true;
 					}
 					prev_day = days[i];
 					prevID = newId;
@@ -1308,10 +1309,10 @@ this_field.attr('id', i);
 					debug('-------(' +events.srow[newId]+ ',' + events.scol[newId] + ') to (' + events.erow[newId] +',' + events.ecol[newId] +') id: '+newId);
 					createEvent(newId, events.srow[newId], events.scol[newId], events.erow[newId], events.ecol[newId]);
 					newIds.push(newId);
-				}
-				for(i in newIds){
-					drawEvent(newIds[i], false);
-				}
+				});
+                                $.each(newIds, function(i, value){
+					drawEvent(value, false);
+				});
 			}
                         
 <? if($edit): ?>
