@@ -34,10 +34,11 @@ METHODS
 
 */
 
-global $helper_schedule, $ps_page_option_name, $ps_query;
+global $helper_schedule, $ps_page_option_name, $ps_default_schedule_option_name, $ps_default_weekly_width_option_name, $ps_query;
 
 $ps_page_option_name = "program_scheduler_page";
 $ps_default_schedule_option_name = "program_scheduler_default_id";
+$ps_default_weekly_width_option_name = "program_scheduler_default_weekly_width";
 
 $ps_query = array();
 if(get_option($ps_default_schedule_option_name)) $ps_query['use_default'] = true;

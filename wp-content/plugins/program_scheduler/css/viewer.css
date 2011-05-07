@@ -34,9 +34,10 @@
 	font-size: large;
 }
 
-.calendar_days th {
+#ps_main_wrapper .calendar_top_table .calendar_days th {
   text-align: center;
   width: 14.286%;/* = (100 / 7) */
+  padding: 0px;
 }
 
 .calendar_hours{
@@ -44,11 +45,6 @@
 	border-collapse: collapse;
 	vertical-align: top;
 }
-
-.calendar_top_table {
-  width: auto !important;
-}
-
 
 .calendar_top_table td, .calendar_top_table tr{
 	vertical-align: top;
@@ -74,7 +70,6 @@ table, td, tr, th, div {
 td.hour_cell {
 	vertical-align: middle;
 	border-top: 1px solid #E7B35C;
-	width: 58px;
 	/*overflow: hidden;*/
 }
 
@@ -409,11 +404,6 @@ ul.listing_list li {
 ul.listing_list li a {
 	width: 603px !important;
 	background-position-x: 590px !important;
-}
-
-table.calendar_days th {
-	padding-left: 15px !important;
-	padding-bottom: 5px;
 }
 
 div#schedule-tabs ul#schedule-tabs-ul div {

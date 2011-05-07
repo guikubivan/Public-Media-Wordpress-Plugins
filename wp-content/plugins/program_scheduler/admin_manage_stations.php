@@ -51,11 +51,19 @@ if(!empty($_POST['schedule_settings_submit'])){
   }else{
     delete_option($ps_default_schedule_option_name);
   }
-  
+
+
+  if(!empty($_POST['default_weekly_width'])){
+    update_option($ps_default_weekly_width_option_name, $_POST['default_weekly_width']);
+  }else{
+    delete_option($ps_default_weekly_width_option_name);
+  }
+
   echo "<div class='updated fade'>Settings saved.</div>";
 }
 $page_name = get_option($ps_page_option_name);
 $default_schedule_id = get_option($ps_default_schedule_option_name);
+$default_weekly_width = get_option($ps_default_weekly_width_option_name);
 /************************************/
 
 
@@ -105,7 +113,8 @@ if (sizeof($schedules)): ?>
   <h2>Settings</h2>
   
   <form action='' method='POST' />
-    <p>Select page where you want the schedule to appear:</p>
+  <h3>Default schedule page</h3>
+    <p>Select page where you want the schedule to appear. This will modify your wordpress url structure so you can easily access and query the schedule.</p>
     <select name="schedule_page_name">
       <option value="">
         <?php echo attribute_escape(__('Select page')); ?>
@@ -120,9 +129,14 @@ if (sizeof($schedules)): ?>
       }
       ?>
     </select>
+<? if(!empty($page_name)): ?>
+    <a href="<? echo get_bloginfo('url') . "/" . $page_name; ?>" target="_blank">
+        Go to schedule page
+    </a>
+<? endif; ?>
 
 
-    <p>Select a default schedule to use. This will only allow one schedule to exist. Set to "None" if you want all schedules to be accessible.</p>
+    <p>Select a default schedule to use. This will only allow one schedule to exist. Set to "None" if you want all schedules to be accessible (TO-DO)</p>
     <select name="default_schedule">
       <option value="">
         <?php echo attribute_escape(__('None, show all')); ?>
@@ -136,6 +150,10 @@ if (sizeof($schedules)): ?>
       }
       ?>
     </select>
+
+    <p>Specifiy the width for the weekly schedule view, in pixels (defaults to 627 pixels otherwise).</p>
+    <input type="text" style="width: 60px;" name="default_weekly_width" value="<?= $default_weekly_width; ?>"/>px
+
     <br/><br/>
     <input name="schedule_settings_submit" type='submit' value='Save settings' />
   </form>

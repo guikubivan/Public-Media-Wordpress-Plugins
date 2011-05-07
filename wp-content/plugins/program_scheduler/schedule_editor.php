@@ -1,13 +1,21 @@
 <?php
-
+global $ps_default_weekly_width_option_name;
 $granularity = 2; //in divisions per hour
 global $cell_width;
 //$singleDay = 4;
-if(!isset($cell_width))$cell_width = isset($singleDay) ? 300 : 80;
+$hour_cell_width = 60;
+$cal_width = get_option($ps_default_weekly_width_option_name);
 
+if(isset($singleDay)){
+    $cell_width = 300;
+    $cal_width = $cell_width;
+}else{
+    $cell_width = $cal_width ? ($cal_width - $hour_cell_width - 7)/7 : 80;
+    $cal_width = $cal_width ? $cal_width - $hour_cell_width : $cell_width * 7 + 7;#+1 for each border between days
+}
+#echo $cell_width;
 $cell_height = 30;
 $cal_height = ($cell_height) * $granularity * 24;//in pixels
-$cal_width = isset($singleDay) ? $cell_width : $cell_width * 7 + 7;#+1 for each border between days
 
 //echo JFormatDateTime($start_date) ."\n<br />";
 if(!isset($start_date) ){
@@ -53,7 +61,7 @@ if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
 if(!$ps_query['in_loop']) echo $_GET['schedule_name'];
 ?>
   </h2>
-	<table class='calendar_top_table'>
+	<table class='calendar_top_table' style="width: <?= $cal_width; ?>px">
 	<tr >
 	<td>&nbsp;
 	</td>
@@ -92,7 +100,7 @@ if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
 	</tr>	
 	<tr>
 	<td style='height: 100%'>
-		<table class='calendar_hours' style='height:100%;'>
+		<table class='calendar_hours' style='height:100%; width: <?= $hour_cell_width -2;#account for border?>px'>
 		<?php
 			$time = mktime(0,0,0);
 			

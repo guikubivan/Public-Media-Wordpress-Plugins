@@ -10,7 +10,7 @@ REQUIRED VARIABLES
 #echo strtotime($_GET['start_date']);
 
 ?>
-
+<div id="ps_main_wrapper">
 <div>
   <ul>
     <li style="float: left;padding-right: 20px">
@@ -27,3 +27,4 @@ REQUIRED VARIABLES
 </div>
 
 <? the_schedule($sname, $ps_mode); ?>
+</div>
