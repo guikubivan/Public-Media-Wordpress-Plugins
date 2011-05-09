@@ -1,3 +1,8 @@
+#ps_main_wrapper img {
+  display: inline;
+  border: none;
+}
+
 #ps_main_wrapper table {
   width: auto;
   margin: 0;

@@ -13,7 +13,7 @@ date_default_timezone_set("America/Denver");#Mountain Time
 $ps_query['schedule_name'] = $_GET['schedule_name'];
 $ps_query['mode'] = $_GET['mode'];
 $ps_query['start_date'] = $_GET['start_date'];
-$ps_query['echo'] = empty($_GET['echo']) ? true : ($_GET['echo'] == "1" ? true : false);
+$ps_query['echo'] = isset($_GET['echo']) ? ($_GET['echo'] == "1" ? true : false) : true;
 
 /* Deprecated */
 /*if(!function_exists('print_program_row') ){

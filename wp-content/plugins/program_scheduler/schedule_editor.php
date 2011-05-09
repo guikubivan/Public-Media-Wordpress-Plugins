@@ -57,15 +57,18 @@ echo "};";
 </script>
 
 <div class='wrap'>
-  <h2>
-<?php 
+  
+<?php
+$title_txt = '';
 if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
-	echo "Schedule Editor - ";
+	$title_txt .= "Schedule Editor - ";
 }
 
-if(!$ps_query['in_loop']) echo $_GET['schedule_name'];
+if(!$ps_query['in_loop']) $title_txt .= $_GET['schedule_name'];
+
+echo empty($title_txt) ? "" : "<h2>". $title_txt . "</h2>";
 ?>
-  </h2>
+
 	<table class='calendar_top_table' style="width: <?= $cal_width; ?>px">
 	<tr>
           <td colspan="2">

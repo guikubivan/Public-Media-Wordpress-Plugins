@@ -33,18 +33,20 @@
 
 #ps_main_wrapper .ps_main_nav {
   font-size: 12px;
+  margin-bottom: 13px;
 }
 
 #ps_main_wrapper .ps_main_mode {
   float: left;
+  padding: 3px 0;
 }
 /*******Main nav datepicker********/
 
 #ps_main_wrapper .ps_main_datepicker {
-
   text-align: right;
   color: white;
   font-weight: bold;
+  padding: 0;
 }
 
 #ps_main_wrapper .ps_main_datepicker span{
@@ -69,7 +71,7 @@
 }
 
 #ps_main_wrapper{
-  color: #777;
+  color: #666;
 }
 
 .calendar_canvas {
