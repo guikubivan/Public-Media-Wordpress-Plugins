@@ -160,6 +160,8 @@ function ps_maybe_show_schedule($content){
           $_GET['mode'] = $ps_mode;
           $_GET['start_date'] = $ps_date;
           $_GET['schedule_name'] = $sname;
+          $ps_query['schedule_name'] = $_GET['schedule_name'];
+          $ps_query['mode'] = $_GET['mode'];
           include(dirname(__FILE__) . "/frontend/schedule.php");
         }
       }

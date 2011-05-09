@@ -15,3 +15,21 @@ tr.ps_playlist_item td {
   color: #029A9A;
   float: right;
 }
+
+#single_wrapper .ps_playlist_item td.ps_playlist_item_start {
+  width: 100px;
+}
+
+#single_wrapper .ps_buy_now {
+  vertical-align: middle;
+  width: 80px;
+}
+
+#single_wrapper .ps_buy_now a{
+  color: white;
+  background-color: #029A9A;
+  padding: 2px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  text-decoration: none;
+}

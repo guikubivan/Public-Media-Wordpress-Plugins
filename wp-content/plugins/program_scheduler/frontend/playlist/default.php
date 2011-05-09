@@ -71,20 +71,19 @@ Last played <strong><?= $item->composer; ?>: <?= $item->title; ?></strong>. <a h
   ?>
 
     <tr class="ps_playlist_item">
-      <td>
+      <td class="ps_playlist_item_start">
       <?= date("h:i a", $start_at); ?> -
       </td>
       <td>
-        <div style="float: right;">
-          <a clas="ps_buy_now"
-             target="_blank"
-             href="http://www.arkivmusic.com/classical/Playlist?source=WOSU&composer=<?= rawurlencode($item->composer); ?>&work=<?= rawurlencode($item->title); ?>&label=<?= rawurlencode($item->label); ?>&catalog=<?= rawurlencode($item->label_id); ?>">
-            Buy Now
-          </a>
-        </div>
         <strong><?= $item->composer; ?>: <?= $item->title; ?></strong><br/>
         <i><?= $item->artist ?></i><br/>
         <?= $item->label ?> <?= $item->label_id ?>
+      </td>
+      <td class="ps_buy_now">
+        <a target="_blank"
+           href="http://www.arkivmusic.com/classical/Playlist?source=WOSU&composer=<?= rawurlencode($item->composer); ?>&work=<?= rawurlencode($item->title); ?>&label=<?= rawurlencode($item->label); ?>&catalog=<?= rawurlencode($item->label_id); ?>">
+          Buy Now
+        </a>
       </td>
     </tr>
 

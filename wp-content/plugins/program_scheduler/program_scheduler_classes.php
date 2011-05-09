@@ -748,8 +748,7 @@ if(!class_exists ('ProgramScheduler')) {
                 }
 
 		function plugin_url(){
-			$result = get_bloginfo('url').'/wp-content/plugins/program_scheduler/';
-			return $result;
+			return get_bloginfo('url').'/wp-content/plugins/program_scheduler/';
 		}
 		function process_alert($str){
 			$str = str_replace('"', '&quot;', $str);

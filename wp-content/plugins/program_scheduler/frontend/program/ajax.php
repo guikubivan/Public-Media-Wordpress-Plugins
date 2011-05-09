@@ -40,9 +40,14 @@ if(sizeof($rows) <= 0 ) return '';
     <div class='single_program_times'>
       <span>Airdates and Times:</span><br />
 <?
-foreach($schedules as $schedule_name){
-  echo $rows[0][$schedule_name] ? "<span class='single_program_channel'>$schedule_name</span> <div>".$rows[0][$schedule_name]."</div>" : '';
-}
+if(sizeof($schedules)==1):
+  $schedule_name = current($schedules);
+  echo $rows[0][$schedule_name] ? "<div>".$rows[0][$schedule_name]."</div>" : '';
+else:
+  foreach($schedules as $schedule_name){
+    echo $rows[0][$schedule_name] ? "<span class='single_program_channel'>$schedule_name</span> <div>".$rows[0][$schedule_name]."</div>" : '';
+  }
+endif;
 ?>
     </div>
 

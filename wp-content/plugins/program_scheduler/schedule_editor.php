@@ -1,7 +1,12 @@
 <?php
-global $ps_default_weekly_width_option_name;
+global $ps_default_weekly_width_option_name, $scheduleObj, $cell_width;
+
+if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
+	$scheduleObj = ProgramScheduler::find_by_name($_GET['schedule_name']);
+}
+
 $granularity = 2; //in divisions per hour
-global $cell_width;
+
 //$singleDay = 4;
 $hour_cell_width = 60;
 $cal_width = get_option($ps_default_weekly_width_option_name);
@@ -62,89 +67,97 @@ if(!$ps_query['in_loop']) echo $_GET['schedule_name'];
 ?>
   </h2>
 	<table class='calendar_top_table' style="width: <?= $cal_width; ?>px">
-	<tr >
-	<td>&nbsp;
-	</td>
-	<td>
-	<div style='width:33.33%;float:left;text-align:left' > <span class='clickable date_changer' onclick='if(isSingle){offset_date(-1);}else{offset_date(-7);}' > <<</span> </div> 
-	<div style='width:33.33%;float:left;text-align:center' >
-		<input style='visibility: hidden; width:0px; margin:0px;padding:0px;' type="text" class="datepicker" />
-		<span class='calendar_year'><?php echo date('Y', $start_date); ?></span>
-		<span><input type='button' class='date_changer' onclick='goToToday()' value='Today'/></span>
-	</div>
-	<div style='width:33.33%;float:left; clear:right;text-align: right' >  
+	<tr>
+          <td colspan="2">
+            <div style='width:33.33%;float:left;text-align:left' >
+              <span class='clickable date_changer' onclick='if(isSingle){offset_date(-1);}else{offset_date(-7);}' >
+                <img src="<?= $scheduleObj->plugin_url(); ?>images/arrow_left.png"/>
+              </span>
+            </div>
+            <div style='width:33.33%;float:left;text-align:center' >
+                    <span class='calendar_year'><?php echo date('Y', $start_date); ?></span>
+            </div>
+            <div style='width:33.33%;float:left; clear:right;text-align: right' >
 <?php 
 
 if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
-	echo "<input class='dontdelete' type='button' id='neweventbutton' value='Add new event'/>";
+        echo "<input class='dontdelete' type='button' id='neweventbutton' value='Add new event'/>";
 }
 
 ?>
 
-		<span class='clickable date_changer' onclick='if(isSingle){offset_date(+1);}else{offset_date(+7);}' > >> </span> </div> 
-	<div style='clear:both;margin-bottom: 10px;'></div>
-		<table class='calendar_days' style='width: <?php echo $cal_width; ?>px'>
-		<?php $days = array();//get_days('D');
-			$cur_day = $start_date;
-			for($i=0;$i<7;++$i){
-				if($singleDay && ($i!=$singleDay) ){
-					$cur_day += 86400;
-					continue;
-				}
-				$days[] = "<span class='day'>" . date('D',$cur_day) . "</span><br /><span class=\"day_".$i."\"><a href='" . ps_single_day_url($_GET['schedule_name'], $cur_day) . "' >" . date('M j', $cur_day) . "</a></span>";
-				$cur_day += 86400;
-			}
-			echo table_headers($days);?>
-		</table>
-	</td>
+              <span class='clickable date_changer' onclick='if(isSingle){offset_date(+1);}else{offset_date(+7);}' >
+                <img src="<?= $scheduleObj->plugin_url(); ?>images/arrow_right.png"/>
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;
+          </td>
+          <td>
+            <table class='calendar_days' style='width: <?php echo $cal_width; ?>px'>
+            <?php $days = array();//get_days('D');
+                    $cur_day = $start_date;
+                    for($i=0;$i<7;++$i){
+                            if($singleDay && ($i!=$singleDay) ){
+                                    $cur_day += 86400;
+                                    continue;
+                            }
+                            $days[] = "<span class='day'>" . date('D',$cur_day) . "</span><br /><span class=\"day_".$i."\"><a href='" . ps_single_day_url($_GET['schedule_name'], $cur_day) . "' >" . date('M j', $cur_day) . "</a></span>";
+                            $cur_day += 86400;
+                    }
+                    echo table_headers($days);?>
+            </table>
+          </td>
 	</tr>	
 	<tr>
-	<td style='height: 100%'>
-		<table class='calendar_hours' style='height:100%; width: <?= $hour_cell_width -2;#account for border?>px'>
-		<?php
-			$time = mktime(0,0,0);
-			
-			for($h=0; $h < 2*24; ++$h){
-				echo "<tr>";
-				echo "<td class='hour_cell' style='height: ". ($granularity*$cell_height/2) ."px'>";
-				//echo "<td class='hour_cell' style='font-size: " . ($cell_height-6) . "px; height: ". ($granularity*$cell_height/2) ."px'>";
-				echo date("g:i a", $time);
-				echo "</td>";
-				echo "</tr>";
-				$time += 60*30;
-			}
-			
-		?>
-		</table>
-	</td>
-	<td>
-		<table class='calendar_canvas' >
-		<?php
-			for($h=0; $h < $granularity*24; ++$h){
-				echo "<tr>";
-				for($i=0;$i<7;++$i){
-					if($singleDay && ($i!=$singleDay) ){
-							continue;					
-					}
-					$class = ($h % $granularity)==0 ? 'selectable_cell calendar_cell calendar_cell_hour' : 'selectable_cell calendar_cell';
-					echo "<td id='${h}_${i}' class='$class' style='height:".($cell_height)."px;width:".($cell_width)."px;' >";
-					echo "<div style='width:100%;height:100%;position: relative;'><img src='".get_bloginfo('url')."/wp-content/plugins/program_scheduler/spacer.gif' />";
-					if( ($h==0) && ($i==0) ){
-						echo '<div class="loading_div calendar_overlay" style="height: ' .  ($cell_height*($granularity*24)) . 'px; width: ' . ($cell_width*7-35) . 'px;"><img src="' . get_bloginfo('url') . '/wp-content/plugins/program_scheduler/images/loading.gif" /></div>';
-					}
-					
-					echo "</div>";
-					/*if($h==0 && $i==0){
-						echo "<div class='calendar_overlay' style='height: ".($cell_height)."px; width: ".($cell_width-1)."px'></div>";
-						//echo "<div style='width:100%;height:100%'></div>";
-					}*/
-					echo "</td>";
-				}
-				echo "</tr>";
-			}
-		?>
-		</table>
-	</td>
+          <td style='height: 100%'>
+                  <table class='calendar_hours' style='height:100%; width: <?= $hour_cell_width -2;#account for border?>px'>
+                  <?php
+                          $time = mktime(0,0,0);
+
+                          for($h=0; $h < 2*24; ++$h){
+                                  echo "<tr>";
+                                  echo "<td class='hour_cell' style='height: ". ($granularity*$cell_height/2) ."px'>";
+                                  //echo "<td class='hour_cell' style='font-size: " . ($cell_height-6) . "px; height: ". ($granularity*$cell_height/2) ."px'>";
+                                  echo date("g:i a", $time);
+                                  echo "</td>";
+                                  echo "</tr>";
+                                  $time += 60*30;
+                          }
+
+                  ?>
+                  </table>
+          </td>
+          <td>
+                  <table class='calendar_canvas' >
+                  <?php
+                          for($h=0; $h < $granularity*24; ++$h){
+                                  echo "<tr>";
+                                  for($i=0;$i<7;++$i){
+                                          if($singleDay && ($i!=$singleDay) ){
+                                                          continue;
+                                          }
+                                          $class = ($h % $granularity)==0 ? 'selectable_cell calendar_cell calendar_cell_hour' : 'selectable_cell calendar_cell';
+                                          echo "<td id='${h}_${i}' class='$class' style='height:".($cell_height)."px;width:".($cell_width)."px;' >";
+                                          echo "<div style='width:100%;height:100%;position: relative;'><img src='".get_bloginfo('url')."/wp-content/plugins/program_scheduler/spacer.gif' />";
+                                          if( ($h==0) && ($i==0) ){
+                                                  echo '<div class="loading_div calendar_overlay" style="height: ' .  ($cell_height*($granularity*24)) . 'px; width: ' . ($cell_width*7-35) . 'px;"><img src="' . get_bloginfo('url') . '/wp-content/plugins/program_scheduler/images/loading.gif" /></div>';
+                                          }
+
+                                          echo "</div>";
+                                          /*if($h==0 && $i==0){
+                                                  echo "<div class='calendar_overlay' style='height: ".($cell_height)."px; width: ".($cell_width-1)."px'></div>";
+                                                  //echo "<div style='width:100%;height:100%'></div>";
+                                          }*/
+                                          echo "</td>";
+                                  }
+                                  echo "</tr>";
+                          }
+                  ?>
+                  </table>
+          </td>
 	</tr>
 	</table>		
 </div>
@@ -155,8 +168,7 @@ if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI']) || preg_match("
 }
 
 if(preg_match("/schedule_editor\.php/", $_SERVER['REQUEST_URI'])){
-	$scheduler = ProgramScheduler::find_by_name($_GET['schedule_name']);
-	$rows = $scheduler->get_all_programs();
+	$rows = $scheduleObj->get_all_programs();
 	echo "<table >";
 	echo table_headers('Name', 'Start date', 'End date', 'Repeats');
 	foreach($rows as $row){

@@ -28,6 +28,7 @@ $program_css_id = $scheduleObj->id . "_" . date('Hi', $start);
 ?>
 <a name="<?= $program_css_id ?>"></a>
 <div id="<?= $program_css_id ?>" class='<?= $class ?>' <?= $style ?> >
+  <img style='vertical-align: middle;' src="<?= $scheduleObj->plugin_url(); ?>images/clock_18x18.png"/>
   <span <?= $name_style ?>>
     <?= $stime ?> - <?= $etime ?>
   </span>
@@ -53,11 +54,16 @@ endif; ?>
       <td><img class="ps_host_photo" src="<?= $program->host_photo_url ?>" /></td>
   <? endif; ?>
       <td>
+<? if(empty($program->host_bio)): ?>
+        <span class="ps_host_name"><?= $program->host_name ?></span>
+<? else: ?>
         <i>About the host -</i><br/>
         <span class="ps_host_name"><?= $program->host_name ?></span><br/>
         <div class="ps_host_description">
           <?= $program->host_bio ?>
         </div>
+        
+<? endif; ?>
       </td>
     </tr>
   </table>

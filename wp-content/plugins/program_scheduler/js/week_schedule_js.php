@@ -850,7 +850,7 @@ jQuery(function($){
                                   var label = "<label for='" + i + "'>" +
                                     i.substr(0,1).toUpperCase() +
                                     i.substring(1).replace(/_/g, ' ') +
-                                    "</label>",
+                                    "</label>";
                                   //console.log(this_field.attr('id'));
                                   switch(i){
                                     case 'show_playlist':
@@ -885,7 +885,7 @@ jQuery(function($){
 					}
 
 					$(timeStuff).append('<div style="clear:both" /> <br />');
-				}
+				});
 
 				var saveButton = $('<input id="'+id+'_save_button" type="button" value="Save" />');
 				$(saveButton).bind("click", function(e){
@@ -1642,34 +1642,34 @@ jQuery(function($){
 				};
 
 			var events  = {
-                          event_id: [],
-                          controls: [],
-                          container: [],
-                          width: [],
-                          program_id: [],
-                          name: [],
-                          description: [],
-                          category_name: [],
-                          category_color: [],
-                          start_date: [],
-                          end_date: [],
-                          never_ends: [],
-                          repeats: [],
-                          color: [],
-                          srow: [],//start row
-                          scol: [],//start coloumn
-                          erow: [],//end row
-                          ecol: [],//end coloumn
-                          url: [],
-                          blog_id: [],
-                          post_id: [],
+                          event_id: {},
+                          controls: {},
+                          container: {},
+                          width: {},
+                          program_id: {},
+                          name: {},
+                          description: {},
+                          category_name: {},
+                          category_color: {},
+                          start_date: {},
+                          end_date: {},
+                          never_ends: {},
+                          repeats: {},
+                          color: {},
+                          srow: {},//start row
+                          scol: {},//start coloumn
+                          erow: {},//end row
+                          ecol: {},//end coloumn
+                          url: {},
+                          blog_id: {},
+                          post_id: {},
 
-                          host_name: [],
-                          host_bio: [],
-                          host_photo_url: [],
-                          host_bio_link: [],
-                          host_wordpress_username: [],
-                          show_playlist: []
+                          host_name: {},
+                          host_bio: {},
+                          host_photo_url: {},
+                          host_bio_link: {},
+                          host_wordpress_username: {},
+                          show_playlist: {}
 			};
 
 			var cur_id = -1;

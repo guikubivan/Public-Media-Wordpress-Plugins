@@ -1,8 +1,22 @@
+#single_wrapper div.ps_host_info {
+  border-top: 1px solid #CCCCCC;
+}
+
 div.ps_host_info {
   border-top: 1px solid #CCCCCC;
 }
 
+#single_wrapper div.ps_host_info table tr td {
+  vertical-align: top;
+  padding: 2px;
+}
+
+div.ps_host_info table tr td {
+  vertical-align: top;
+  padding: 2px;
+}
+
 img.ps_host_photo  {
-  height: 50px;
-  width: 50px;
+  height: 80px;
+  width: 80px;
 }

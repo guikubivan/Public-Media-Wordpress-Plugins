@@ -1,0 +1,9 @@
+#ps_main_wrapper table {
+  width: auto;
+  margin: 0;
+}
+
+#ps_main_wrapper table tr td, #ps_main_wrapper table tr th,
+#single_wrapper table tr td, #single_wrapper table tr th {
+  padding: 0;
+}
