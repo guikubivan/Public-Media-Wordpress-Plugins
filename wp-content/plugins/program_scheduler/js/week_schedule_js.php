@@ -1332,7 +1332,12 @@ jQuery(function($){
 <? else: ?>
 			function drawEvent(id){
 				events.container[id] = $('<div id="'+id+'" class="calendar_overlay " style="background-color: '+ events.color[id] +'; height: '+((events.erow[id]-events.srow[id]+1)*opts.cell_height + (events.erow[id]-events.srow[id]-1))+'px; width: '+events.width[id]+'px;"></div>');
-                                var popup = $('<div class="ps_popup_wrapper top_left" style="min-width: '+events.width[id]+'px;"></div>');
+
+                                var popupWidth = 320;
+                                var maxWidth = 7*opts.cell_width + 7;
+                                var leftBorderWidth = events.scol[id] * opts.cell_width + (events.scol[id]+1);
+                                var pos_class = maxWidth -  leftBorderWidth > popupWidth ? 'top_left' : 'top_right';
+                                var popup = $('<div class="ps_popup_wrapper" style="width: ' + events.width[id] + 'px"><div class="' + pos_class + '"></div></div>');
 				if(events.category_color[id] ){
 					setBackgroundColor(id, events.category_color[id]);
 				}else{

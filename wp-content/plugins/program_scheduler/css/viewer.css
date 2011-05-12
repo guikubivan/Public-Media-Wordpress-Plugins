@@ -177,11 +177,11 @@ div.single_program_url {
 }
 
 div.single_program_times {
-	width: 320px;
+	/*width: 320px;*/
 }
 
 div.single_program_times > div {
-	width: 250px;
+	min-width: 250px;
 	display: inline-block;
 	vertical-align: top;
 	margin-bottom: 5px;

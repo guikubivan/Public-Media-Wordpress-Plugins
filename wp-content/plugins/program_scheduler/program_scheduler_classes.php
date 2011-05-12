@@ -954,16 +954,8 @@ if(!class_exists ('ProgramScheduler')) {
 			return $program->url ? "<a href='$program->url' >$program->name</a>" : $program->name;	
 		}
 
-		function format_single_row($allowed_schedules, $row, $class='single_details', $popup = true){
+		function format_single_row($allowed_schedules, $row, $class='single_details'){
 			$str = "<div class='$class'>";
-			if($popup){
-				$str .= "<div><span class='single_program_name' >";
-				$str .= $row['url'] ? "<a href='" . $row['url'] . "' >" . $row['name'] . "</a>" : $row['name'];
-				$str .= "</span>";
-				
-				$str .= "<span class='clickable' onclick=\"jQuery(this).parent().parent().remove();\" >Close</span>";
-				$str .= "</div>";
-			}
 			$str .= "<div class='single_program_content'>";
 			$str .= $row['description'] ? "<div class='single_program_description'>".$row['description']."</div>" : '';
 

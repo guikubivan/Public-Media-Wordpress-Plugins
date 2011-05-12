@@ -97,7 +97,7 @@ if($_GET['mode'] == 'program-ajax'){
 		foreach($rows as $row){
 			echo "<li>";
 			echo "<a style='cursor: auto' href=\"#".sanitize_title($row['name'])."\">".$row['name']."</a>";
-			echo $scheduleObj->format_single_row($schedules, $row, 'listing_item', false);
+			echo $scheduleObj->format_single_row($schedules, $row, 'listing_item');
 			echo "</li>";
 		}
 		echo "</ul>";

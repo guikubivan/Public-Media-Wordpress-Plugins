@@ -145,16 +145,21 @@ div.event_controls{
 }
 
 .ps_popup_details {
-	background-color: #fff;
-	padding: 5px;
-	margin:0px;
-	border: 1px solid #666;
-	text-align: left;
-	/* wooo fancy shadows ahead */
-	-webkit-box-shadow: 5px 5px 5px #666;
-	-moz-box-shadow: 5px 5px 5px #666;
-	box-shadow: 5px 5px 5px #666;
-	filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=10,OffY=10,Color='gray',Positive='true')
+  width: 320px;
+  background-color: #fff;
+  padding: 5px;
+  margin:0px;
+  border: 1px solid #666;
+  text-align: left;
+  /* wooo fancy shadows ahead */
+  -webkit-box-shadow: 5px 5px 5px #666;
+  -moz-box-shadow: 5px 5px 5px #666;
+  box-shadow: 5px 5px 5px #666;
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=10,OffY=10,Color='gray',Positive='true')
+}
+
+.single_program_name {
+  width: 310px;
 }
 
 .ps_popup_close_button {

@@ -16,10 +16,10 @@ $rows = $scheduleObj->parse_program_times($airtimes);
 if(sizeof($rows) <= 0 ) return '';
 
 ?>
-<div class='single_details'>
+<div class='ps_popup_details'>
 
-  <div>
-    <span class='single_program_name' >
+  <div class="single_program_name">
+    <span>
 
     <? if(!empty($rows[0]['url'])): ?>
       <a href='<?= $rows[0]['url'] ?>'><?= $rows[0]['name'] ?></a>
@@ -29,7 +29,7 @@ if(sizeof($rows) <= 0 ) return '';
 
     </span>
 
-    <span class='clickable single_close_button' onclick="jQuery(this).parent().parent().remove();" >x</span>
+    <span class='canclick ps_popup_close_button' onclick="jQuery('div.ps_popup_wrapper').hide(); jQuery('div.ps_popup_details').remove();" >x</span>
   </div>
 
   <div class='single_program_content'>

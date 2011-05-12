@@ -42,3 +42,7 @@ img.ps_host_photo  {
 .single_program_url {
 
 }
+
+.single_program_name:hover {
+	color:#666;
+}

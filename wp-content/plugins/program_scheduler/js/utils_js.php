@@ -52,11 +52,8 @@ function ajax_get_program(schedule_name, id, element, leftright){
                 jQuery('div.ps_popup_wrapper').hide();
 		jQuery('div.ps_popup_details').remove();
 
-		console.log(jQuery(element).parent());
-                //var class = 'single_details_wrapper_'+"right";
-		//jQuery(element).prepend("<div style='' class='" + class + "'></div>");
 		var popup_wrapper = jQuery(element).parent().find('div.ps_popup_wrapper')
-                popup_wrapper.append(htmlText);
+                popup_wrapper.find("div:first").append(htmlText);
                 popup_wrapper.show();
 	};
 	
