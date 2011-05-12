@@ -43,9 +43,10 @@ td.single_program_cell {
 div.single_program {
 	height: 100%;
 	margin: 0px;
-	padding: 3px;
+	padding: 8px 3px 3px 3px;
 	border-top: 3px solid #029A9A;
 	position: relative;
+	clear:both;
 
 }
 div.single_program_module {
@@ -75,45 +76,18 @@ div.single_filler {
 	font-size: 12px;
 	color: #666;
 }
-.single_program_description {
+.single_program_main_name {
+	font-size:15px;
+	font-weight:bold;
+	line-height:28px;
+	float:left;
+	
+}
+.ps_program_description {
 	font-size: 14px;
 	line-height: 1.2em;
-}
-
-.single_program_content {
-	padding: 10px;
-}
-
-.single_program_url {
-
-}
-
-.single_details {
-	background-color: #fff;
-	padding: 5px;
-	margin:0px;
-	border: 1px solid #666;
-	text-align: left;
-	/* wooo fancy shadows ahead */
-	-webkit-box-shadow: 5px 5px 5px #666;
-	-moz-box-shadow: 5px 5px 5px #666;
-	box-shadow: 5px 5px 5px #666;
-	filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=10,OffY=10,Color='gray',Positive='true')
-}
-
-.single_details_wrapper_left {
-	z-index:10;
-	position: absolute;
-	top: 0px;
-	left: 0px;
-}
-
-
-.single_details_wrapper_right {
-	z-index:10;
-	position: absolute;
-	top: 0px;
-	right: 0px;
+	padding-bottom:8px;
+	clear:both;
 }
 
 #single_wrapper {
@@ -123,7 +97,7 @@ div.single_filler {
 #single_wrapper .ps_single_nav {
   position: relative;
   height: 25px;
-  margin: 5px 0 0 0;
+  margin: 5px 0 20px 0;
 }
 
 

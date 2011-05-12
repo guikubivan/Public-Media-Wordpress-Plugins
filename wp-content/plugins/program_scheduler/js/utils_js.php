@@ -49,10 +49,15 @@ function ajax_get_program(schedule_name, id, element, leftright){
 	
 	mysack.onCompletion = function completed(){
 		htmlText = mysack.response;
-		jQuery('.single_details:first').remove();
-		
-		jQuery(element).before("<div style='' class='single_details_wrapper_"+leftright+"'></div>");
-		jQuery(element).prev().prepend(htmlText);
+                jQuery('div.ps_popup_wrapper').hide();
+		jQuery('div.ps_popup_details').remove();
+
+		console.log(jQuery(element).parent());
+                //var class = 'single_details_wrapper_'+"right";
+		//jQuery(element).prepend("<div style='' class='" + class + "'></div>");
+		var popup_wrapper = jQuery(element).parent().find('div.ps_popup_wrapper')
+                popup_wrapper.append(htmlText);
+                popup_wrapper.show();
 	};
 	
 	mysack.runAJAX();

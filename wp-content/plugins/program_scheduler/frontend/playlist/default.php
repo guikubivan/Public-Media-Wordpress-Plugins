@@ -6,6 +6,7 @@ REQUIRED VARIABLES
   $end - program end timestamp
   $wpdb
   $scheduleObj
+  $ps_query
   
 VALID ATTRIBUTES
   -ID
@@ -23,7 +24,7 @@ VALID ATTRIBUTES
   -label_id
   -station_id
 *********/
-global $wpdb;
+global $wpdb, $ps_query;
 
 #echo date("g:i A Y-m-d ",$start_date);
 #echo date("g:i A Y-m-d ",$start); echo "<br/>";
@@ -48,7 +49,7 @@ $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE s
 
 $playlist = $wpdb->get_results($query);
 
-if(sizeof($playlist) == 1):
+if( ($ps_query['mode'] =='now') && (sizeof($playlist) == 1) ):
   $item = current($playlist);
   $program_css_id = $scheduleObj->id . "_" . date('Hi', $start);
   ?>

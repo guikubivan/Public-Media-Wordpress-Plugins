@@ -1332,6 +1332,7 @@ jQuery(function($){
 <? else: ?>
 			function drawEvent(id){
 				events.container[id] = $('<div id="'+id+'" class="calendar_overlay " style="background-color: '+ events.color[id] +'; height: '+((events.erow[id]-events.srow[id]+1)*opts.cell_height + (events.erow[id]-events.srow[id]-1))+'px; width: '+events.width[id]+'px;"></div>');
+                                var popup = $('<div class="ps_popup_wrapper top_left" style="min-width: '+events.width[id]+'px;"></div>');
 				if(events.category_color[id] ){
 					setBackgroundColor(id, events.category_color[id]);
 				}else{
@@ -1342,6 +1343,7 @@ jQuery(function($){
 				events.controls[id] = getControls();
 				$(events.controls[id]).prepend(events.name[id]);
 				$(events.container[id]).append($(events.controls[id]));
+                                $(events.container[id]).after(popup);
 				bindEvents(id);
 			}
 <? endif; ?>
@@ -1474,7 +1476,10 @@ jQuery(function($){
                           confirmDelete(this);
                           });*/
 <? else: ?>
-						toggleFocus(this.id);
+                            if($(e.target).hasClass('calendar_overlay') ||
+                                $(e.target).hasClass('event_controls') ||
+                                $(e.target).hasClass('event_name'))
+                                  toggleFocus(this.id);
 <? endif; ?>
                           });
 			}

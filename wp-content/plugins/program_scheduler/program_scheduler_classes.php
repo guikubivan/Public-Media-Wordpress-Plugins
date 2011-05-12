@@ -995,40 +995,6 @@ if(!class_exists ('ProgramScheduler')) {
                   return null;
                 }
 		
-		function php_get_program($ID){
-			global $wpdb;
-			$airtimes = $this->get_listing($ID, '');//$this->id ? $this->id : '');
-                        $schedules = array();
-                        foreach($airtimes as $item){
-                          if(!in_array($item->schedule_name, $schedules)) $schedules[] = $item->schedule_name;
-                        }
-			$rows = $this->parse_program_times($airtimes);
-
-			if(sizeof($rows) <= 0 ) return '';
-
-			echo "<div class='single_details'>";
-
-			echo "<div><span class='single_program_name' >";
-			echo $rows[0]['url'] ? "<a href='" . $rows[0]['url'] . "' >" . $rows[0]['name'] . "</a>" : $rows[0]['name'];
-			echo "</span>";
-			echo "<span class='clickable single_close_button' onclick=\"jQuery(this).parent().parent().remove();\" >x</span>";
-			echo "</div>";
-
-			echo "<div class='single_program_content'>";
-			echo $rows[0]['description'] ? "<div class='single_program_description'>".$rows[0]['description']."</div>" : '';
-
-			echo "<div class='single_program_times'> <span>Airdates and Times:</span><br />";
-                        foreach($schedules as $schedule_name){
-                          echo $rows[0][$schedule_name] ? "<span class='single_program_channel'>$schedule_name</span> <div>".$rows[0][$schedule_name]."</div>" : '';
-                        }
-			echo "</div>";
-			
-			echo $rows[0]['url']? "<div class='single_program_url'><a href='".$rows[0]['url']."'>Website link &raquo;</a></div>" : '';
-			
-			echo "</div>";
-			echo "</div>";
-		}
-
 		function php_get_programs($start_date = '', $end_date = '', $sql = ''){
 			global $wpdb;
 			$start_date = $_POST[start_date] ? $_POST[start_date] : $start_date;
