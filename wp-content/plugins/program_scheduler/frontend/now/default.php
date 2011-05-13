@@ -3,15 +3,7 @@
 REQUIRED VARIABLES
   $ps_query['program'] - contains program properties such as $ps_query['program']->name, which can be accessible with tag functions (see schedule_viewer.php)
 AVAILABLE FUNCTIONS
- ps_program_name()
- ps_start_time()
- ps_end_time()
- ps_program_info_link()
- ps_program_description()
- ps_host_name()
- ps_host_bio()
- ps_host_photo_url()
- ps_host_bio_link()
+  See plugin README
 *********/
 
 $has_program_url = empty($ps_query['program']->url) ? false : true;

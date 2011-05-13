@@ -17,12 +17,20 @@ the_schedule(station_name, mode, $echo = true)
 
 Hook functions for when you call the_schedule(station_name, "now", true/false):
 
-* ps_program_name()
-* ps_start_time()
-* ps_end_time()
-* ps_program_info_link()
-* ps_program_description()
-* ps_host_name()
-* ps_host_bio()
-* ps_host_photo_url()
-* ps_host_bio_link()
+ps_program_has_url() - returns true/false
+ps_program_has_photo_url() - returns true/false
+ps_program_show_playlist() - returns true/false
+
+Note the following echo the output inside the function. To return the result, use its ps_get_* counterpart so for example, ps_program_time() will echo the result and ps_get_program_time() will return it. Unless otherwise noted below, the ps_get_* functions will return an empty string ("") if no value exists for that field.
+
+ps_program_name() - Echos/returns "N/A" if for some reason there is no program loaded
+ps_start_time() - Optional $format as described in http://us.php.net/manual/en/function.date.php
+                - Returns "N/A" if for some reason there is no program loaded
+ps_end_time() - Optional $format as described in http://us.php.net/manual/en/function.date.php
+              - Returns "N/A" if for some reason there is no program loaded
+ps_program_info_link()
+ps_program_description()
+ps_host_name()
+ps_host_bio()
+ps_host_photo_url()
+ps_host_bio_link()
