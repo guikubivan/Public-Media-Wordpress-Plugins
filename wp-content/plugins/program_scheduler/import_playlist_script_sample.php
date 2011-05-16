@@ -21,7 +21,7 @@ $wp_load_loc = '/home/www/wordpress_3.1/wp-load.php';
 
 
 if($argc ==1)
-  die("Usage: import_daily_playlist.php [--today] [file1 file2 ...] \n");
+  die("Usage: import_daily_playlist.php [--today | --date YYYYMMDD] [file1 file2 ...] \n");
 
 require_once($wp_load_loc);
 
@@ -37,15 +37,29 @@ try{
 }
 
 /*  START EXECUTION */
-date_default_timezone_set("America/New_York");
-echo str_repeat("=", 25) . "\nPLAYLIST IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
-
 global $file_date_string;
 
+date_default_timezone_set("America/New_York");
+
+echo str_repeat("=", 25) . "\nPLAYLIST IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
+
 $files = Array();
+$date = false;
 foreach($argv as $key=>$val){
   if($key==0) continue;
-  if($val == '--today'){
+  if($date){
+    if(preg_match("/(\d{4})(\d{2})(\d{2})$/i", $val) == 0){
+      die("Incorrect format when using --date. Needs to be YYYYMMDD.\n");
+    }
+
+    $today_f = fetch_playlist_at(strtotime($val));
+    if(is_null($today_f)){
+      die("ERROR: Could not download today's playlist (url exists?)\n");
+    }else{
+      $files = Array($today_f);
+    }
+    break;
+  }else if($val == '--today'){
     $today_f = fetch_todays_file();
     if(is_null($today_f)){
       die("ERROR: Could not download today's playlist (url exists?)\n");
@@ -53,6 +67,9 @@ foreach($argv as $key=>$val){
       $files = Array($today_f);
     }
     break;
+  }else if ($val == '--date'){
+    $date = true;
+    continue;
   }else{
     $files[] = $val;
   }
@@ -81,8 +98,7 @@ ______________________
 
 echo "DONE\n" . str_repeat("=", 25) . "\n";
 
-
-function fetch_todays_file(){
+function fetch_playlist_at($timestamp){
   global $playlists_url_directory;
   $user_info = posix_getpwuid(posix_getuid());
   $home_dir = $user_info['dir'];
@@ -91,7 +107,7 @@ function fetch_todays_file(){
     mkdir($temp_folder);
   }
 
-  $file_name = date("Ymd") . ".txt";
+  $file_name = date("Ymd", $timestamp) . ".txt";
   $download_file = "$temp_folder/$file_name";
   $remote_playlist = $playlists_url_directory . $file_name;
 
@@ -102,6 +118,10 @@ function fetch_todays_file(){
   if(file_exists($download_file)) return $download_file;
 
   return null;
+}
+
+function fetch_todays_file(){
+  return fetch_playlist_at(time());
 }
 
 
