@@ -30,7 +30,7 @@ $valid_times = Array(
 
 
 if($argc ==1)
-  die("Usage: import_daily_playlist.php [--today | --date YYYYMMDD | --all-since YYYYMMDD] [file1 file2 ...] \n");
+  die("Usage: import_daily_playlist.php [--today] [--date YYYYMMDD] [--all-since YYYYMMDD] [file1 file2 ...] \n");
 
 require_once($wp_load_loc);
 

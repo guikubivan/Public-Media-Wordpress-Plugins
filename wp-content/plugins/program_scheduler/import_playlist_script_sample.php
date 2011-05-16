@@ -21,7 +21,7 @@ $wp_load_loc = '/home/www/wordpress_3.1/wp-load.php';
 
 
 if($argc ==1)
-  die("Usage: import_daily_playlist.php [--today | --date YYYYMMDD] [file1 file2 ...] \n");
+  die("Usage: import_daily_playlist.php [--today] [--date YYYYMMDD] [file1 file2 ...] \n");
 
 require_once($wp_load_loc);
 
