@@ -106,10 +106,42 @@ if($_GET['mode'] == 'program-ajax'){
 	}
 
 	echo "</div>";
-}else if($_GET['mode'] == 'now'){
+}else if( in_array($_GET['mode'], array('now', 'next', 'prev')) ){
 	$start_date = time();
+
+        #echo date('l jS \of F Y h:i:s A', $start_date) . "<br/>";
         $program = $scheduleObj->get_program_playing_at($start_date);
 
+        if(!is_null($program)){
+          $start = strtotime($program->start_date);
+          $end = $eventHelper->fix_end_time($start, $program->end_date);
+
+          
+          switch($_GET['mode']){
+            case 'next':
+              $day_now_seconds = date("H", $start_date)*60*60 + date("i", $start_date)*60 + date("s", $start_date);
+              $day_end_seconds = date("H", $end-1)*60*60 + date("i", $end-1)*60 + date("s", $end-1);
+              $different_to_next_program = $day_end_seconds- $day_now_seconds + 2;#+1+1 for cases when $end date is 23:59
+              $start_date += $different_to_next_program;
+              #echo date('l jS \of F Y h:i:s A', $start_date);
+              $program = $scheduleObj->get_program_playing_at($start_date);
+              break;
+            case 'prev':
+              #echo date('h:i:s A', $start);
+              #echo "<br/>";
+              #echo date('h:i:s A', $start_date);
+              $day_now_seconds = date("H", $start_date-1)*60*60 + date("i", $start_date-1)*60 + date("s", $start_date-1);#avoid when current time is 0:0
+              $day_start_seconds = date("H", $start)*60*60 + date("i", $start)*60 + date("s", $start);
+              
+              $different_to_prev_program = $day_now_seconds - $day_start_seconds + 3;#due to $start_date < end_date-1 in *time* query
+              $start_date = $start_date - $different_to_prev_program;
+              #echo "<br/>";
+              #echo date('h:i:s A', $start_date);
+              $program = $scheduleObj->get_program_playing_at($start_date);
+              #echo "<br/>";
+              break;
+          }
+        }
         #global, needs to be set to null so hooks don't have old info in case no program was found
         $ps_query['program'] = $program;
         if(!is_null($program)){

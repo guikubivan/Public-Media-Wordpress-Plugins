@@ -49,6 +49,7 @@ $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE s
         $program_start, $program_end, $cur_datetime, $scheduleObj->id);
 
 $playlist = $wpdb->get_results($query);
+#echo $query;
 
 $ps_query['playlist_url_hash'] =  $scheduleObj->id . "_" . date('Hi', $start);
 
@@ -59,7 +60,7 @@ if(!$ps_query['echo']){
     $ps_query['playlist_item'] =  current($playlist);
    
   }
-}else if( ($ps_query['mode'] =='now' || $ps_query['mode'] == 'playlist-item-now') && (sizeof($playlist) == 1) ):
+}else if( in_array($ps_query['mode'], array('now', 'next', 'prev', 'playlist-item-now')) && (sizeof($playlist) == 1) ):
   $ps_query['playlist_item'] = $item = current($playlist);
   ?>
 <div>

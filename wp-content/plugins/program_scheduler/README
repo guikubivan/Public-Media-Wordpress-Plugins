@@ -11,11 +11,12 @@ the_schedule(station_name, mode, $echo = true)
     - "weekly" - Week view of single schedule
     - "single" - Daily view for one or more schedules.
     - "listing" - List of programs and respective air dates across all schedules
-    - "now" - Current program name
-  * echo only works for when mode is "now". When true, it will output and populate hook functions. When false, it will also populate the hook functions, but won't output anything. Defaults to true.
+    - "now", "next", "prev" - Current, Next, Previous program
+    - "playlist-item-now" - Current playlist item of current program
+  * $echo only works for modes "now", "next", "prev" and "playlist-item-now". When true, it will output and populate hook functions. When false, it will also populate the hook functions, but won't output anything. Defaults to true.
 
 
-Hook functions for when you call the_schedule(station_name, "now", true/false):
+Hook functions available for when you call the_schedule(station_name, "now"/"next"/"prev", true/false):
 
 ps_program_has_url() - returns true/false
 ps_program_has_photo_url() - returns true/false
@@ -35,7 +36,7 @@ ps_host_bio()
 ps_host_photo_url()
 ps_host_bio_link()
 
-Hook function for when you call the_scheduler(station_name, "playlist-item-now", true/false). Same as above, these all have their ps_get_* counterparts.
+Hook functions for when you call the_scheduler(station_name, "playlist-item-now", true/false). Same as above, these all have their ps_get_* counterparts.
 
 ps_current_playlist_url() - Echos a <a> tag with a link to the playlist. The ps_get counterpart just returns the url.
 
@@ -48,7 +49,7 @@ ps_pitem_release_year()
 ps_pitem_asin()
 ps_pitem_notes()
 ps_pitem_start_time($format) - Optional $format as described in http://us.php.net/manual/en/function.date.php
-ps_pitem_duration($format) - Returns a string formatted by default as "mm:ss". Optional $format as described in http://us.php.net/manual/en/function.sprintf.php (default is "[%02s]:[%02s]")
+ps_pitem_duration($format) - Returns a string formatted by default as "mm:ss". Optional $format as described in http://us.php.net/manual/en/function.sprintf.php (default is "%02s:%02s")
 ps_pitem_label_id()
 
 

@@ -199,20 +199,23 @@ if(!class_exists ('SchedulerEvent')) {
 				$ret .= " AND Time('$start_date') < Time(end_date)";
 			}else if(!$option){//make end_date -1
 			//SELECT ADDTIME('2007-12-31 23:59:59.999999', '1 1:1:1.000002');
-                                /* Expected cases
+                                /*$end_date is inclusive
+                                 *
+                                 * Expected cases
                                  * Time of $start_date is 1:00, end_date is 0:00 (midnight)
                                  *  - true: Time('$start_date') < Time(ADDTIME(end_date, -1)
-                                 * Time of $end_date is 0:00, start_date is 0:00
-                                 *  - false: Time(ADDTIME('$end_date', -1)) > Time(start_date)
+                                 * Time of $end_date can never be 0:00 because if start_date is 0:00, it's dubious
+                                 *  - false: Time('$end_date') > Time(start_date)
                                  * Time of start_date is 0:00, end_date is 0:00 - 23:58
                                  *  - true: TIME(ADDTIME(start_date,-1)) > TIME(end_date)
                                  *  -- Not sure what this does, so I removed it from the query.
                                  */
-
-                                $ret .= " AND Time('$start_date') < Time(ADDTIME(end_date, -1)) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date))";
+                                $ret .= " AND Time('$start_date') < Time(ADDTIME(end_date, -1)) AND Time('$end_date') >= Time(start_date)";
+                                #$ret .= " AND Time('$start_date') < Time(ADDTIME(end_date, -1)) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date))";
 				#$ret .= " AND Time('$start_date') < Time(ADDTIME(end_date, -1)) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) )";
 				#$ret .= " AND ( Time('$start_date') < Time(ADDTIME(end_date, -1)) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) ) AND (Time(ADDTIME('$end_date', -1)) > Time(start_date) OR TIME(ADDTIME(start_date,-1)) > TIME(end_date) )";
 			}
+                        #echo $ret;
 			return $ret;
 		}
 		

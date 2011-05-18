@@ -44,7 +44,7 @@ foreach($stations as $key=>$value){
 
         $scheduleObj = ProgramScheduler::find_by_name($station);
         #echo "<td>$station - ".$scheduleObj->id."</td>";
-        $end_date = $start_date + 24*60*60;
+        $end_date = $start_date + 24*60*60 - 1;
         $programs = $scheduleObj->php_get_programs($start_date, $end_date);
 
 

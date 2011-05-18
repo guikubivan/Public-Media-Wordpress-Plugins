@@ -25,7 +25,7 @@ if(!function_exists('single_day_view')){
     $tr_seconds_delta = 30*60;#seconds at each table row
     $rows = 24*(60*60/$tr_seconds_delta);
     $hour_modulus = $rows/24;
-    $end_date = $start_date + 24*60*60;
+    $end_date = $start_date + 24*60*60 -1;
 
     $schedules = array();
     $programs = array();
