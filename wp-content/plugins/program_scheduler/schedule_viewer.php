@@ -44,7 +44,7 @@ $ps_query['echo'] = isset($_GET['echo']) ? ($_GET['echo'] == "1" ? true : false)
 */
 
 
-if(isset($_GET['schedule_name']) && !isset($scheduleObj)){
+if(isset($_GET['schedule_name']) && (!isset($scheduleObj) || ($_GET['schedule_name'] != $scheduleObj->schedule_name) ) ) {
 	$sname = $_GET['schedule_name'];
 	$scheduleObj = ProgramScheduler::find_by_name($sname);
 
@@ -109,12 +109,37 @@ if($_GET['mode'] == 'program-ajax'){
 }else if($_GET['mode'] == 'now'){
 	$start_date = time();
         $program = $scheduleObj->get_program_playing_at($start_date);
+
+        #global, needs to be set to null so hooks don't have old info in case no program was found
+        $ps_query['program'] = $program;
         if(!is_null($program)){
-          $ps_query['program'] = $program;#global
           require_once(dirname(__FILE__) . "/hooks/program.php");
+          require_once(dirname(__FILE__) . "/hooks/playlist_item.php");
           if($ps_query['echo']){
             include(dirname(__FILE__) . "/frontend/now/default.php");
           }
+	}else{
+          if($ps_query['echo']){
+		echo "N/A";
+          }
+        }
+}else if($_GET['mode'] == 'playlist-item-now'){
+  
+	$start_date = time();
+        $program = $scheduleObj->get_program_playing_at($start_date);
+
+        #global, needs to be set to null so hooks don't have old info in case no program was found
+        $ps_query['program'] = $program;
+        if(!is_null($program)){
+          $start = strtotime($program->start_date);
+          $end = $eventHelper->fix_end_time($start, $program->end_date);
+          $show_only_last = true;
+
+
+          require_once(dirname(__FILE__) . "/hooks/playlist_item.php");
+          #will act as controller to populate $ps_query['playlist_item']
+          include(dirname(__FILE__) . "/frontend/playlist/default.php");
+
 	}else{
           if($ps_query['echo']){
 		echo "N/A";

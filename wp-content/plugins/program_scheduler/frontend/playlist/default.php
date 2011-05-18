@@ -7,6 +7,7 @@ REQUIRED VARIABLES
   $wpdb
   $scheduleObj
   $ps_query
+  $show_only_last
   
 VALID ATTRIBUTES
   -ID
@@ -49,12 +50,21 @@ $query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE s
 
 $playlist = $wpdb->get_results($query);
 
-if( ($ps_query['mode'] =='now') && (sizeof($playlist) == 1) ):
-  $item = current($playlist);
-  $program_css_id = $scheduleObj->id . "_" . date('Hi', $start);
+$ps_query['playlist_url_hash'] =  $scheduleObj->id . "_" . date('Hi', $start);
+
+if(!$ps_query['echo']){
+  $ps_query['playlist_item'] = null;
+
+  if($ps_query['mode'] == 'playlist-item-now' && (sizeof($playlist) == 1) ){
+    $ps_query['playlist_item'] =  current($playlist);
+   
+  }
+}else if( ($ps_query['mode'] =='now' || $ps_query['mode'] == 'playlist-item-now') && (sizeof($playlist) == 1) ):
+  $ps_query['playlist_item'] = $item = current($playlist);
   ?>
 <div>
-Last played <strong><?= $item->composer; ?>: <?= $item->title; ?></strong>. <a href="<?= ps_single_day_url($scheduleObj->schedule_name, time()); ?>#<?= $program_css_id; ?>">See playlist</a>.
+  Last played <strong><?= ps_get_pitem_composer(); ?>: <?= ps_get_pitem_title(); ?></strong>.
+<? ps_current_playlist_url(); ?>
 </div>
 
 <? elseif(sizeof($playlist) > 1): ?>

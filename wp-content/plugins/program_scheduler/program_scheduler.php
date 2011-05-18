@@ -172,6 +172,9 @@ function ps_maybe_show_schedule($content){
 
 if(!function_exists('the_schedule') ){
 	function the_schedule($schedule_name, $mode='weekly', $echo = true){
+                $ps_query['program'] = null;
+                $ps_query['playlist_item'] = null;
+
 		$_GET['schedule_name'] = $schedule_name;
                 #echo "<b>".$mode."</b>";
 		$_GET['mode'] = $mode;
