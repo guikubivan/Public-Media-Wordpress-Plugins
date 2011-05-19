@@ -61,6 +61,6 @@ Hook functions for when you call the\_scheduler(station\_name, "playlist-item-no
 * _ps_pitem_notes()_
 * _ps_pitem_start_time($format)_
     * Optional $format as described in http://us.php.net/manual/en/function.date.php
-* ps_pitem_duration($format)_
+* _ps_pitem_duration($format)_
     * Returns a string formatted by default as "mm:ss". Optional $format as described in http://us.php.net/manual/en/function.sprintf.php (default is "%02s:%02s")
-* ps_pitem_label_id()
+* _ps_pitem_label_id()_
