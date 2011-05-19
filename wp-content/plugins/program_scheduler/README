@@ -1,4 +1,5 @@
 Template functions
+==
 
 the_schedule(station_name, mode, $echo = true)
   * station_name is the name of the station/schedule.
