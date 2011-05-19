@@ -2,7 +2,7 @@
 /* 
 Plugin Name: Program Scheduler
 Plugin URI: http://wfiu.org
-Version: 1.0
+Version: 2.0
 Description: Program Scheduler for WFIU
 Author: Pablo Vanwoerkom
 Author URI: http://www.wfiu.org
