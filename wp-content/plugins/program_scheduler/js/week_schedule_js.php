@@ -46,7 +46,7 @@ jQuery(function($){
         // firebug console output
         //----------------------------------------------------------------------
         function debug(text) {
-          //return false;
+          return false;
           if (window.console && window.console.log) {
               window.console.log(text);
           }

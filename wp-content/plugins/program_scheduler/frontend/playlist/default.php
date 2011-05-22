@@ -56,7 +56,7 @@ $ps_query['playlist_url_hash'] =  $scheduleObj->id . "_" . date('Hi', $start);
 if(!$ps_query['echo']){
   $ps_query['playlist_item'] = null;
 
-  if($ps_query['mode'] == 'playlist-item-now' && (sizeof($playlist) == 1) ){
+  if(preg_match("/playlist\-item\-now.*/", $ps_query['mode']) && (sizeof($playlist) == 1) ){
     $ps_query['playlist_item'] =  current($playlist);
    
   }

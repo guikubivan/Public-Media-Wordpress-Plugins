@@ -12,7 +12,7 @@ REQUIRED VARIABLES
 ?>
 <div id="ps_main_wrapper">
 <?
-include("navigation.php");
+include("_navigation.php");
 the_schedule($sname, $ps_mode);
 ?>
 </div>

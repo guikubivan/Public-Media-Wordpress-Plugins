@@ -118,7 +118,7 @@ if(!function_exists('single_day_view')){
 
 
 <div id='single_wrapper'>
-  <? include(dirname(__FILE__) . "/navigation.php"); ?>
+  <? include(dirname(__FILE__) . "/_navigation.php"); ?>
 
     <? /******** BRAINS OF THE WHOLE THING **********/ ?>
     <table style='clear:both' class='single'>

@@ -144,9 +144,9 @@ if($_GET['mode'] == 'program-ajax'){
         }
         #global, needs to be set to null so hooks don't have old info in case no program was found
         $ps_query['program'] = $program;
+        require_once(dirname(__FILE__) . "/hooks/program.php");
+        require_once(dirname(__FILE__) . "/hooks/playlist_item.php");
         if(!is_null($program)){
-          require_once(dirname(__FILE__) . "/hooks/program.php");
-          require_once(dirname(__FILE__) . "/hooks/playlist_item.php");
           if($ps_query['echo']){
             include(dirname(__FILE__) . "/frontend/now/default.php");
           }
@@ -155,6 +155,28 @@ if($_GET['mode'] == 'program-ajax'){
 		echo "N/A";
           }
         }
+}else if($_GET['mode'] == 'playlist-item-now-ajax'){
+
+	$start_date = time();
+        $program = $scheduleObj->get_program_playing_at($start_date);
+
+        #global, needs to be set to null so hooks don't have old info in case no program was found
+        $ps_query['program'] = $program;
+
+        require_once(dirname(__FILE__) . "/hooks/playlist_item.php");
+        if(!is_null($program)){
+          $start = strtotime($program->start_date);
+          $end = $eventHelper->fix_end_time($start, $program->end_date);
+          $show_only_last = true;
+          $ps_query['echo'] = false;
+          #will act as controller to populate $ps_query['playlist_item']
+          include(dirname(__FILE__) . "/frontend/playlist/default.php");
+          $ps_query['echo'] = true;
+          include(dirname(__FILE__) . "/frontend/playlist/last_item_ajax.php");
+
+	}else{
+          include(dirname(__FILE__) . "/frontend/playlist/last_item_ajax.php");
+        }
 }else if($_GET['mode'] == 'playlist-item-now'){
   
 	$start_date = time();
@@ -162,13 +184,12 @@ if($_GET['mode'] == 'program-ajax'){
 
         #global, needs to be set to null so hooks don't have old info in case no program was found
         $ps_query['program'] = $program;
+
+        require_once(dirname(__FILE__) . "/hooks/playlist_item.php");
         if(!is_null($program)){
           $start = strtotime($program->start_date);
           $end = $eventHelper->fix_end_time($start, $program->end_date);
           $show_only_last = true;
-
-
-          require_once(dirname(__FILE__) . "/hooks/playlist_item.php");
           #will act as controller to populate $ps_query['playlist_item']
           include(dirname(__FILE__) . "/frontend/playlist/default.php");
 

@@ -25,7 +25,7 @@ foreach($stations as $key=>$value){
 
 
 <div id='single_wrapper' style="width:99%;">
-  <? include(dirname(__FILE__) . "/navigation.php"); ?>
+  <? include(dirname(__FILE__) . "/_navigation.php"); ?>
   <table style='clear:both' class='single'>
     <? /******** BRAINS OF THE WHOLE THING **********/ ?>
 <? if(!$ps_query['in_loop'] || (sizeof($stations) > 1)): ?>

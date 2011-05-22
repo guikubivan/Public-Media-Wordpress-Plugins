@@ -47,6 +47,10 @@ jQuery(document).ready(function($){
   var matches = window.location.toString().match(/#(\d_\d+)$/);
   if(matches && (jQuery("#" + matches[1]).find(".ps_playlist").length > 0 )){
     jQuery("#" + matches[1]).find(".ps_playlist").toggleClass('hide');
+
+    var td_height = jQuery("#" + matches[1]).find('td.ps_playlist_item_start:first').height();
+    
+    window.scrollTo(0, jQuery("#" + matches[1]).position().top + jQuery("#" + matches[1]).height() - jQuery(window).height() + td_height/1.2);
   }
 
   jQuery('#single_day_datepicker_<?= $scheduleObj->id; ?>').datepicker({

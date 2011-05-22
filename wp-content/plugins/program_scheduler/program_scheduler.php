@@ -64,6 +64,9 @@ add_action('wp_ajax_nopriv_action_send_programs', 'global_get_programs');
 add_action('wp_ajax_action_single_day', 'global_get_single_day');
 add_action('wp_ajax_nopriv_action_single_day', 'global_get_single_day');
 
+add_action('wp_ajax_action_playlist_latest', 'global_playlist_latest');
+add_action('wp_ajax_nopriv_action_playlist_latest', 'global_playlist_latest');
+
 if( is_admin() ){
   add_action('wp_ajax_action_receive_event', 'php_receive_event');
   add_action('wp_ajax_action_delete_event', 'php_delete_event');
@@ -104,7 +107,7 @@ if ( !is_admin() ) { // instruction to only load if it is not the admin area
     if($valid || $force){
       $helper_schedule->frontend_enque(null, null, $in_footer);
     }else{
-      $helper_schedule->frontend_enque(array(), array("ps_now", "ps_program"), $in_footer);
+      $helper_schedule->frontend_enque(array('jquery'), array("ps_now", "ps_program"), $in_footer);
     }
   }
 }
@@ -230,15 +233,23 @@ function global_get_programs($single=false){
 
 function global_get_single_day(){
   global $wpdb;
-	if(isset($_POST['start_date']) ){
-		$_GET['mode'] = 'single';
-		$_GET['start_date'] = $_POST['start_date'];
-                #$names = $wpdb->get_col("SELECT name FROM ps_stations ORDER BY name;");
-                #the_schedule(implode(",", $names), 'single');
-                the_schedule($_POST['schedule_name'], 'single');
-		#include(dirname(__FILE__).'/schedule_viewer.php');
-	}
-        die();
+  if(isset($_POST['start_date']) ){
+    $_GET['mode'] = 'single';
+    $_GET['start_date'] = $_POST['start_date'];
+    #$names = $wpdb->get_col("SELECT name FROM ps_stations ORDER BY name;");
+    #the_schedule(implode(",", $names), 'single');
+    the_schedule($_POST['schedule_name'], 'single');
+    #include(dirname(__FILE__).'/schedule_viewer.php');
+  }
+  die();
+}
+
+function global_playlist_latest(){
+  global $wpdb;
+  $schedule_name = $_POST['schedule_name'];
+  the_schedule($schedule_name, 'playlist-item-now-ajax');
+  
+  die();
 }
 
 /************END Universal functions ********/
