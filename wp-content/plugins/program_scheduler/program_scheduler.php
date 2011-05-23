@@ -165,6 +165,9 @@ function ps_maybe_show_schedule($content){
           $_GET['schedule_name'] = $sname;
           $ps_query['schedule_name'] = $_GET['schedule_name'];
           $ps_query['mode'] = $_GET['mode'];
+
+          $scheduleObj = ProgramScheduler::find_by_name($sname);
+          $ps_query['schedule_id'] =  $scheduleObj->id;
           include(dirname(__FILE__) . "/frontend/schedule.php");
         }
       }

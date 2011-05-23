@@ -1,5 +1,5 @@
 <?
-global $scheduleObj;
+#do not use scheduleObj
 global $ps_query;
 
 ?>
@@ -20,7 +20,7 @@ global $ps_query;
   <div class="ps_main_datepicker">
     <span class="canclick">
 <? if($ps_query['mode'] == "single"): ?>
-      <input style='visibility: hidden; width:0px; margin:0px;padding:0px;' type="text" id="single_day_datepicker_<?= $scheduleObj->id; ?>" />
+      <input style='visibility: hidden; width:0px; margin:0px;padding:0px;' type="text" id="single_day_datepicker_<?= $ps_query['schedule_id']; ?>" />
       <span onclick="jQuery(this).prev().datepicker( 'show' );">Select Date</span> |
       <a href="<?= ps_single_day_url($sname, time()); ?>">Jump to Today</a>
 <? else: #weekly mode?>
