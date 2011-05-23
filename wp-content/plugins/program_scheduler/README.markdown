@@ -5,7 +5,7 @@
 *the_schedule(station_name, mode, $echo = true)*
 
 * station_name is the name of the station/schedule.
-    - Required when mode is "weekly", "single", "now", "next", "prev", or "playlist-item-now".
+    - Required when mode is "weekly", "single", "now", "next", "prev", or "playlist-item-now", "playlist-item-now-ajax".
     - When mode is "single", use a comma separated string of schedule names.
     - Optional when mode is "listing". If station_name is given, it will only retrieve programs for that schedule, otherwise, it will retrieve all.
     - Should be empty("") when mode is "all".
@@ -16,6 +16,7 @@
     - "listing" - List of programs and respective air dates across all schedules
     - "now", "next", "prev" - Current, Next, Previous program
     - "playlist-item-now" - Current playlist item of current program
+    - "playlist-item-now-ajax" - Dynamic current playlist item of current program (updates at song boundaries automatically)
 * $echo only works for modes "now", "next", "prev" and "playlist-item-now". When true, it will output and populate hook functions. When false, it will also populate the hook functions, but won't output anything. Defaults to true.
 
 ##Hooks

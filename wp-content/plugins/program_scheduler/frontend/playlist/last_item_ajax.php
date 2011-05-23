@@ -31,7 +31,7 @@ setTimeout(function() {
 <? if(!empty($ps_query['playlist_item'])): ?>
   <p><strong>Now Playing</strong></p>
   <?php ps_pitem_composer(); ?><br /><?php ps_pitem_title(); ?><br />
-  <a href="http://www.arkivmusic.com/classical/Playlist?source=WOSU&composer=<?php ps_pitem_composer(); ?>&work=<?php ps_pitem_title(); ?>&label=<?php ps_pitem_label(); ?>&catalog=<?php ps_pitem_label_id(); ?>" target="_blank">Buy This Recording</a>
+  <a href="http://www.arkivmusic.com/classical/Playlist?source=WOSU&composer=<?= rawurlencode(ps_get_pitem_composer()); ?>&work=<?= rawurlencode(ps_get_pitem_title()); ?>&label=<?= rawurlencode(ps_get_pitem_label()); ?>&catalog=<?= rawurlencode(ps_pitem_label_id()); ?>" target="_blank">Buy This Recording</a>
   <?php $playlisturl = ps_get_current_playlist_url(); ?>
   <p><a href="<?php echo $playlisturl; ?>" target="_blank">Today's Playlist &raquo;</a></p>
 <? endif; ?>
