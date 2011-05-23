@@ -10,39 +10,11 @@ global $sname; #single day
 #date_default_timezone_set("America/New_York");#Eastern Time
 date_default_timezone_set("America/Denver");#Mountain Time
 
+$_GET['schedule_name'] = rawurldecode($_GET['schedule_name']);
 $ps_query['schedule_name'] = $_GET['schedule_name'];
 $ps_query['mode'] = $_GET['mode'];
 $ps_query['start_date'] = $_GET['start_date'];
 $ps_query['echo'] = isset($_GET['echo']) ? ($_GET['echo'] == "1" ? true : false) : true;
-
-/* Deprecated */
-/*if(!function_exists('print_program_row') ){
-	function print_program_row ($row){
-		echo "<li><div class='program_name'>";
-		echo $row[url] ? "<a href='$row[url]' >$row[name] </a>" : $row['name'];
-		echo "</div>";
-		echo $row[description] ? "<div> $row[description] </div>" : '';
-		if($row['hd1'] || $row['hd2']){
-			echo "Airdates & Times: ";
-		}
-		
-		if($row['hd1']){
-			echo "<ul class='air_times'>HD1";
-			echo $row['hd1'];
-			echo "</ul>";
-		}
-		if($row['hd2']){
-			echo "<ul class='air_times'>HD2";
-			echo $row['hd2'];
-			echo "</ul>";
-		}
-		echo $row[url] ? "<a href='$row[url]' > Website link &raquo; </a>" : '';
-		echo "</li>";
-		
-	}
-}
-*/
-
 
 if(isset($_GET['schedule_name']) && (!isset($scheduleObj) || ($_GET['schedule_name'] != $scheduleObj->schedule_name) ) ) {
 	$sname = $_GET['schedule_name'];
@@ -172,11 +144,8 @@ if($_GET['mode'] == 'program-ajax'){
           #will act as controller to populate $ps_query['playlist_item']
           include(dirname(__FILE__) . "/frontend/playlist/default.php");
           $ps_query['echo'] = true;
-          include(dirname(__FILE__) . "/frontend/playlist/last_item_ajax.php");
-
-	}else{
-          include(dirname(__FILE__) . "/frontend/playlist/last_item_ajax.php");
         }
+        include(dirname(__FILE__) . "/frontend/playlist/last_item_ajax.php");
 }else if($_GET['mode'] == 'playlist-item-now'){
   
 	$start_date = time();

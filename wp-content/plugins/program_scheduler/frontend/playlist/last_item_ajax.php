@@ -9,7 +9,7 @@ if(!empty($ps_query['playlist_item']) && ($ps_query['playlist_item']->duration >
 
   if($remaining_time  <= 0) $remaining_time = 0;
   
-  $ps_refresh_timeout = $remaining_time * 1000 + 1;
+  $ps_refresh_timeout = ($remaining_time + 1) * 1000;
 }
 ?>
 
