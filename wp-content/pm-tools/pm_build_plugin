@@ -1,0 +1,85 @@
+#!/bin/sh
+die () {
+    echo >&2 "$@"
+    echo 
+    echo Please enter a valid plugin name directory, it must be one of these:
+    find ../plugins/. -maxdepth 1 -type d | grep -o -E '\./[^/]*$' | grep -o -E '[^/]*$'
+
+    exit 1
+}
+
+compress_js () {
+  extension="${1##*.}"
+
+  if [ $extension = "php" ]
+  then
+    php $1 > ${1}.new
+  else
+    mv $1 ${1}.new
+  fi
+
+  java -jar  yuicompressor-2.4.6.jar --type js -o $1 ${1}.new
+  rm ${1}.new
+}
+
+compress_css () {
+  
+
+  dirname="${1%/*}"
+ 
+  grep -E '@import\s+url.*$' $1 | while read line;
+  do
+    
+    basename=`echo $line | grep -o -E '[^"]+.css'`
+    path="$dirname/$basename"
+
+    safe_line=`echo $line | sed "s/\"/\\\\\"/"`
+    sed -i -e s/"$safe_line"//ig $1
+
+    cat $path >> ${1}.new
+    echo "\n" >> ${1}.new
+  done
+
+  cat $1 >> ${1}.new
+
+  java -jar  yuicompressor-2.4.6.jar --type css -o $1 ${1}.new
+  rm ${1}.new
+}
+
+
+[ "$#" -eq 1 ] || die "1 argument required, $# provided"
+
+while read dir
+do
+    [ -d "$dir" ] || die "Directory $dir does not exist"
+
+    #echo $dir
+    #exit 1
+    new_dir="${dir}_build"
+    cp -a $dir $new_dir
+
+    echo "Compressing Javascript"
+    for jsfile in `find ../plugins/${new_dir}/js/ -type f`; do
+      echo $jsfile
+      compress_js $jsfile
+    done
+
+    echo 
+    echo "Compressing CSS"
+    for cssfile in `find ../plugins/${new_dir}/css/ -type f`; do
+      echo $cssfile
+      compress_css $cssfile
+    done
+
+    cur_dir=`pwd`
+
+    cd ../plugins/${new_dir}/
+    zipfile=`echo $dir | grep -E -o '[^/]+$'`
+    revision=`git describe --always HEAD`
+    zip -q -r ${cur_dir}/${zipfile}_rev#${revision}.zip *
+    cd $cur_dir
+    rm -Rf $new_dir
+
+done <<EOF
+../plugins/$1
+EOF

@@ -21,7 +21,6 @@ if(typeof ajaxurl == 'undefined'){
   ajaxurl = WPScheduler.ajaxurl;
 }
 
-
 <? include_once(dirname(__FILE__).'/utils_js.php'); ?>
 //<script type="text/javascript">
 jQuery(function($){
