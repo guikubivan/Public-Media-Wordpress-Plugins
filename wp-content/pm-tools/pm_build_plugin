@@ -73,12 +73,19 @@ do
 
     cur_dir=`pwd`
 
-    cd ../plugins/${new_dir}/
+    cd ../plugins/
     zipfile=`echo $dir | grep -E -o '[^/]+$'`
     revision=`git describe --always HEAD`
-    zip -q -r ${cur_dir}/${zipfile}_rev#${revision}.zip *
+
+    mv $dir ${dir}_current
+    mv $new_dir $dir
+    
+    zip -q -r ${cur_dir}/${zipfile}_rev#${revision}.zip ${dir##*/}
     cd $cur_dir
-    rm -Rf $new_dir
+
+    rm -Rf $dir
+    mv ${dir}_current $dir
+    
 
 done <<EOF
 ../plugins/$1
