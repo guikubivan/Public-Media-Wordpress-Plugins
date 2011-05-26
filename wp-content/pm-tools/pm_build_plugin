@@ -8,18 +8,16 @@ die () {
     exit 1
 }
 
+run_php () {
+  php $1 > ${1}.new
+  mv ${1}.new $1
+}
+
+
 compress_js () {
-  extension="${1##*.}"
-
-  if [ $extension = "php" ]
-  then
-    php $1 > ${1}.new
-  else
-    mv $1 ${1}.new
-  fi
-
-  java -jar  yuicompressor-2.4.6.jar --type js -o $1 ${1}.new
-  rm ${1}.new
+#  extension="${1##*.}"
+  java -jar  yuicompressor-2.4.6.jar --type js -o ${1}.new $1
+  mv ${1}.new $1
 }
 
 compress_css () {
@@ -58,7 +56,14 @@ do
     new_dir="${dir}_build"
     cp -a $dir $new_dir
 
-    echo "Compressing Javascript"
+    echo "Compressing Javascript - Running any PHP files"
+    for jsfile in `find ../plugins/${new_dir}/js/*php -type f`; do
+      echo $jsfile
+      run_php $jsfile
+    done
+
+    echo 
+    echo "Compressing Javascript - Running YUI compressor"
     for jsfile in `find ../plugins/${new_dir}/js/ -type f`; do
       echo $jsfile
       compress_js $jsfile
@@ -85,7 +90,6 @@ do
 
     rm -Rf $dir
     mv ${dir}_current $dir
-    
 
 done <<EOF
 ../plugins/$1
