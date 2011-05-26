@@ -59,11 +59,18 @@ if(!empty($_POST['schedule_settings_submit'])){
     delete_option($ps_default_weekly_width_option_name);
   }
 
+  if(!empty($_POST['ps_timezone_string'])){
+    update_option($ps_default_timezone_option_name, $_POST['ps_timezone_string']);
+  }else{
+    delete_option($ps_default_timezone_option_name);
+  }
+
   echo "<div class='updated fade'>Settings saved.</div>";
 }
 $page_name = get_option($ps_page_option_name);
 $default_schedule_id = get_option($ps_default_schedule_option_name);
 $default_weekly_width = get_option($ps_default_weekly_width_option_name);
+$default_tzstring = get_option($ps_default_timezone_option_name);
 /************************************/
 
 
@@ -110,7 +117,7 @@ if (sizeof($schedules)): ?>
 
 
 
-  <h2>Settings</h2>
+  <h2>Settings (per blog)</h2>
   
   <form action='' method='POST' />
   <h3>Default schedule page</h3>
@@ -135,7 +142,7 @@ if (sizeof($schedules)): ?>
     </a>
 <? endif; ?>
 
-
+    <h3>Default schedule</h3>
     <p>Select a default schedule to use. This will only allow one schedule to exist. Set to "None" if you want all schedules to be accessible (TO-DO)</p>
     <select name="default_schedule">
       <option value="">
@@ -151,10 +158,19 @@ if (sizeof($schedules)): ?>
       ?>
     </select>
 
+    <h3>Default timezone</h3>
+    <p>Specifiy timezone of the dates stored. Used for determining prev/current/next programs.</p>
+    <select id="ps_timezone_string" name="ps_timezone_string">
+    <?php echo wp_timezone_choice($default_tzstring); ?>
+    </select>
+
+
+    <h3>Weekly schedule width</h3>
     <p>Specifiy the width for the weekly schedule view, in pixels (defaults to 627 pixels otherwise).</p>
     <input type="text" style="width: 60px;" name="default_weekly_width" value="<?= $default_weekly_width; ?>"/>px
 
     <br/><br/>
     <input name="schedule_settings_submit" type='submit' value='Save settings' />
+
   </form>
 </div>

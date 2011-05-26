@@ -5,10 +5,12 @@ global $eventHelper;
 global $scheduleObj;
 global $ps_query;
 global $sname; #single day
+global $ps_default_timezone_option_name;
 
-#Find your timezone by city at http://us.php.net/manual/en/timezones.america.php
-#date_default_timezone_set("America/New_York");#Eastern Time
-date_default_timezone_set("America/Denver");#Mountain Time
+#Change your timezone on the plugin settings
+$ps_query['timezone'] = get_option($ps_default_timezone_option_name);
+if(!$ps_query['timezone']) $ps_query['timezone'] = "America/New_York";
+date_default_timezone_set($ps_query['timezone']);#Default is eastern Time
 
 $_GET['schedule_name'] = rawurldecode($_GET['schedule_name']);
 $ps_query['schedule_name'] = $_GET['schedule_name'];
