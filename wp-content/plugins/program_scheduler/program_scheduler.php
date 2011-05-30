@@ -68,6 +68,9 @@ add_action('wp_ajax_nopriv_action_single_day', 'global_get_single_day');
 add_action('wp_ajax_action_playlist_latest', 'global_playlist_latest');
 add_action('wp_ajax_nopriv_action_playlist_latest', 'global_playlist_latest');
 
+add_action('wp_ajax_action_program_now', 'global_program_now');
+add_action('wp_ajax_nopriv_action_program_now', 'global_program_now');
+
 if( is_admin() ){
   add_action('wp_ajax_action_receive_event', 'php_receive_event');
   add_action('wp_ajax_action_delete_event', 'php_delete_event');
@@ -223,7 +226,7 @@ function global_get_programs($single=false){
                         $_GET['schedule_name'] = $_POST['schedule_name'];
 			unset($_POST['schedule_name']);
 			if($single){
-                          $_GET['mode'] = 'program-ajax';
+                          $_GET['mode'] = 'popup';
                           include(dirname(__FILE__).'/schedule_viewer.php');
 			}else{
 				$scheduleObj->php_get_programs();
@@ -256,6 +259,13 @@ function global_playlist_latest(){
   die();
 }
 
+function global_program_now(){
+  global $wpdb;
+  $schedule_name = $_POST['schedule_name'];
+  the_schedule($schedule_name, 'now-ajax');
+
+  die();
+}
 /************END Universal functions ********/
 
 /************************************

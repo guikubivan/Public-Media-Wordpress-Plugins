@@ -38,10 +38,9 @@ $max_cell_height = 800;
 $eventHelper = new SchedulerEvent('', '', '');
 
 
-if($_GET['mode'] == 'program-ajax'){
+if($_GET['mode'] == 'popup'){
   $program_id = $_POST['program_id'];
-  include(dirname(__FILE__) . "/frontend/program/ajax.php");
-
+  include(dirname(__FILE__) . "/frontend/program/popup.php");
 }else if($_GET['mode'] == 'single'){
   
   if(empty($sname)){
@@ -80,7 +79,7 @@ if($_GET['mode'] == 'program-ajax'){
 	}
 
 	echo "</div>";
-}else if( in_array($_GET['mode'], array('now', 'next', 'prev')) ){
+}else if( in_array($_GET['mode'], array('now', 'next', 'prev', 'now-ajax')) ){
 	$start_date = time();
 
         #echo date('l jS \of F Y h:i:s A', $start_date) . "<br/>";
@@ -90,7 +89,7 @@ if($_GET['mode'] == 'program-ajax'){
           $start = strtotime($program->start_date);
           $end = $eventHelper->fix_end_time($start, $program->end_date);
 
-          
+
           switch($_GET['mode']){
             case 'next':
               $day_now_seconds = date("H", $start_date)*60*60 + date("i", $start_date)*60 + date("s", $start_date);
@@ -120,14 +119,19 @@ if($_GET['mode'] == 'program-ajax'){
         $ps_query['program'] = $program;
         require_once(dirname(__FILE__) . "/hooks/program.php");
         require_once(dirname(__FILE__) . "/hooks/playlist_item.php");
-        if(!is_null($program)){
-          if($ps_query['echo']){
-            include(dirname(__FILE__) . "/frontend/now/default.php");
-          }
-	}else{
-          if($ps_query['echo']){
-		echo "N/A";
-          }
+
+        if($_GET['mode'] == "now-ajax"){
+            include(dirname(__FILE__) . "/frontend/now/default_ajax.php");
+        }else{
+            if(!is_null($program)){
+              if($ps_query['echo']){
+                include(dirname(__FILE__) . "/frontend/now/default.php");
+              }
+            }else{
+              if($ps_query['echo']){
+                    echo "N/A";
+              }
+            }
         }
 }else if($_GET['mode'] == 'playlist-item-now-ajax'){
 
