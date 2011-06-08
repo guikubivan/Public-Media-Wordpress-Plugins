@@ -81,6 +81,7 @@ if($_GET['mode'] == 'popup'){
 	echo "</div>";
 }else if( in_array($_GET['mode'], array('now', 'next', 'prev', 'now-ajax')) ){
 	$start_date = time();
+        #$start_date = mktime(23,59,55);
 
         #echo date('l jS \of F Y h:i:s A', $start_date) . "<br/>";
         $program = $scheduleObj->get_program_playing_at($start_date);

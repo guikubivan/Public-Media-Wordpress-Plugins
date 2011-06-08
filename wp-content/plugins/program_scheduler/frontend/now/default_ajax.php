@@ -11,8 +11,12 @@ AVAILABLE FUNCTIONS
 
 $ps_refresh_timeout = 60000;#default 1 minute
 if(!empty($ps_query['program'])){
-  $start_time =  strtotime($ps_query['playlist_item']->start_date);
-  $remaining_time = $ps_query['playlist_item']->duration - ( time() - $start_time );
+  #echo date("Y-m-d\TH:i:s", $start_date);
+  $end = $eventHelper->fix_end_time($start_date, $ps_query['program']->end_date);
+
+  $day_now_seconds = date("H", $start_date)*60*60 + date("i", $start_date)*60 + date("s", $start_date);
+  $day_end_seconds = date("H", $end-1)*60*60 + date("i", $end-1)*60 + date("s", $end-1);
+  $remaining_time = $day_end_seconds- $day_now_seconds + 2;#+1+1 for cases when $end date is 23:59
 
   if($remaining_time  <= 0) $remaining_time = 0;
 
@@ -67,7 +71,11 @@ endif; ?>
    $start = strtotime($ps_query['program']->start_date);
    $end = $eventHelper->fix_end_time($start, $ps_query['program']->end_date);
    $show_only_last = true;
+   $ps_query['echo'] = false;
+   #will act as controller to populate $ps_query['playlist_item']
    include(dirname(__FILE__) . "/../playlist/default.php");
+   $ps_query['echo'] = true;
+   include(dirname(__FILE__) . "/../playlist/last_item_ajax.php");
  }?>
  
   <br/>
