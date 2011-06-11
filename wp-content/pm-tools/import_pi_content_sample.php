@@ -4,7 +4,11 @@
  * Required variables - change to match your setup ***
  *****************************************************/
 #blog id where content should be imported, will be ignored if install is not multi-site
-$blog_id = 7;
+$target_blog_id = 2;
+
+global $default_user_id, $default_role;
+$default_user_id = 2;
+$default_role = 'autorh';
 
 #specify host or domain (needed for wp-includes/ms-settings.php:100)
 $_SERVER[ 'HTTP_HOST' ] = 'pablo.dyndns-office.com';
@@ -21,64 +25,29 @@ if($argc ==1)
 
 require_once($wp_load_loc);
 
-if(is_multisite()) switch_to_blog($playlists_blog_id);
-
-try{
-
-  $results = $wpdb->get_results($wpdb->prepare("DESCRIBE ".$wpdb->prefix."wfiu_playlist;"));
-  if(sizeof($results)==0)
-    Throw new Exception();
-}catch(Exception $e) {
-  die($wpdb->prefix."wfiu_playlist table not found, make sure plugin is activated in blog with id $playlists_blog_id\n");
-}
+if(is_multisite()) switch_to_blog($target_blog_id);
 
 /*  START EXECUTION */
-global $file_date_string;
 
 date_default_timezone_set("America/New_York");
 
-echo str_repeat("=", 25) . "\nPLAYLIST IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
+echo str_repeat("=", 25) . "\nPI IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
 
 $files = Array();
 $date = false;
 foreach($argv as $key=>$val){
   if($key==0) continue;
-  if($date){
-    if(preg_match("/(\d{4})(\d{2})(\d{2})$/i", $val) == 0){
-      die("Incorrect format when using --date. Needs to be YYYYMMDD.\n");
-    }
-
-    $today_f = fetch_playlist_at(strtotime($val));
-    if(is_null($today_f)){
-      die("ERROR: Could not download today's playlist (url exists?)\n");
-    }else{
-      $files = Array($today_f);
-    }
-    break;
-  }else if($val == '--today'){
-    $today_f = fetch_todays_file();
-    if(is_null($today_f)){
-      die("ERROR: Could not download today's playlist (url exists?)\n");
-    }else{
-      $files = Array($today_f);
-    }
-    break;
-  }else if ($val == '--date'){
-    $date = true;
-    continue;
-  }else{
     $files[] = $val;
-  }
 }
 
 $count = 0;
-echo "\nPROCESSING PLAYLIST FILE(S)\n";
+echo "\nPROCESSING DATA BUNDLE(S)\n";
 foreach($files as $file){
-  if(file_exists($file)){
-    process_playlist_file($file);
+  if(is_dir($val)){
+    process_bundled_data($file);
     ++$count;
   }else{
-    echo "File \"$file\" does not exist on the filesystem...skipping.\n";
+    echo "Argument \"$file\" is not a directory on the filesystem...skipping.\n";
   }
 }
 
@@ -94,50 +63,26 @@ ______________________
 
 echo "DONE\n" . str_repeat("=", 25) . "\n";
 
-function fetch_playlist_at($timestamp){
-  global $playlists_url_directory;
-  $user_info = posix_getpwuid(posix_getuid());
-  $home_dir = $user_info['dir'];
-  $temp_folder = $home_dir . "/temp";
-  if(!file_exists($temp_folder) || is_file($temp_folder)){
-    mkdir($temp_folder);
-  }
-
-  $file_name = date("Ymd", $timestamp) . ".txt";
-  $download_file = "$temp_folder/$file_name";
-  $remote_playlist = $playlists_url_directory . $file_name;
-
-  $command = "curl -f -o " . escapeshellarg($download_file) . " " .  escapeshellarg($remote_playlist);
-  echo "\nRETRIEVING TODAYS PLAYLIST FILE\n";
-  echo $command . "\n";
-  exec($command);
-  if(file_exists($download_file)) return $download_file;
-
-  return null;
-}
-
-function fetch_todays_file(){
-  return fetch_playlist_at(time());
-}
-
-
-function process_playlist_file($file){
-  global $file_date_string;
-
-  $filename = basename($file);
-
-  preg_match("/(\d{4})(\d{2})(\d{2})\.txt$/i", $filename, $matches);
-
-  if(sizeof($matches) == 4){
-    $file_ts = mktime(0, 0, 0, $matches[2], $matches[3], $matches[1]);
-  }else{
-    $file_ts = filectime($file);
-  }
+function process_bundled_data($dir){
+  global $default_user_id;
+  $files = array();
   
-  $file_date_string = date("Y-m-d ", $file_ts);
+  echo "Bundle directory: $dir:\n";
+  if ($dh = opendir($dir)) {
+      while (($file = readdir($dh)) !== false) {
+        
+        if( (filetype(joinPaths($dir, $file)) == 'file') && in_array($file, array("articles.csv", "audio.csv", "images.csv")) ){
+          $files[] = joinPaths($dir, $file);
+        }
+      }
+      closedir($dh);
+  }
+  #return;
+  if(sizeof($files) != 3){
+    die("Directory did not contain the three needed files (articles, audio, images).\n");
+  }
 
-  echo $filename . "($file_date_string):\t";
-  //return;
+  $file = joinPaths($dir, "articles.csv");
   $added = 0;
   $skipped = 0;
   $handle = @fopen($file, "r");
@@ -146,7 +91,8 @@ function process_playlist_file($file){
       $line = trim($buffer);
       if(!empty($line)){
         //echo ".";
-        if(parse_playlist_item($line)){
+        $article_item = parse_article_item($line);
+        if(!is_null($article_item)){
           ++$added;
         }else{
           ++$skipped;
@@ -163,57 +109,18 @@ function process_playlist_file($file){
 }
 
 
-function parse_playlist_item($line){
-  global $station_id, $file_date_string;
-  $fields = explode("\t", $line);
+function parse_article_item($line){
+  global $default_user_id;
+  
+  $fields = explode("~", $line);
   #echo sizeof($fields);
   #echo "|". implode("|", $fields) ."|\n";
 
   $item = array();
-  $time_parts = preg_split("/[:\s]+/", $fields[0]);
   
-  if($time_parts[1] > 60){
-    $time_parts[0] += intval($time_parts[1] / 60);
-    $time_parts[1] = intval($time_parts[1] % 60);
-  }
-  if($time_parts[0] > 12){
-    $time_parts[0] = intval($time_parts[0] % 12);
-    $time_parts[2] = $time_parts[2]=="am" ? "pm" : "am";
-  }
-  $fields[0] = $time_parts[0] . ":" . $time_parts[1] . ":00 " . $time_parts[2];
-  
-  $item['start_time'] = date("Y-m-d H:i:s", strtotime($file_date_string. $fields[0]));
-
-  #caculate seconds of track
-  $item['duration'] = preg_split("/[:]+/", $fields[2]);
-  $item['duration'] = $item['duration'][0]*60 + $item['duration'][1];
-
-  $item['composer'] = $fields[3];
-  $item['title'] = combine_array_items(array_slice($fields, 4, 4));#e.g. |Adagio|from Choral Fantasy|in c|,  Op. 80|
-  $item['artist'] = "";#initialize, will be in format "soloist; conductor/orchestra"
-  
-  #soloist
-  if(array_key_exists(12, $fields)){
-    $item['artist'] = $fields[12];
-  }
-
-  #conductor/orchestra
-  $artist_cond_orch = "";
-  if( !empty($fields[8]) && !empty($fields[9]) ){
-    $artist_cond_orch = $fields[8] . "/" . $fields[9];
-  }else{
-    $artist_cond_orch = $fields[8] . $fields[9];#at least one will be empty
-  }
-
-  #Either both soloist or $artist_cond_orch exist, or one of them doesn't
-  $item['artist'] .= !empty($item['artist'] ) && !empty($artist_cond_orch) ? "; " . $artist_cond_orch : $artist_cond_orch;
-
-  $item['label'] = $fields[10];
-  $item['label_id'] = $fields[11];
-
-  if(!empty($station_id))
-    $item['station_id'] = $station_id;
-  return insert_playlist_item($item);
+  $post_id = wp_insert_post( array( 'post_title' => "My title", 'post_content'=>"This is a new post.", 'post_type' => 'post', 'post_author' => $default_user_id, 'post_status'=>'publish' ) );
+  #update_post_meta( $post_ID, '_edit_last', $GLOBALS['current_user']->ID );
+  #return insert_playlist_item($item);
 
   #echo "\n|" . $fields[0]."|";
   #echo "\n\t|" . $item['duration']."|";
@@ -236,5 +143,37 @@ function insert_playlist_item($item){
 function combine_array_items($array){
   return preg_replace(array('/\s{2,}/','/\s,/'), array(" ", ","), trim(implode(' ', $array) ));
 
+}
+
+function joinPaths() {
+    $args = func_get_args();
+    $paths = array();
+    foreach ($args as $arg) {
+        $paths = array_merge($paths, (array)$arg);
+    }
+
+    $paths = array_map(create_function('$p', 'return trim($p, "/");'), $paths);
+    $paths = array_filter($paths);
+    return join('/', $paths);
+}
+
+function pm_add_wp_user($first, $last){
+  global $wpdb, $default_role;
+
+
+  
+  $login = strtolower(substr($last, 0, 1) . $first);
+  $email = strtolower($first . "." . $last . "@wosu.org");
+
+
+  $user_details = wpmu_validate_user_signup($login, $email );
+  $new_user_login = apply_filters('pre_user_login', sanitize_user(stripslashes($login), true));
+  add_filter( 'wpmu_signup_user_notification', '__return_false' ); // Disable confirmation email
+  wpmu_signup_user( $new_user_login, $email, array( 'add_to_blog' => $wpdb->blogid, 'new_role' => $default_role ) );
+  $key = $wpdb->get_var( $wpdb->prepare( "SELECT activation_key FROM {$wpdb->signups} WHERE user_login = %s AND user_email = %s", $new_user_login, $email) );
+  wpmu_activate_signup( $key );
+
+  $newuser = get_userdatabylogin( $new_user_login );
+  wp_update_user(array('ID'=> $newuser->ID, 'first_name'=>$first, 'last_name'=>$last, 'display_name' => $first . ' ' . $last));
 }
 ?>
