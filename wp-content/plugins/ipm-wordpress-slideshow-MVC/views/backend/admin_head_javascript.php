@@ -183,7 +183,7 @@
 			mysack.setVar( "action", "action_remove_photo_from_slideshow" );
 			mysack.setVar( "photo_id", photo_id );
 			mysack.setVar( "slideshow_id", slideshow_id);
-			mysack.setVar( "post_id", get_wordpress_post_id() );
+			mysack.setVar( "post_id", document.getElementById('post_ID').value );
 			mysack.encVar( "cookie", document.cookie, false );
 			mysack.onCompletion = function () 
 			{ 
@@ -229,7 +229,7 @@
 			mysack.method = 'POST';
 			mysack.setVar( "action", "action_remove_slideshow" );
 			mysack.setVar( "slideshow_id", slideshow_id);
-			mysack.setVar( "post_id", get_wordpress_post_id() );
+			mysack.setVar( "post_id", document.getElementById('post_ID').value );
 			mysack.encVar( "cookie", document.cookie, false );
 			mysack.onCompletion = function () 
 			{ 
@@ -264,11 +264,11 @@
 			mysack.method = 'POST';
 			mysack.setVar( "action", "action_add_new_slideshow" );
 			mysack.setVar( "current_slideshows", number_of_slideshows);
-			mysack.setVar( "post_id", get_wordpress_post_id());
+			mysack.setVar( "post_id", document.getElementById('post_ID').value);
 			mysack.encVar( "cookie", document.cookie, false );
 			mysack.onCompletion = function () 
 			{ 
-				if(number_of_slideshows > 0)
+				if(number_of_slideshows > 0) 
 				{
 					jQuery("#slideshows_wrapper_ul").append("<li>"+mysack.response+"</li>");
 				}
@@ -328,7 +328,7 @@
 			mysack.setVar( "action", "action_add_photo_to_slideshow" );
 			mysack.setVar( "photo_post_id", photo_post_id );
 			mysack.setVar( "slideshow_id", current_slideshow);
-			mysack.setVar( "post_id", get_wordpress_post_id() );
+			mysack.setVar( "post_id", document.getElementById('post_ID').value );
 			mysack.setVar( "title", title );
 			mysack.encVar( "cookie", document.cookie, false );
 			mysack.onCompletion = function () 
