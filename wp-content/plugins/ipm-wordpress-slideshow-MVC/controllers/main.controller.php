@@ -176,6 +176,18 @@ class wpss_main{
 					
 				if($key == "single")
 				{
+					//@Priyank Wrote this loop	
+					foreach($slideshow['photos'] as $key => $photo)
+					{
+						$ipm_photo = new IPM_SlideshowPhoto($this, $key);
+						$ipm_photo->title = $photo['title'];
+						$ipm_photo->photo_credit = $photo['photo_credit'];
+						$ipm_photo->geo_location = $photo['geo_location'];
+						$ipm_photo->original_url = $photo['original_url'];
+						$ipm_photo->alt = $photo['alt'];
+						$ipm_photo->caption = $photo['caption'];
+						$ipm_photo->update();
+					}					
 				}
 				else
 				{
@@ -195,6 +207,8 @@ class wpss_main{
 						$ipm_photo->original_url = $photo['original_url'];
 						$ipm_photo->alt = $photo['alt'];
 						$ipm_photo->caption = $photo['caption'];
+						//@Priyank added next line
+						$ipm_photo->update();
 					}		
 				}	
 			}
