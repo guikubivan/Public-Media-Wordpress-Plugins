@@ -1,5 +1,7 @@
 #!/usr/bin/php -q
 <?php
+
+ini_set('memory_limit','128M'); 
 /*****************************************************
  * Required variables - change to match your setup ***
  *****************************************************/
@@ -13,12 +15,21 @@ $default_role = 'author';
 #specify host or domain (needed for wp-includes/ms-settings.php:100)
 $_SERVER[ 'HTTP_HOST' ] = 'pablo.dyndns-office.com';
 
-#location of wp-load.php so we have access to database and $wpdb object
-$wp_load_loc = '/home/www/wordpress_3.1/wp-load.php';
+$wordpress_dir = "/home/www/wordpress_3.1/";
+
+#path of audio files used as blogs.dir/$target_blog_id/$path_audio
+$path_audio = "files/import-audio/";
 /*****************************************************
  *******end required variables************************
  *****************************************************/
 
+#location of wp-load.php so we have access to database and $wpdb object
+$wp_load_loc = $wordpress_dir . 'wp-load.php';
+#Location of PowerPress main plugin file
+$wp_powerpress_loc = $wordpress_dir . "wp-content/plugins/powerpress/powerpress.php";
+
+#Worpdress file that contains the code for inserting attachments (images in our case)
+$wp_admin_image_functions = $wordpress_dir . "wp-admin/includes/image.php";
 
 if($argc ==1)
   die("Usage: import_pi_content.php folder_with_text_files \n");
@@ -30,6 +41,17 @@ if(is_multisite()) switch_to_blog($target_blog_id);
 /*  START EXECUTION */
 
 date_default_timezone_set("America/New_York");
+define('WP_ADMIN', true);#make script run as admin
+
+require_once($wp_powerpress_loc);
+//require_once($wp_admin_image_functions);
+//
+//$file = "/home/www/wordpress_3.1/wp-content/blogs.dir/2/files/import-images/dummy.jpeg";
+//$image_meta = wp_read_image_metadata($file);
+//
+//print_r($image_meta);
+//
+//die();
 
 echo str_repeat("=", 25) . "\nPI IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
 
@@ -82,19 +104,20 @@ function process_bundled_data($dir){
     die("Directory did not contain the three needed files (articles, audio, images).\n");
   }
 
+  echo "Processing articles...\n";
   $file = joinPaths($dir, "articles.csv");
   $added = 0;
   $skipped = 0;
   $total = 0;
   $handle = @fopen($file, "r");
-  $items = array();
+  $articles = array();
   if ($handle) {
     while (($buffer = fgets($handle)) !== false) {#fgets length was 4096, but it was truncating really long lines stuff
       ++$total;
       if($total==1) continue;
       $line = trim($buffer);
       if(!empty($line)){
-        
+        #echo $total;
         $current_item = parse_article_item($line);
         $key = key($current_item);
         if($current_item[$key]['imported']){
@@ -104,25 +127,30 @@ function process_bundled_data($dir){
           echo "*";
           ++$skipped;
         }
-        $items = $items + $current_item;
+        $articles = $articles + $current_item;
       }
     }
 
-    echo " ($added added / $skipped skipped)";
+    echo "\n($added added / $skipped skipped)";
     echo "\n";
     if (!feof($handle)) {
       echo "Error: unexpected fgets() fail\n";
     }
 
-    #print_r($items);
+    #print_r($articles);
 
     fclose($handle);
   }
+  
+  echo "Processing audio items...\n";
 
   $file = joinPaths($dir, "audio.csv");
+  $added = 0;
+  $skipped = 0;
+  $wrong_format = 0;
   $total2 = 0;
   $handle = @fopen($file, "r");
-  $items = array();
+
   if ($handle) {
     while (($buffer = fgets($handle)) !== false) {#fgets length was 4096, but it was truncating really long lines stuff
       ++$total2;
@@ -130,31 +158,86 @@ function process_bundled_data($dir){
       $line = trim($buffer);
       if(!empty($line)){
 
-        $current_item = parse_article_item($line);
-        $key = key($current_item);
-        if($current_item[$key]['imported']){
-          echo ".";
-          ++$added;
+        $fields = explode("~", $line);
+        $article_id = trim($fields[0]);
+        if(array_key_exists($article_id, $articles)){
+          $result = parse_audio_item($articles[$article_id], $fields);
+          if(is_null($result)){
+            ++$wrong_format;
+            echo "x";
+          }else if($result){
+            echo ".";
+            ++$added;
+          }else{
+            ++$skipped;
+            echo "*";
+          }
         }else{
-          echo "*";
-          ++$skipped;
+          echo "x";
+          ++$article_missing;
         }
-        $items = $items + $current_item;
+        
       }
     }
 
-    echo " ($added added / $skipped skipped)";
+    echo "\n($added added / $skipped skipped/ $wrong_format had wrong format/not found)";
     echo "\n";
     if (!feof($handle)) {
       echo "Error: unexpected fgets() fail\n";
     }
 
-    #print_r($items);
+    #print_r($articles);
     fclose($handle);
   }
   
 }
 
+
+function parse_audio_item($article_item, $fields){
+  global $wp_powerpress_loc, $target_blog_id, $path_audio, $wpdb;
+  
+  $item = array();
+  $item['article_id_ref'] = trim($fields[0]);
+  $item['audio_id'] = trim($fields[1]);
+  $item['audio_caption'] = trim($fields[2]);#not used
+  $item['audio_credit'] = trim($fields[3]);#not used
+  $item['audio_type'] = trim($fields[4]);#do not import files that are not mp3 format
+  if($item['audio_type'] == 'mp3'){
+    $enclosure = $wpdb->get_row( "SELECT * FROM $wpdb->postmeta WHERE meta_key = 'enclosure' AND post_id = " . $article_item['post_id']);
+    if(!$enclosure){
+      $file = $item['audio_id'] . ".mp3";
+      preg_match("/^(.*wp\-content\/).*$/", $wp_powerpress_loc, $matches);
+      $audio_local = $matches[1] . "blogs.dir/$target_blog_id/" . $path_audio . $file;
+      if(!file_exists($audio_local)){
+        echo "not found(" . $file. ")";
+        return null;
+        #only for testing purposes
+        #copy($matches[1] . "blogs.dir/$target_blog_id/" . $path_audio . "dummy.mp3", $audio_local);
+      }
+      
+      $audio_url = get_bloginfo('url') . "/" . $path_audio . $file;
+
+      $r = powerpress_get_media_info_local($audio_local);
+      if(!empty($r['error'])){
+        echo "error(" . $file . ")";
+        return null;
+      }
+
+      $enclosure = $audio_url . "\n";
+      $enclosure .= $r['length'] . "\n";
+      $enclosure .= $r['content-type'] . "\n";
+      unset($r['content-type']);
+      unset($r['length']);
+      $enclosure .= serialize($r);
+      #echo $enclosure . "\n=========================\n";
+      update_post_meta($article_item['post_id'], 'enclosure', $enclosure);
+      return true;
+    }
+    return false;
+  }
+  return null;
+  
+}
 
 function parse_article_item($line){
   global $default_author_id, $wpdb;
@@ -183,7 +266,8 @@ function parse_article_item($line){
   $wp_post['post_excerpt'] = $item['article_tease'];
 
 
-  $authors = trim(str_ireplace(array('ap', 'wosu news reporter', 'wosu news staff', 'wosu news', 'ap', 'wosu reporter', 'wosu staff', 'wosu science reporter', 'wosu producers', 'assistant', 'wosu'), '', $item['byline']), "/\\, \t");
+  $authors = str_ireplace(array('wosu news reporter', 'wosu news staff', 'wosu news', 'associated press', 'associtaed press',  'ap', 'wosu reporter', 'wosu staff', 'wosu science reporter', 'wosu producers', 'assistant', 'wosu'), '', $item['byline']);
+  $authors = trim($authors, "/\\;, \t");
   #if($author)echo $author . "\n";
   if(empty($authors)){
     $wp_post['post_author'] = $default_author_id;
@@ -198,7 +282,7 @@ function parse_article_item($line){
     #echo $wp_post['post_title'];
 
     if(!array_key_exists('post_author', $wp_post)) {
-      $authors = explode(",", $authors);
+      $authors = preg_split("/[,;]+/", $authors);
       $wp_post['post_author'] = find_or_create_author(trim($authors[0]));#use first author if more than one
     }
     $post_id = wp_insert_post($wp_post);
@@ -292,9 +376,8 @@ function find_or_create_author($first_last){
 
 function pm_add_wp_user($first, $last){
   global $wpdb, $default_role;
+  #echo $first . "-" . $last;
 
-
-  
   $login = strtolower(substr($last, 0, 1) . $first);
   $email = strtolower($first . (empty($last) ? "" : ".$last" ) . "@wosu.org");
 
@@ -308,6 +391,7 @@ function pm_add_wp_user($first, $last){
 
   $newuser = get_userdatabylogin( $new_user_login );
   wp_update_user(array('ID'=> $newuser->ID, 'first_name'=>$first, 'last_name'=>$last, 'display_name' => $first . ' ' . $last));
+  #echo '|';
   return get_userdatabylogin( $new_user_login );
 }
 
