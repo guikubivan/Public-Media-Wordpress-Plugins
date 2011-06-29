@@ -19,6 +19,9 @@ $wordpress_dir = "/home/www/wordpress_3.1/";
 
 #path of audio files used as blogs.dir/$target_blog_id/$path_audio
 $path_audio = "files/import-audio/";
+#path of image files used as blogs.dir/$target_blog_id/$path_images
+$path_images = "files/import-images/";
+$process = array("audio"=>false, "images"=>true);
 /*****************************************************
  *******end required variables************************
  *****************************************************/
@@ -44,14 +47,7 @@ date_default_timezone_set("America/New_York");
 define('WP_ADMIN', true);#make script run as admin
 
 require_once($wp_powerpress_loc);
-//require_once($wp_admin_image_functions);
-//
-//$file = "/home/www/wordpress_3.1/wp-content/blogs.dir/2/files/import-images/dummy.jpeg";
-//$image_meta = wp_read_image_metadata($file);
-//
-//print_r($image_meta);
-//
-//die();
+require_once($wp_admin_image_functions);
 
 echo str_repeat("=", 25) . "\nPI IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
 
@@ -86,7 +82,7 @@ ______________________
 echo "DONE\n" . str_repeat("=", 25) . "\n";
 
 function process_bundled_data($dir){
-  global $default_author_id;
+  global $default_author_id, $process;
   $files = array();
   
   echo "Bundle directory: $dir:\n";
@@ -141,57 +137,185 @@ function process_bundled_data($dir){
 
     fclose($handle);
   }
-  
-  echo "Processing audio items...\n";
 
-  $file = joinPaths($dir, "audio.csv");
-  $added = 0;
-  $skipped = 0;
-  $wrong_format = 0;
-  $total2 = 0;
-  $handle = @fopen($file, "r");
+  if($process['audio']){
 
-  if ($handle) {
-    while (($buffer = fgets($handle)) !== false) {#fgets length was 4096, but it was truncating really long lines stuff
-      ++$total2;
-      if($total2==1) continue;
-      $line = trim($buffer);
-      if(!empty($line)){
+    echo "Processing audio items...\n";
 
-        $fields = explode("~", $line);
-        $article_id = trim($fields[0]);
-        if(array_key_exists($article_id, $articles)){
-          $result = parse_audio_item($articles[$article_id], $fields);
-          if(is_null($result)){
-            ++$wrong_format;
-            echo "x";
-          }else if($result){
-            echo ".";
-            ++$added;
+    $file = joinPaths($dir, "audio.csv");
+    $added = 0;
+    $skipped = 0;
+    $wrong_format = 0;
+    $article_missing = 0;
+    $total2 = 0;
+    $handle = @fopen($file, "r");
+
+    if ($handle) {
+      while (($buffer = fgets($handle)) !== false) {#fgets length was 4096, but it was truncating really long lines stuff
+        ++$total2;
+        if($total2==1) continue;
+        $line = trim($buffer);
+        if(!empty($line)){
+
+          $fields = explode("~", $line);
+          $article_id = trim($fields[0]);
+          if(array_key_exists($article_id, $articles)){
+            $result = parse_audio_item($articles[$article_id], $fields);
+            if(is_null($result)){
+              ++$wrong_format;
+              echo "x";
+            }else if($result){
+              echo ".";
+              ++$added;
+            }else{
+              ++$skipped;
+              echo "*";
+            }
           }else{
-            ++$skipped;
-            echo "*";
+            echo "x";
+            ++$article_missing;
           }
-        }else{
-          echo "x";
-          ++$article_missing;
+
         }
-        
       }
-    }
 
-    echo "\n($added added / $skipped skipped/ $wrong_format had wrong format/not found)";
-    echo "\n";
-    if (!feof($handle)) {
-      echo "Error: unexpected fgets() fail\n";
-    }
+      echo "\n($added added / $skipped skipped/ $wrong_format had wrong format or not found/ $article_missing article not found)";
+      echo "\n";
+      if (!feof($handle)) {
+        echo "Error: unexpected fgets() fail\n";
+      }
 
-    #print_r($articles);
-    fclose($handle);
+      #print_r($articles);
+      fclose($handle);
+    }
   }
-  
+  if($process['images']){
+    echo "Processing image items...\n";
+
+    $file = joinPaths($dir, "images.csv");
+    $added = 0;
+    $skipped = 0;
+    $wrong_format = 0;
+    $article_missing = 0;
+    $total2 = 0;
+    $handle = @fopen($file, "r");
+
+    if ($handle) {
+      while (($buffer = fgets($handle)) !== false) {#fgets length was 4096, but it was truncating really long lines stuff
+        ++$total2;
+        if($total2==1) continue;
+        $line = trim($buffer);
+        if(!empty($line)){
+
+          $fields = explode("~", $line);
+          $article_id = trim($fields[0]);
+          if(array_key_exists($article_id, $articles)){
+            $result = parse_image_item($articles[$article_id], $fields);
+            if(is_null($result)){
+              ++$wrong_format;
+              echo "x";
+            }else if($result){
+              echo ".";
+              ++$added;
+            }else{
+              ++$skipped;
+              echo "*";
+            }
+          }else{
+            echo "x";
+            ++$article_missing;
+          }
+
+        }
+      }
+
+      echo "\n($added added / $skipped skipped/ $wrong_format had wrong format or not found/ $article_missing article not found)";
+      echo "\n";
+      if (!feof($handle)) {
+        echo "Error: unexpected fgets() fail\n";
+      }
+
+      #print_r($articles);
+      fclose($handle);
+    }
+  }
 }
 
+function parse_image_item($article_item, $fields){
+  global $wordpress_dir, $wp_powerpress_loc, $target_blog_id, $path_images, $wpdb, $default_author_id;
+
+  $item = array();
+  $item['article_id_ref'] = trim($fields[0]);
+  $item['image_id'] = trim($fields[1]);
+  $item['image_caption'] = trim($fields[2]);#not used
+  $item['image_credit'] = trim($fields[3]);#not used
+
+  $file = $item['image_id'] . ".jpg";
+  $image_local = $wordpress_dir . "wp-content/blogs.dir/$target_blog_id/$path_images" . $file;
+  
+  if(!file_exists($image_local)){
+    echo "not found(" . $file. ")";
+    #return null;
+    #only for testing purposes
+    copy($wordpress_dir . "wp-content/blogs.dir/$target_blog_id/$path_images" . "dummy.jpg", $image_local);
+  }
+  #$image_meta = wp_read_image_metadata($file);
+
+
+  $url = get_bloginfo('url') . "/" . $path_images . $file;
+
+  // Construct the attachment array
+  $attachment =array(
+          'post_mime_type' => 'image/jpeg',
+          'guid' => $url,
+          #'post_parent' => $post_id,
+          'post_title' => $item['image_caption'],
+          'post_content' => $item['image_caption'],
+      'post_author' => $default_author_id
+  );
+  #$file = array('url' => $url, 'type' => 'image/jpeg', 'file'=> $image_local);
+
+  // Save the data
+  $id = wp_insert_attachment($attachment, $file, $article_item['post_id']);
+
+  if ( !is_wp_error($id) ) {
+          wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $image_local ) );
+  }
+  update_post_meta($id, "_wp_attached_file", substr($path_images, strpos($path_images, "files/")+6) . $file);
+
+  return true;
+  $enclosure = $wpdb->get_row( "SELECT * FROM $wpdb->postmeta WHERE meta_key = 'enclosure' AND post_id = " . $article_item['post_id']);
+  if(!$enclosure){
+    $file = $item['audio_id'] . ".mp3";
+    preg_match("/^(.*wp\-content\/).*$/", $wp_powerpress_loc, $matches);
+    $audio_local = $matches[1] . "blogs.dir/$target_blog_id/" . $path_audio . $file;
+    if(!file_exists($audio_local)){
+      echo "not found(" . $file. ")";
+      return null;
+      #only for testing purposes
+      #copy($matches[1] . "blogs.dir/$target_blog_id/" . $path_audio . "dummy.mp3", $audio_local);
+    }
+
+    $audio_url = get_bloginfo('url') . "/" . $path_audio . $file;
+
+    $r = powerpress_get_media_info_local($audio_local);
+    if(!empty($r['error'])){
+      echo "error(" . $file . ")";
+      return null;
+    }
+
+    $enclosure = $audio_url . "\n";
+    $enclosure .= $r['length'] . "\n";
+    $enclosure .= $r['content-type'] . "\n";
+    unset($r['content-type']);
+    unset($r['length']);
+    $enclosure .= serialize($r);
+    #echo $enclosure . "\n=========================\n";
+    update_post_meta($article_item['post_id'], 'enclosure', $enclosure);
+    return true;
+  }
+  return false;
+}
 
 function parse_audio_item($article_item, $fields){
   global $wp_powerpress_loc, $target_blog_id, $path_audio, $wpdb;
