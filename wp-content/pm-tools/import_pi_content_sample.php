@@ -243,6 +243,9 @@ function process_bundled_data($dir){
 
 function parse_image_item($article_item, $fields){
   global $wordpress_dir, $wp_powerpress_loc, $target_blog_id, $path_images, $wpdb, $default_author_id;
+  
+  $attachment = $wpdb->get_row( "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' AND post_parent = " . $article_item['post_id']);
+  if($attachment) return false;
 
   $item = array();
   $item['article_id_ref'] = trim($fields[0]);
@@ -255,9 +258,9 @@ function parse_image_item($article_item, $fields){
   
   if(!file_exists($image_local)){
     echo "not found(" . $file. ")";
-    #return null;
+    return null;
     #only for testing purposes
-    copy($wordpress_dir . "wp-content/blogs.dir/$target_blog_id/$path_images" . "dummy.jpg", $image_local);
+    #copy($wordpress_dir . "wp-content/blogs.dir/$target_blog_id/$path_images" . "dummy.jpg", $image_local);
   }
   #$image_meta = wp_read_image_metadata($file);
 
@@ -284,37 +287,6 @@ function parse_image_item($article_item, $fields){
   update_post_meta($id, "_wp_attached_file", substr($path_images, strpos($path_images, "files/")+6) . $file);
 
   return true;
-  $enclosure = $wpdb->get_row( "SELECT * FROM $wpdb->postmeta WHERE meta_key = 'enclosure' AND post_id = " . $article_item['post_id']);
-  if(!$enclosure){
-    $file = $item['audio_id'] . ".mp3";
-    preg_match("/^(.*wp\-content\/).*$/", $wp_powerpress_loc, $matches);
-    $audio_local = $matches[1] . "blogs.dir/$target_blog_id/" . $path_audio . $file;
-    if(!file_exists($audio_local)){
-      echo "not found(" . $file. ")";
-      return null;
-      #only for testing purposes
-      #copy($matches[1] . "blogs.dir/$target_blog_id/" . $path_audio . "dummy.mp3", $audio_local);
-    }
-
-    $audio_url = get_bloginfo('url') . "/" . $path_audio . $file;
-
-    $r = powerpress_get_media_info_local($audio_local);
-    if(!empty($r['error'])){
-      echo "error(" . $file . ")";
-      return null;
-    }
-
-    $enclosure = $audio_url . "\n";
-    $enclosure .= $r['length'] . "\n";
-    $enclosure .= $r['content-type'] . "\n";
-    unset($r['content-type']);
-    unset($r['length']);
-    $enclosure .= serialize($r);
-    #echo $enclosure . "\n=========================\n";
-    update_post_meta($article_item['post_id'], 'enclosure', $enclosure);
-    return true;
-  }
-  return false;
 }
 
 function parse_audio_item($article_item, $fields){
