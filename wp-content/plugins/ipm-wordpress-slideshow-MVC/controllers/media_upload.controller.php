@@ -55,12 +55,13 @@ class WPSSMediaUpload
 		$parameters['media_upload_form'] = ob_get_contents();
 		ob_end_clean();
 		
+		$parameters['path'] = $this->plugin->plugin_url;
 		$parameters['img_id'] = $img_id = $this->plugin->_get['img_id'];
 		$parameters['img_id_var'] = $img_id_var = $img_id ? "&img_id=$img_id" : '';
 		$parameters['search'] = $search = $this->plugin->_post['s'] ? $this->plugin->_post['s'] : $this->plugin->_get['s']; 
 		
 		$maxposts = 10;
-		$start = $this->plugin->_get['start'] ? $this->plugin->_get['start'] : 0;
+		$parameters['start'] = $start = $this->plugin->_get['start'] ? $this->plugin->_get['start'] : 0;
 
 		if(!isset($this->plugin->_get['order_by']) && !isset($_REQUEST['s']) && !isset($this->plugin->_post['see_all'])){
 			//return;
@@ -70,7 +71,7 @@ class WPSSMediaUpload
 		
 		
 		$msg = '';
-		$parameters['order_by'] = $orderby = $this->plugin->_get['order_by'] ? $this->plugin->_get['order_by'] : 'title';
+		$parameters['orderby'] = $orderby = $this->plugin->_get['order_by'] ? $this->plugin->_get['order_by'] : 'title';
 		$parameters['direction'] = $direction = $this->plugin->_get['direction'] ? $this->plugin->_get['direction'] : 'asc';
 		
 		if($this->plugin->_get['order_by'] != $this->plugin->_get['porder_by']){
@@ -150,24 +151,27 @@ class WPSSMediaUpload
 			if(is_array($rows)){
 				foreach ( $rows as $attachment )
 					$posts[$attachment->ID] = $attachment;
+			$parameters['posts'] = $posts;
 			}
+			
 			if(sizeof($posts)==0){
-				$msg .= "No results found for \"$search\".\n<br />";
+				$parameters['msg'] = $msg .= "No results found for \"$search\".\n<br />";
 			}
 				
 		}
 		else
 		{
-			$posts = $this->wpdb->get_results($query);
+			$parameters['posts'] = $posts = $this->wpdb->get_results($query);
+			
 		}
-
+		$parameters["search_field"] = $search;
 		$parameters["search"] = $search = $search ? "&s=$search" : '';
 		if(!$msg)
 		{
 			$parameters['end'] = $end = (($start + $maxposts) > sizeof($posts)) ? sizeof($posts) : ($start+$maxposts);
 			$parameters['pstart'] = $pstart = (($start - $maxposts) >=0 ) ? ($start-$maxposts) : 0;
 			$parameters['nstart'] = $nstart = (($start + $maxposts) > sizeof($posts)) ? sizeof($posts) : ($start+$maxposts);
-			
+			$parameters['nav_direction'] = $direction;
 			$parameters['direction'] = $direction = ($direction == 'asc') ? 'desc' : 'asc';
 			
 			$count = 0;

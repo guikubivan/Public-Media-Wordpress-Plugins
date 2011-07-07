@@ -41,7 +41,15 @@
 	}
 </style> 
 
-	<h2>Upload new photo</h2>
+<center>	<h2>Upload new photo</h2> 
+	<?php 
+		$post_id = 0;
+		$type='image';
+		$form_action_url = admin_url("media-upload.php?type=$type&tab=type&post_id=0&flash=0");
+		//$form_action_url = apply_filters('media_upload_form_url', $form_action_url, $type);
+
+		$callback = "type_form_$type";
+	?>
 			<form enctype="multipart/form-data" method="post" action="<?= attribute_escape($form_action_url) ?>" class="media-upload-form type-form validate" id="<?= $type ?>-form">
 				<input type="hidden" name="post_id" id="post_id" value="<?= (int) $post_id ?>" />
 				<?= wp_nonce_field('media-form') ?>
@@ -67,16 +75,18 @@
 
 	<hr />
 
-	<h2 style='margin-bottom:50px'>Choose picture</h2>
+<h2 style='margin-bottom:0px'>Choose picture</h2> 
 	<div>
 	
 	<form method='post' name='search_form' action='?type=slideshow_image<?= $img_id_var ?>' >
 	
 	
-	<input id="post-search-input" type="text" value="<?= $this->plugin->_post['see_all'] ? '' : $search ?>" name="s"/>
+	<input id="post-search-input" type="text" value="<?= $this->plugin->_post['see_all'] ? '' : $search_field ?>" name="s"/>
 	<input type="submit" value="Search Photos"/> <input type="submit" name='see_all' value="See all"/>
-	
+
 	</form>
+</center>
+
 	</div>
 	<?php
 
@@ -87,16 +97,16 @@
 		if(!$msg){
 	?>
 	
-	<div style='position:relative;text-align: left'>
+	<div style='position:relative;text-align: right'>
 	
 		<? if($start > 0){ ?>
-			<a href="?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$pstart <?=$search . $img_id_var?>"  > << </a>
+			<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=<?= $orderby ?>&direction=<?= $nav_direction ?>&porder_by=<?= $orderby ?>&start=<?= $pstart ?><?=$search . $img_id_var?>"  > << Previous</a>&nbsp;
 		<? } ?>
 	
 		<span style='top:0;right:0;'>
 		Showing <?=($start+1) ?> - <?=$end?> of <?= sizeof($posts) ?>
 		<? if($nstart < sizeof($posts)){ ?>
-			<a href=\"?type=slideshow_image&post_id=$pid&order_by=$orderby&direction=$direction&porder_by=$orderby&start=$nstart<?= $search . $img_id_var ?>"  > >> </a>
+			<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=<?= $orderby ?>&direction=<?= $nav_direction ?>&porder_by=<?= $orderby ?>&start=<?= $nstart ?><?= $search . $img_id_var ?>"  > Next >> </a>
 		<? } ?>
 		</span>
 		
