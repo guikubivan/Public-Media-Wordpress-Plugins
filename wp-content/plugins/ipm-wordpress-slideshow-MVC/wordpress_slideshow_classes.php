@@ -1869,6 +1869,10 @@ jQuery(document).ready(function() {
 			$items['alt'] = $fields['post_excerpt']['value'];
 */			$items['url'] = $thumb_url;
 			$img_id = $_REQUEST['img_id'];
+			
+			$fields_new = get_attachment_fields_to_edit($post, $errors);
+			$img_title = $fields_new['post_title']['value'];
+			
 			//$string .= $img_id ? "img id: $img_id<br />":'';
 			$string .= "<br /><br />";
 			$string .="<span id='insert_photo_span_$id' class='alignleft'  style='display:none'><button class='button' onclick=\"currentMediaItem=$id;if(check_required('wpss_required', false)){";
@@ -1876,7 +1880,7 @@ jQuery(document).ready(function() {
 				$string .= "wpss_replace_photo_javascript($img_id,$id,'".$items['url']."');";
 				$string .= "}\">Replace photo";
 			}else{
-				$string .= "wpss_send_and_return('$id','".$this->photoItemHTML_javascript($id, $items)."');";
+				$string .= "wpss_send_and_return('$id','$img_title');";
 				$string .= "}\">Insert photo";
 			}
 			$string .= "</button></span>";
