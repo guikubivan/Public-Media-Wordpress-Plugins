@@ -365,6 +365,31 @@
 				return qs[1];
 		}
 		
+	function check_required(elementClass, showAlert){
+	valid=true;
+	jQuery("."+elementClass).each(function(index){
+		//alert(this);
+		this.style.backgroundColor = '';
+		if(this.value === ''){
+			if (typeof currentMediaItem != 'undefined') {
+				if(this.id.search(currentMediaItem)==-1)return;
+			}
+			if(showAlert){
+				this.style.backgroundColor = '#FF9A8D';
+				jQuery(this).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+			}
+			valid=false;
+			//return false;
+		}
+		
+	});
+	if(!valid && showAlert){
+		alert("Please fill required fields");
+	}
+	return valid;
+}
+
+		
 		 // end of JavaScript function myplugin_ajax_elevation
 		//]]>
 		</script>
