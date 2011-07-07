@@ -202,7 +202,7 @@ class IPM_Ajax
 		}
 		
 	public function php_add_photo_to_slideshow()
-	{
+	{	usleep(200000);
 		$photo_post_id = $this->plugin->_post['photo_post_id'];
 		$slideshow_id = $this->plugin->_post['slideshow_id'];
 		$slideshow_photo = new IPM_SlideshowPhoto($this->plugin); //create new Photo-Slideshow Relationship
