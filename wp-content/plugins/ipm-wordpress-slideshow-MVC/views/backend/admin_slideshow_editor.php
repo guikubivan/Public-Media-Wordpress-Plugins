@@ -1,7 +1,7 @@
 
 <div class='<?=$this->plugin_prefix?>slideshow_container' id='slideshowContainer_<?=$slideshow->slideshow_id?>'>
 	<?//if(!$edit_mode){?>
-	<div class='button' style="float: right;" onclick='removeSlideshow("<?=$slideshow->slideshow_id?>")' >Remove Slideshow</div>
+	<div class='button' style="float: right;" onclick='if(confirm("Are you sure you want to remove the Slideshow ?") ) {removeSlideshow("<?=$slideshow->slideshow_id?>") }' >Remove Slideshow</div>
 	<div class='button slideshow_collapse_button' onclick="jQuery(this).siblings('div.slideshow_wrapper').toggle(); jQuery(this).html( jQuery(this).html()=='Collapse'?'Expand':'Collapse');" style="float: right;" >Collapse</div>
 	<?//}?>
 
@@ -13,14 +13,14 @@
 	
 	<div class='slideshow_wrapper'>
 		<div class='slideshow_fields'>
+			<div style="float: right;">	
+				<label for="slideshow_<?=$slideshow->slideshow_id?>_description">Slideshow description</label>
+				<textarea id='slideshow_<?= $slideshow->slideshow_id ?>_description' name='slideshow[<?= $slideshow->slideshow_id ?>][description]' rows='6' style='width:300px;' class='<?= $this->plugin_prefix ?>required' ><?= $slideshow->description ?></textarea>
+			</div>	
 			<div>
 				<label for="slideshow_field_<?=$slideshow->slideshow_id?>_title">Slideshow title</label>
 				<input type='text' id='slideshow_<?= $slideshow->slideshow_id ?>_title' name='slideshow[<?= $slideshow->slideshow_id ?>][title]' style='width:$fieldW' value='<?=  $slideshow->title ?>' class='<?= $this->plugin_prefix ?>required' />
-			</div>	
-			<div style="float: right;">	
-				<label for="slideshow_<?=$slideshow->slideshow_id?>_description">Slideshow description</label>
-				<textarea id='slideshow_<?= $slideshow->slideshow_id ?>_description' name='slideshow[<?= $slideshow->slideshow_id ?>][description]' style='width:100%;height:100%;' class='<?= $this->plugin_prefix ?>required' ><?= $slideshow->description ?></textarea>
-			</div>	
+			</div>				
 			<div>	
 				<label for="slideshow_<?=$slideshow->slideshow_id?>_photo_credit">Slideshow photo credit</label>
 				<input type='text' name='slideshow[<?= $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_<?= $slideshow->slideshow_id ?>_photo_credit' style='width:$fieldW' value='<?=  $slideshow->photo_credit ?>' />
