@@ -403,8 +403,8 @@ function parse_article_item($line){
     if($item['dateline'])
       update_post_meta( $post_id, 'PI_dateline', $item['dateline'] );
 
-//	if ($postarr['post_type'] == 'attachment')
-//		return wp_insert_attachment($postarr);
+    if($item['byline'])
+      update_post_meta( $post_id, 'PI_byline', $item['byline'] );
 
     $current_item[$item['article_id']]['imported'] = true;
   }else{
