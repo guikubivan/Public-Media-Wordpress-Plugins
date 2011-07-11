@@ -2333,6 +2333,10 @@ jQuery(function($){
 		return $msg;
 	}
 
+        #$sid - slideshow id if adding photos to existing slideshow
+        #$photos - array of photos
+        #$photo_only - if does not belong to slideshow?
+        #$post_id = ?
 	function insert_photos($sid, $photos, $photo_only = false, $post_id=''){
 		global $wpdb;
 		//echo $photo_only ? 'photo only' : 'no photo only';
@@ -2346,12 +2350,14 @@ jQuery(function($){
 		if(!$sid && !$photo_only){
 			return "<p>No slideshow id provided to link with photos</p>";
 		}
+                #get photo ids in ascending order of slideshow
 		$old_order = $lost_photos = $wpdb->get_col("SELECT photo_id FROM ".$sprtable ." WHERE slideshow_id=".$sid .  " ORDER BY photo_id ASC");
 		//print_r($old_order);
 		$thumb_id = '';
 		if(is_array($photos)){
 
 			//$maxUpdates = sizeof($existing_photos);
+                        #used as the photo order in $sprtable
 			$count = 0;
 
 			foreach($photos as $pid => $photo){
@@ -2369,7 +2375,7 @@ jQuery(function($){
 						$msg .= ($result!==false) ? '' : "<p>Could not link slideshow $sid with photo $sphoto_id</p>";
 						if($result===false)break;
 					}
-				}else{
+				}else{#was a single photo and now is slideshow I think -Pablo
 					//echo "$pid and result " . array_search($pid, $lost_photos). "<br />";
 					//$oldindex = array_search($pid, $old_photos);
 					//$old
@@ -2379,7 +2385,7 @@ jQuery(function($){
 
 					unset($photo['update']);
 					if(!$photo_only){
-						unset($lost_photos[array_search($pid, $lost_photos)]);
+						unset($lost_photos[array_search($pid, $lost_photos)]);#not lost, belongs to slideshow now
 						$result = $wpdb->query("UPDATE $sprtable SET photo_order=$count WHERE photo_id=$pid AND slideshow_id=$sid;");//LINK PHOTO TO SLIDESHOW
 						$msg .= ($result!==false) ? '' : "<p>Could not update photo order for photo $pid</p>";
 						if($result===false)break;
@@ -2482,23 +2488,25 @@ jQuery(function($){
 				echo $verbose ? "\n<br />" : '';
 
 			}
-			if($valid === true){
-				if($slideshow['update']){
+			if($valid === true){#valid slideshow?
+				if($slideshow['update']){#slideshow already exists
 					unset($slideshow['update']);
 					//echo "sid: |$sid| <br />";
 					$sid = $this->insert_slideshow($slideshow, $post_id, $sid);//update
 					//echo "sid: |$sid| <br />";
-				}else{
+				}else{#new slideshow
 					$sid = $this->insert_slideshow($slideshow, $post_id);//insert
 				}
 
+                                #if slideshow entry created without errors, insert associated photos
 				if ($sid !== false){
 					$errormsg .= $this->insert_photos($sid, $photos);
 					++$count;
 				}else{
 					$errormsg .= "<p>Slideshow could not be saved to the database...</p>";
-				}	
-			}else if(sizeof($slideshow['photos'])==1){//no title, so it either is a single photo or invalid slideshow
+				}
+                        #no title, so it must be a single photo
+			}else if(sizeof($slideshow['photos'])==1){#
 				$photos = $slideshow['photos'];
 				$errormsg .= $this->insert_photos('', $photos, true, $post_id);
 			}else{
@@ -2540,9 +2548,8 @@ jQuery(function($){
 				//die();
 		//$myErrors = new my_class();
 		//echo $myErrors->get_error('my_weird_error');
-
-
 	}
+        
 	function delete_photos($post_id){
 		/*if($slideshows=get_post_meta($post_id,$this->fieldname, false)){
 			delete_post_meta($post_id, $this->fieldname);

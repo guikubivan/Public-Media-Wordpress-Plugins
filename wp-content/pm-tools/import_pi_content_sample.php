@@ -31,6 +31,9 @@ $wp_load_loc = $wordpress_dir . 'wp-load.php';
 #Location of PowerPress main plugin file
 $wp_powerpress_loc = $wordpress_dir . "wp-content/plugins/powerpress/powerpress.php";
 
+#Location of wp slideshow plugin main file
+$wp_slideshow_loc = $wordpress_dir . "wp-content/plugins/ipm-wordpress-slideshow/wordpress_slideshow.php";
+
 #Worpdress file that contains the code for inserting attachments (images in our case)
 $wp_admin_image_functions = $wordpress_dir . "wp-admin/includes/image.php";
 
@@ -46,8 +49,18 @@ if(is_multisite()) switch_to_blog($target_blog_id);
 date_default_timezone_set("America/New_York");
 define('WP_ADMIN', true);#make script run as admin
 
-require_once($wp_powerpress_loc);
 require_once($wp_admin_image_functions);
+require_once($wp_powerpress_loc);
+
+require_once($wp_slideshow_loc);
+global $wpss_obj;
+$wpss_obj = new wordpress_slideshow();
+
+$errormsg = $this->insert_photos('', $photos, true, $post_id);
+
+$wpss_obj->insert_photos();
+$wpss_obj->insert_slideshow();
+return;
 
 echo str_repeat("=", 25) . "\nPI IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
 
