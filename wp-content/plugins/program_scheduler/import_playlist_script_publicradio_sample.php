@@ -16,14 +16,18 @@ $_SERVER[ 'HTTP_HOST' ] = 'pablo.dyndns-office.com';
 #location of wp-load.php so we have access to database and $wpdb object
 $wp_load_loc = '/home/www/wordpress_3.1/wp-load.php';
 
+#valid times in Central Time, later in function parse_playlist_item, we add an hour to the time
 $valid_times = Array(
-    Array("12345", "00:00", "06:00"),
-    Array("12345", "20:00", "23:59"),
-    Array("6",  "00:00", "08:00"),
-    Array("6", "17:00", "23:59"),
-    Array("7", "00:00", "06:00"),
-    Array("7", "13:00", "18:00"),
+    Array("12345", "00:00", "05:00"),
+    Array("12345", "19:00", "23:59"),
+    Array("6",  "00:00", "07:00"),
+    Array("6", "16:00", "23:59"),
+    Array("7", "00:00", "05:00"),
+    Array("7", "12:00", "17:00"),
     );
+
+global $time_offset;
+$time_offset = 3600; #will add one hour to time in parse_playlist_item
 /*****************************************************
  *******end required variables************************
  *****************************************************/
@@ -48,7 +52,7 @@ try{
 /*  START EXECUTION */
 global $file_date_string;
 
-date_default_timezone_set("America/New_York");
+date_default_timezone_set("America/Chicago");
 
 echo str_repeat("=", 25) . "\nPLAYLIST IMPORT SCRIPT (publicradio.org) STARTED AT: " . date("D M j G:i:s T Y") . "\n";
 
@@ -233,11 +237,11 @@ function process_playlist_file($file){
 
 
 function parse_playlist_item($start_time, $duration, $td){
-  global $station_id, $file_date_string;
+  global $station_id, $file_date_string, $time_offset;
 
   $item = array();
 
-
+  $start_time += $time_offset;#times are in Central time, need to move forward 1 hour
   $item['start_time'] = date("Y-m-d H:i:s", $start_time);
   $item['duration'] = $duration;
 
