@@ -11,7 +11,7 @@ class wordpress_slideshow{
 	public $default_style_slideshow = 'wpss_program_single_new.xsl';
 	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
 	public $default_multiple_slideshows = true;
-	public $photo_id_translation = Array();
+	public $photo_id_translation = Array();#array to keep track of temporary ids linked to photo ids
 	
 	public $plugin_path = "/ipm-wordpress-slideshow/";#folder name in wp-content/plugins, updated in constructor
         public $stylesheets_path = "";#Default is set in constructor if none given here
@@ -65,8 +65,7 @@ class wordpress_slideshow{
 				}else if($pid=get_post_meta($id,$this->plugin_prefix.'photo_id', true)){
 					//echo "&#8227;";
 					$photo = $this->getPhoto($pid);
-					echo "<b>".$photo['title'] . "</b>";
-				
+					echo "<b>". ($photo['title'] ? $photo['title'] : 'untitled' ). "</b>";
 				}else{
 					echo "";//N/A
 
@@ -2286,6 +2285,9 @@ jQuery(function($){
 		return $msg;
 	}
 
+        #$internal_photo_id - id in photos table
+        #$form_photo_id  - photo id from wordpress form (could be a temporary id or existing id in photos table)
+        #$photo - associative array of meta values (usually title, alt, and caption)
 	function insert_photo_meta($internal_photo_id, $form_photo_id, $photo){
 		global $wpdb;
 		$sptable = $wpdb->prefix.$this->plugin_prefix."photos";
@@ -2336,7 +2338,7 @@ jQuery(function($){
         #$sid - slideshow id if adding photos to existing slideshow
         #$photos - array of photos
         #$photo_only - if does not belong to slideshow?
-        #$post_id = ?
+        #$post_id = post this photo belongs to (for when $photo_only = true)
 	function insert_photos($sid, $photos, $photo_only = false, $post_id=''){
 		global $wpdb;
 		//echo $photo_only ? 'photo only' : 'no photo only';
@@ -2360,6 +2362,7 @@ jQuery(function($){
                         #used as the photo order in $sprtable
 			$count = 0;
 
+                        #$pid is the id of the wordpress photo id in the posts table
 			foreach($photos as $pid => $photo){
 				
 				$sphoto_id = $pid;
@@ -2385,19 +2388,23 @@ jQuery(function($){
 
 					unset($photo['update']);
 					if(!$photo_only){
-						unset($lost_photos[array_search($pid, $lost_photos)]);#not lost, belongs to slideshow now
-						$result = $wpdb->query("UPDATE $sprtable SET photo_order=$count WHERE photo_id=$pid AND slideshow_id=$sid;");//LINK PHOTO TO SLIDESHOW
-						$msg .= ($result!==false) ? '' : "<p>Could not update photo order for photo $pid</p>";
-						if($result===false)break;
+                                                #not lost, belongs to slideshow now
+						unset($lost_photos[array_search($pid, $lost_photos)]);
+                                                if($result === false){#if "$sid, $pid" primary key already exists
+                                                  $result = $wpdb->query("UPDATE $sprtable SET photo_order=$count WHERE photo_id=$pid AND slideshow_id=$sid;");//LINK PHOTO TO SLIDESHOW
+                                                  $msg .= ($result!==false) ? '' : "<p>Could not update photo order for photo $pid</p>";
+                                                  if($result===false)break;
+                                                }
 					}
 				}
+                                #link temp $pid to actual db $sphoto_id
 				$this->photo_id_translation[$pid] = $sphoto_id;
 				if($photo['cover'] && $sid){
 					$result = $wpdb->query("UPDATE ".$this->t_s." SET thumb_id=$sphoto_id WHERE ID=$sid;");//LINK PHOTO TO SLIDESHOW
 					$msg .= ($result!==false) ? '' : "<p>Could not set thumb id $sphoto_id for slideshow $sid</p>";
 					if($result===false)break;
 					$thumb_id = $pid;
-				}else if($count==0 && $sid && !$thumb_id){
+				}else if($count==0 && $sid && !$thumb_id){#always make first photo slideshow thumb (may change later)
 					$result = $wpdb->query("UPDATE ".$this->t_s." SET thumb_id=$sphoto_id WHERE ID=$sid;");//LINK PHOTO TO SLIDESHOW
 					$msg .= ($result!==false) ? '' : "<p>Could not set default thumb id $sphoto_id for slideshow $sid</p>";
 					if($result===false)break;
@@ -2412,7 +2419,7 @@ jQuery(function($){
 					if($prev_photo_id != $sphoto_id){
 						$mst .= $this->delete_photo($prev_photo_id);
 					}
-					add_post_meta($post_id, $this->plugin_prefix."photo_id", $sphoto_id, true) or update_post_meta($post_id, $this->plugin_prefix."photo_id", $sphoto_id) ;
+					update_post_meta($post_id, $this->plugin_prefix."photo_id", $sphoto_id);
 				}
 				++$count;
 			}

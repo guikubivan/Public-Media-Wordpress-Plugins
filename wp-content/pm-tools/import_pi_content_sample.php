@@ -1,7 +1,7 @@
 #!/usr/bin/php -q
 <?php
 
-ini_set('memory_limit','128M'); 
+ini_set('memory_limit','256M');
 /*****************************************************
  * Required variables - change to match your setup ***
  *****************************************************/
@@ -21,7 +21,7 @@ $wordpress_dir = "/home/www/wordpress_3.1/";
 $path_audio = "files/import-audio/";
 #path of image files used as blogs.dir/$target_blog_id/$path_images
 $path_images = "files/import-images/";
-$process = array("audio"=>false, "images"=>true);
+$process = array("audio"=>true, "images"=>true);
 /*****************************************************
  *******end required variables************************
  *****************************************************/
@@ -54,13 +54,8 @@ require_once($wp_powerpress_loc);
 
 require_once($wp_slideshow_loc);
 global $wpss_obj;
+
 $wpss_obj = new wordpress_slideshow();
-
-$errormsg = $this->insert_photos('', $photos, true, $post_id);
-
-$wpss_obj->insert_photos();
-$wpss_obj->insert_slideshow();
-return;
 
 echo str_repeat("=", 25) . "\nPI IMPORT SCRIPT STARTED AT: " . date("D M j G:i:s T Y") . "\n";
 
@@ -130,10 +125,10 @@ function process_bundled_data($dir){
         $current_item = parse_article_item($line);
         $key = key($current_item);
         if($current_item[$key]['imported']){
-          echo ".";
+          echo "+";
           ++$added;
         }else{
-          echo "*";
+          echo "^";
           ++$skipped;
         }
         $articles = $articles + $current_item;
@@ -178,11 +173,11 @@ function process_bundled_data($dir){
               ++$wrong_format;
               echo "x";
             }else if($result){
-              echo ".";
+              echo "+";
               ++$added;
             }else{
               ++$skipped;
-              echo "*";
+              echo "^";
             }
           }else{
             echo "x";
@@ -228,11 +223,11 @@ function process_bundled_data($dir){
               ++$wrong_format;
               echo "x";
             }else if($result){
-              echo ".";
+              echo "+";
               ++$added;
             }else{
               ++$skipped;
-              echo "*";
+              echo "^";
             }
           }else{
             echo "x";
@@ -255,20 +250,31 @@ function process_bundled_data($dir){
 }
 
 function parse_image_item($article_item, $fields){
-  global $wordpress_dir, $wp_powerpress_loc, $target_blog_id, $path_images, $wpdb, $default_author_id;
+  global $wordpress_dir, $wp_powerpress_loc, $target_blog_id, $path_images, $wpdb, $default_author_id, $wpss_obj;
   
   $attachment = $wpdb->get_row( "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' AND post_parent = " . $article_item['post_id']);
-  if($attachment) return false;
+
+  $is_slideshow = false;
+  if($attachment){
+    $is_slideshow = true;
+    return false;
+  }
 
   $item = array();
   $item['article_id_ref'] = trim($fields[0]);
   $item['image_id'] = trim($fields[1]);
-  $item['image_caption'] = trim($fields[2]);#not used
-  $item['image_credit'] = trim($fields[3]);#not used
+  $item['image_caption'] = trim($fields[2]);
+  $item['image_caption'] = $item['image_caption'] ? $item['image_caption'] : "N/A";
+  $item['image_credit'] = trim($fields[3]);
 
   $file = $item['image_id'] . ".jpg";
   $image_local = $wordpress_dir . "wp-content/blogs.dir/$target_blog_id/$path_images" . $file;
-  
+
+  if(!file_exists($image_local)){
+    $file = $item['image_id'] . ".gif";
+    $image_local = $wordpress_dir . "wp-content/blogs.dir/$target_blog_id/$path_images" . $file;
+  }
+
   if(!file_exists($image_local)){
     echo "not found(" . $file. ")";
     return null;
@@ -299,6 +305,20 @@ function parse_image_item($article_item, $fields){
   }
   update_post_meta($id, "_wp_attached_file", substr($path_images, strpos($path_images, "files/")+6) . $file);
 
+  ####### INSERT INTO SLIDESHOW PLUGIN #######
+  if($is_slideshow){#will always be false, unused
+    echo "s";
+    #$slideshow = array();
+    #$wpss_obj->insert_slideshow();
+  }else{
+    $post_id = $article_item['post_id'];
+    
+    add_post_meta($id, 'photo_credit', $item['image_credit']);
+    
+    $photos = array($id=>array('caption'=>str_replace("'", "\'", $item['image_caption']) ));
+    $errormsg = $wpss_obj->insert_photos('', $photos, true, $post_id);
+    if($errormsg) echo $errormsg;
+  }
   return true;
 }
 
@@ -318,8 +338,14 @@ function parse_audio_item($article_item, $fields){
       preg_match("/^(.*wp\-content\/).*$/", $wp_powerpress_loc, $matches);
       $audio_local = $matches[1] . "blogs.dir/$target_blog_id/" . $path_audio . $file;
       if(!file_exists($audio_local)){
-        echo "not found(" . $file. ")";
-        return null;
+        $file_url = "http://stream.publicbroadcasting.net/production/mp3/wosu/local-wosu-" . $item['audio_id'] . ".mp3";
+        $command = "curl -f -o " . escapeshellarg($audio_local) . " " .  escapeshellarg($file_url);
+        echo "downloading $file";
+        exec($command);
+        if(!file_exists($audio_local)){
+          echo "->not found";
+          return null;
+        }
         #only for testing purposes
         #copy($matches[1] . "blogs.dir/$target_blog_id/" . $path_audio . "dummy.mp3", $audio_local);
       }
@@ -374,20 +400,30 @@ function parse_article_item($line){
   $wp_post['post_date'] = $item['article_date'] . " 00:00:00";
   $wp_post['post_excerpt'] = $item['article_tease'];
 
+  $ignore_authors = array('associated press', 'associtaed press',  'ap');
+  $should_skip_article = array_search(strtolower($item['byline']),array_map('strtolower',$ignore_authors));
 
-  $authors = str_ireplace(array('wosu news reporter', 'wosu news staff', 'wosu news', 'associated press', 'associtaed press',  'ap', 'wosu reporter', 'wosu staff', 'wosu science reporter', 'wosu producers', 'assistant', 'wosu'), '', $item['byline']);
-  $authors = trim($authors, "/\\;, \t");
-  #if($author)echo $author . "\n";
-  if(empty($authors)){
-    $wp_post['post_author'] = $default_author_id;
+  if($should_skip_article === false){
+    $authors = str_ireplace(array('wosu news reporter', 'wosu news staff', 'wosu news', 'wosu reporter', 'wosu staff', 'wosu science reporter', 'wosu producers', 'assistant', 'wosu', 'staff'), '', $item['byline']);
+    $authors = str_ireplace($ignore_authors, '', $authors);
+    $authors = trim($authors, "/\\;, \t");
+    #if($author)echo $author . "\n";
+    if(empty($authors)){
+      $wp_post['post_author'] = $default_author_id;
+    }
+
+    $current_item = array();
+    $current_item[$item['article_id']] = array();
+
+    $cat_name = "section_id_" . $item['section_id'];
   }
-
-  $current_item = array();
-  $current_item[$item['article_id']] = array();
-
-  $cat_name = "section_id_" . $item['section_id'];
   
-  if ( !$existing_post = $wpdb->get_row( "SELECT * FROM $wpdb->posts WHERE post_title = '" . $wp_post['post_title'] . "'") ){
+  #if original byline is one of the items in $ignore_authors, then skip it
+  if($should_skip_article !== false){
+    #echo "skip: " . $item['article_id'];
+    $current_item[$item['article_id']]['imported'] = false;
+    $post_id = '';
+  }else if ( !$existing_post = $wpdb->get_row( "SELECT * FROM $wpdb->posts WHERE post_title = '" . $wp_post['post_title'] . "'") ){
     #echo $wp_post['post_title'];
 
     if(!array_key_exists('post_author', $wp_post)) {
@@ -428,24 +464,7 @@ function parse_article_item($line){
 
   return $current_item;
   
-  #return insert_playlist_item($item);
-
-  
 }
-
-//function insert_playlist_item($item){
-//  global $wpdb;
-//
-//  $query = $wpdb->prepare("SELECT ID FROM " . $wpdb->prefix . "wfiu_playlist WHERE title = %s AND start_time = %s", $item['title'], $item['start_time']);
-//  #echo $query . "\n";
-//  if(sizeof($wpdb->get_results($query)) > 0){
-//    echo "^";
-//    return false;
-//  }
-//  $wpdb->insert( $wpdb->prefix . "wfiu_playlist", $item);
-//  echo "+";
-//  return true;
-//}
 
 function combine_array_items($array){
   return preg_replace(array('/\s{2,}/','/\s,/'), array(" ", ","), trim(implode(' ', $array) ));
@@ -548,7 +567,7 @@ function tidy_up_html($html, $force_p_tags = true){
                         $outString .= getTag($START, 'p', array());//write out p start tag
                         $parText .= getTag($END, 'p', array());//write out p end tag
                         $outString .= $parText;//write out text and end p tag
-                        echo ".";
+                        #echo ".";
                 }
                 $inPar = true;
                 $parText = "";
