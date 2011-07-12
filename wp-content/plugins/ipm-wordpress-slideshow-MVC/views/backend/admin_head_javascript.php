@@ -207,10 +207,8 @@
 				}
 				else 
 				{
-					jQuery("#slideshow_content_box").fadeOut(1000, function(){
 						jQuery("#slideshow_content_box").empty();
 						jQuery("#slideshow_content_box").html(mysack.response);
-					});
 				}
 				wpss_stop_loading(msg + " " + mysack.response);
 			};
@@ -241,7 +239,9 @@
 				else if(mysack.response == slideshow_id)
 				{
 					msg = "Successfully removed slideshow";
-					jQuery("#slideshowContainer_34").parent().empty().remove();
+					jQuery("#slideshowContainer_" + slideshow_id).fadeOut(500, function(){
+						jQuery("#slideshowContainer_" + slideshow_id).parent().empty().remove();
+					});
 				}
 				else
 				{
