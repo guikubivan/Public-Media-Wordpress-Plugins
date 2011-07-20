@@ -27,6 +27,7 @@ class IPM_PostSlideshows
 	private $plugin;
 	private $wpdb;
 	private $postmeta_post_image = "";
+	public $post_image_id;
 	
 	public function __construct($plugin, $post = "", $post_id = "")
 	{
@@ -55,8 +56,8 @@ class IPM_PostSlideshows
 			if(is_array($slideshows))
 			{
 				$this->slideshows = array();
-				
-				$post_image_id = get_post_meta($this->post_id, $this->postmeta_post_image, true);
+			
+				$this->post_image_id = get_post_meta($this->post_id, $this->postmeta_post_image, true);
 				
 				foreach($slideshows as $slideshow_id)
 				{
@@ -98,5 +99,12 @@ class IPM_PostSlideshows
 		return $success;	
 	}
 		
+public function save_post_image()
+	{
+		update_post_meta($this->post_id, $this->postmeta_post_image, $this->post_image_id);
+		return true;
+	}
+
+
 }
 	
