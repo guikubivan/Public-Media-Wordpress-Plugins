@@ -1,6 +1,33 @@
 
 		<script type="text/javascript">//<![CDATA[
 
+jQuery(document).ready(function(){
+
+	jQuery("#library-form, #image-form").submit(function() { //for media-upload.php
+		return check_required('wpss_required', true);
+
+	});
+
+	jQuery("#post").submit(function() {//for post.php//, #edit_slideshow_form
+		valid=true;
+		jQuery("input.wpss_required, textarea.wpss_required, select.wpss_required").each(function(index){
+			if(this.value == ''){
+				this.style.backgroundColor = '#FF9A8D';
+				jQuery(this).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+				
+				valid=false;
+				//return false;
+			}
+			
+		});
+		if(!valid){
+			alert("Please fill required fields");
+		}
+		return valid;
+	});
+});
+
+
        <?php if(!current_user_can('edit_plugins') && preg_match("/media\-upload.php/", $_SERVER[ 'REQUEST_URI' ]) ): ?>
 
           function simplifyUploadInterface(){
@@ -151,9 +178,15 @@
 				mysack.onCompletion = function () { 
 						var success = mysack.response;
 						if(success == 1)
-						{
-							jQuery(".wpss_cover_highlight").children("div").html("Make this the slideshow thumbnail"); 
-							jQuery(".wpss_cover_highlight").removeClass("wpss_cover_highlight");
+						{	
+						
+							jQuery(".wpss_cover_highlight").each(function() {
+							if(jQuery(this).parent().parent().parent().parent().attr("slideshow_id") == slideshow_id)
+							{
+							jQuery(this).children("div").html("Make this the slideshow thumbnail"); 
+							jQuery(this).removeClass("wpss_cover_highlight");
+							}
+							});
 							jQuery("#img_"+slideshow_id+"_"+photo_id).parent().addClass("wpss_cover_highlight");
 							jQuery("#img_"+slideshow_id+"_"+photo_id).parent().children("div").html("This is the slideshow thumbnail");
 							msg = "Changed cover image" ;
@@ -200,6 +233,7 @@
 						jQuery("#photoContainer_"+photo_id).empty();
 						jQuery("#photoContainer_"+photo_id).remove();
 					});
+				update_post_image_menu();
 				}
 				else if(mysack.response == "0")
 				{
@@ -242,6 +276,7 @@
 					jQuery("#slideshowContainer_" + slideshow_id).fadeOut(500, function(){
 						jQuery("#slideshowContainer_" + slideshow_id).parent().empty().remove();
 					});
+				update_post_image_menu();
 				}
 				else
 				{
@@ -342,7 +377,7 @@
 					jQuery("#slideshow_content_box").empty();
 					jQuery("#slideshow_content_box").html(mysack.response);
 				}
-					
+				update_post_image_menu();	
 				wpss_stop_loading( "" );
 				current_slideshow = "";
 				tb_remove();
@@ -388,6 +423,51 @@
 	}
 	return valid;
 }
+
+
+function update_post_image_menu(){
+wpss_start_loading();
+		
+			var mysack = new sack( 
+		       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
+			mysack.method = 'POST';
+			mysack.setVar( "action", "action_update_post_image_menu" );
+			mysack.setVar( "post_id", document.getElementById('post_ID').value );
+			mysack.encVar( "cookie", document.cookie, false );
+			mysack.onCompletion = function () 
+			{ 
+				var msg = "";
+					msg = "Successfully photo";
+					jQuery("#wpss_post_photo").empty();
+					jQuery("#wpss_post_photo").html(mysack.response);
+				
+								wpss_stop_loading(msg + " " + mysack.response);
+			};
+			mysack.onError = function() { alert('Ajax error in updating post image menu.' )};
+			mysack.runAJAX();
+			return true;
+}
+
+		function setPostImage(photo_id)
+		{
+				wpss_start_loading();
+			
+				var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
+			
+				mysack.method = 'POST';
+				mysack.setVar( "action", "action_set_post_image" );
+				mysack.setVar( "photo_id", photo_id );
+				mysack.setVar( "post_id", document.getElementById('post_ID').value );
+				mysack.encVar( "cookie", document.cookie, false );
+				mysack.onCompletion = function () { 
+					wpss_stop_loading(mysack.response);
+					};
+				mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};
+				mysack.runAJAX();
+				return true;
+			
+		}
+
 
 		
 		 // end of JavaScript function myplugin_ajax_elevation
