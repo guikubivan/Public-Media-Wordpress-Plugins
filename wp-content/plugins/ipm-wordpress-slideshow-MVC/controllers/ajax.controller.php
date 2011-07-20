@@ -21,7 +21,8 @@ class IPM_Ajax
 		add_action('wp_ajax_action_add_new_slideshow', array(&$this, 'php_add_new_slideshow') );
 		add_action('wp_ajax_action_set_cover_image', array(&$this, 'php_set_cover_image') );
 		add_action('wp_ajax_action_change_photo_order', array(&$this, 'php_change_photo_order') );
-	
+		add_action('wp_ajax_action_update_post_image_menu', array(&$this, 'php_update_post_image_menu') );
+		add_action('wp_ajax_action_set_post_image', array(&$this, 'php_set_post_image') );
 		
 	}
 
@@ -106,7 +107,8 @@ class IPM_Ajax
 			die($new_editor);
 		} 
 		else 
-		{	
+		{
+
 			$photo = new IPM_SlideshowPhoto($this->plugin, $photo_id);
 			$success = $photo->remove_from_slideshow($slideshow_id);
 		}
@@ -280,6 +282,57 @@ class IPM_Ajax
 		
 	}
 	
+	function php_update_post_image_menu()
+		{
+			$post_id = $this->plugin->_post['post_id'];
+			
+			$post_slideshows = new IPM_PostSlideshows($this->plugin, "", $this->plugin->_post["post_id"]);
+			$post_slideshows->get_slideshows();
+			$slideshow_editors = array();
+			$post_image_title = array();
+			$msg = "<option value=''>Choose post image</option>";
+		if(!empty($post_slideshows->slideshows) )
+		{
+			foreach($post_slideshows->slideshows as $key => $slideshow)
+			{
+				foreach($slideshow->photos as $key => $photo)
+				{
+					$post_image_title[$photo->photo_id] = $photo->title;
+					$msg .= "<option value='";
+					$msg .= $photo->photo_id;
+					$msg .= "' ";
+					if($photo->photo_id == $post_slideshows->post_image_id)
+						{
+							$msg .= "selected='selected'";
+						}
+					$msg .= ">";
+					$msg .= $photo->title;
+					$msg .= "</option>";							
+				}
+			}
+		}
+
+			die($msg);
+		
+		}
+	
+
+
+function php_set_post_image()
+		{
+			$post_id = $this->plugin->_post['post_id'];
+			$photo_id = $this->plugin->_post["photo_id"];
+		
+			$post_slideshows = new IPM_PostSlideshows($this->plugin, "", $this->plugin->_post["post_id"]);
+			
+			$post_slideshows->post_image_id = $photo_id;
+			
+			$post_slideshows->save_post_image();
+			
+			die();
+		
+		}
+
 
 
 }
