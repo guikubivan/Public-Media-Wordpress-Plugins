@@ -168,7 +168,11 @@ class wpss_main{
 		$this->get_post();
 		
 		$slideshows = $this->plugin->_post["slideshow"];
-		
+	
+		$post_slideshows = new IPM_PostSlideshows($this, "", $this->_post['post_ID']);
+		$post_slideshows->post_image_id = $this->_post['wpss_post_photo'];
+		$post_slideshows->save_post_image();
+	
 		if(is_array($slideshows))
 		{
 			foreach($slideshows as $key => $slideshow)
@@ -187,7 +191,7 @@ class wpss_main{
 						$ipm_photo->alt = $photo['alt'];
 						$ipm_photo->caption = $photo['caption'];
 						$ipm_photo->update();
-					}					
+					}						
 				}
 				else
 				{
