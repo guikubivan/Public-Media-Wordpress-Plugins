@@ -32,7 +32,7 @@ class WPSSAdminBox
 		$post_slideshows = new IPM_PostSlideshows($this->plugin);
 		$post_slideshows->get_slideshows();
 		$slideshow_editors = array();
-		
+		$post_image_menu_titles = array();
 		if(!empty($post_slideshows->slideshows) )
 		{
 			foreach($post_slideshows->slideshows as $key => $slideshow)
@@ -42,10 +42,12 @@ class WPSSAdminBox
 				foreach($slideshow->photos as $key => $photo)
 				{
 					$photo_editors[] = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$photo, "slideshow_id"=>$slideshow->slideshow_id, "ss_thumb"=>$slideshow_thumb) );
+					$post_image_menu_titles[$photo->photo_id] = $photo->title;
+					
 				}
 				$slideshow_editors[] = $this->plugin->render_backend_view("admin_slideshow_editor.php", array("photo_editors"=>$photo_editors, "slideshow"=>$slideshow) );
 			}
-			$admin_box = $this->plugin->render_backend_view("admin_slideshow_wrapper.php", array("slideshow_editors"=>$slideshow_editors) );
+			$admin_box = $this->plugin->render_backend_view("admin_slideshow_wrapper.php", array("slideshow_editors"=>$slideshow_editors, "post_image_menu_titles"=>$post_image_menu_titles, "post_image_id"=>$post_slideshows->post_image_id) );
 		}
 		else if ( $post_slideshows->photo !== false )
 		{
