@@ -15,15 +15,15 @@
 		<div class='slideshow_fields'>
 			<div style="float: right;">	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_description">Slideshow description</label>
-				<textarea id='slideshow_<?php echo $slideshow->slideshow_id ?>_description' name='slideshow[<?php echo $slideshow->slideshow_id ?>][description]' rows='6' style='width:300px;' class='<?php echo $this->plugin_prefix ?>required' ><?php echo $slideshow->description ?></textarea>
+				<textarea id='slideshow_<?php echo $slideshow->slideshow_id ?>_description' name='slideshow[<?php echo $slideshow->slideshow_id ?>][description]'  style='width:300px; height:125px' class='<?php echo $this->plugin_prefix ?>required' ><?php echo $slideshow->description ?></textarea>
 			</div>	
 			<div>
 				<label for="slideshow_field_<?php echo $slideshow->slideshow_id?>_title">Slideshow title</label>
-				<input type='text' id='slideshow_<?php echo $slideshow->slideshow_id ?>_title' name='slideshow[<?php echo $slideshow->slideshow_id ?>][title]' style='width:$fieldW' value='<?php echo  $slideshow->title ?>' class='<?php echo $this->plugin_prefix ?>required' />
+				<input type='text' id='slideshow_<?php echo $slideshow->slideshow_id ?>_title' name='slideshow[<?php echo $slideshow->slideshow_id ?>][title]' style='width:50%' value='<?php echo  $slideshow->title ?>' class='<?php echo $this->plugin_prefix ?>required' />
 			</div>				
 			<div>	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_photo_credit">Slideshow photo credit</label>
-				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_photo_credit' style='width:$fieldW' value='<?php echo  $slideshow->photo_credit ?>' />
+				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_photo_credit' style='width:50%' value='<?php echo  $slideshow->photo_credit ?>' />
 			</div>	
 			<div>	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_geo_location">Slideshow geo location</label>
@@ -32,7 +32,7 @@
 			</div>
 
 			<div>	
-				<span tip="Save Slideshow Info" onclick="ajax_update_slideshow('<?php echo $slideshow->slideshow_id?>')" class="button" style="white-space: nowrap;">Save Slideshow Info</span>
+				<span tip="Save Slideshow Info" onclick="ajax_update_slideshow('<?php echo $slideshow->slideshow_id?>')" class="button" style="white-space: nowrap; display: none;">Save Slideshow Info</span>
 			</div>
 			<input type='hidden' id='slideshowItem[<?php echo $slideshow->slideshow_id ?>][latitude]' name='slideshowItem[<?php echo $slideshow->slideshow_id ?>][latitude]' ReadOnly size='4' value='<?php echo $slideshow->latitude ?>' />
 			<input type='hidden' id='slideshowItem[<?php echo $slideshow->slideshow_id ?>][longitude]' name='slideshowItem[<?php echo $slideshow->slideshow_id ?>][longitude]' ReadOnly size='4' value='<?php echo $slideshow->longitude ?>' /><!--&#176; latitude--><!--&#176; longitude-->
