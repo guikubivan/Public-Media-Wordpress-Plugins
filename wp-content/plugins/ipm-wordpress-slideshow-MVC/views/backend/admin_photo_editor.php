@@ -16,23 +16,23 @@
 				
 				<div>
 					<label >Title:</label>
-					<input type='text'  id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id ?>_title' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][title]' size='20' value='<?php echo htmlentities($photo->title)?>' class='<?php echo $this->plugin_prefix ?>required photo_title' />
+					<input type='text'  id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id ?>_title' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][title]' style='width:300px' value='<?php echo htmlentities($photo->title)?>' class='<?php echo $this->plugin_prefix ?>required photo_title' />
 				</div>
 				<div>	
 					<label >Photo credit</label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_photo_credit' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][photo_credit]' size='20' value='<?php echo htmlentities($photo->photo_credit) ?>'  title='Click to edit' class='editable <?php echo $this->plugin_prefix ?>required' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_photo_credit' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][photo_credit]' style='width:300px' value='<?php echo htmlentities($photo->photo_credit) ?>'  title='Click to edit' class='editable <?php echo $this->plugin_prefix ?>required' />
 				</div>
 				<div>
 					<label >Geo location</label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_geo_location' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][geo_location]' size='20' value='<?php echo htmlentities($photo->geo_location) ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_geo_location' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][geo_location]' style='width:300px' value='<?php echo htmlentities($photo->geo_location) ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
 				</div>
 				<div>
 					<label >Original URL</label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_original_url' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][original_url]' size='20' value='<?php echo htmlentities($photo->original_url) ?>'  title='Click to edit' class='editable' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_original_url' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][original_url]' style='width:300px' value='<?php echo htmlentities($photo->original_url) ?>'  title='Click to edit' class='editable' />
 				</div>
 				<div>
 					<label >Alt text <small>Specific to this Slideshow</small></label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id?>_alt' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][alt]' size='20' value='<?php echo htmlentities($photo->alt) ?>' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id?>_alt' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][alt]' style='width:300px' value='<?php echo htmlentities($photo->alt) ?>' />
 					
 				</div>
 				
@@ -42,7 +42,7 @@
 				</div>
 				
 				<div >
-					<span onclick='ajax_update_photo(<?php echo $photo->photo_id?>, "<?php echo $slideshow_id ?>");' id='save_photo_button_<?php echo $photo->photo_id?>' class='button save_photo_button_<?php echo $slideshow_id ?>' style='text-align:center;margin-top:5px;' >Update This Photo</span>
+					<span onclick='ajax_update_photo(<?php echo $photo->photo_id?>, "<?php echo $slideshow_id ?>");' id='save_photo_button_<?php echo $photo->photo_id?>' class='button save_photo_button_<?php echo $slideshow_id ?>' style='text-align:center;margin-top:5px; display: none;' >Update This Photo</span>
 				</div>
 				
 	
