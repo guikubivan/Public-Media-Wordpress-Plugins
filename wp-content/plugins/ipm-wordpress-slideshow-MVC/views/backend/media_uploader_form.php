@@ -50,9 +50,9 @@
 
 		$callback = "type_form_$type";
 	?>
-			<form enctype="multipart/form-data" method="post" action="<?= attribute_escape($form_action_url) ?>" class="media-upload-form type-form validate" id="<?= $type ?>-form">
-				<input type="hidden" name="post_id" id="post_id" value="<?= (int) $post_id ?>" />
-				<?= wp_nonce_field('media-form') ?>
+			<form enctype="multipart/form-data" method="post" action="<?php echo attribute_escape($form_action_url) ?>" class="media-upload-form type-form validate" id="<?php echo $type ?>-form">
+				<input type="hidden" name="post_id" id="post_id" value="<?php echo (int) $post_id ?>" />
+				<?php echo wp_nonce_field('media-form') ?>
 				
 				<script type="text/javascript">
 				<!--
@@ -66,10 +66,10 @@
 				-->
 				</script>
 				
-				<?= $media_upload_form ?>
+				<?php echo $media_upload_form ?>
 				
 				<? if($img_id) { ?>
-					<input type='hidden' name='img_id' value='<?= $img_id ?>' />
+					<input type='hidden' name='img_id' value='<?php echo $img_id ?>' />
 				<? } ?>
 			</form>
 
@@ -78,10 +78,10 @@
 <h2 style='margin-bottom:0px'>Choose picture</h2> 
 	<div>
 	
-	<form method='post' name='search_form' action='?type=slideshow_image<?= $img_id_var ?>' >
+	<form method='post' name='search_form' action='?type=slideshow_image<?php echo $img_id_var ?>' >
 	
 	
-	<input id="post-search-input" type="text" value="<?= $this->plugin->_post['see_all'] ? '' : $search_field ?>" name="s"/>
+	<input id="post-search-input" type="text" value="<?php echo $this->plugin->_post['see_all'] ? '' : $search_field ?>" name="s"/>
 	<input type="submit" value="Search Photos"/> <input type="submit" name='see_all' value="See all"/>
 
 	</form>
@@ -100,13 +100,13 @@
 	<div style='position:relative;text-align: right'>
 	
 		<? if($start > 0){ ?>
-			<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=<?= $orderby ?>&direction=<?= $nav_direction ?>&porder_by=<?= $orderby ?>&start=<?= $pstart ?><?=$search . $img_id_var?>"  > << Previous</a>&nbsp;
+			<a href="?type=slideshow_image&post_id=<?php echo $pid ?>&order_by=<?php echo $orderby ?>&direction=<?php echo $nav_direction ?>&porder_by=<?php echo $orderby ?>&start=<?php echo $pstart ?><?php echo $search . $img_id_var?>"  > << Previous</a>&nbsp;
 		<? } ?>
 	
 		<span style='top:0;right:0;'>
-		Showing <?=($start+1) ?> - <?=$end?> of <?= sizeof($posts) ?>
+		Showing <?php echo ($start+1) ?> - <?php echo $end?> of <?php echo  sizeof($posts) ?>
 		<? if($nstart < sizeof($posts)){ ?>
-			<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=<?= $orderby ?>&direction=<?= $nav_direction ?>&porder_by=<?= $orderby ?>&start=<?= $nstart ?><?= $search . $img_id_var ?>"  > Next >> </a>
+			<a href="?type=slideshow_image&post_id=<?php echo $pid ?>&order_by=<?php echo $orderby ?>&direction=<?php echo $nav_direction ?>&porder_by=<?php echo $orderby ?>&start=<?php echo $nstart ?><?php echo $search . $img_id_var ?>"  > Next >> </a>
 		<? } ?>
 		</span>
 		
@@ -120,13 +120,13 @@
 		<tr>
 			<th>Select</th>
 			<th class='title_column' >
-				<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=title&direction=<?=$direction?>&porder_by=<?=$orderby?>&start=<?=$start?><?=$search?><?=$img_id_var?>" >Title</a>
+				<a href="?type=slideshow_image&post_id=<?php echo $pid ?>&order_by=title&direction=<?php echo $direction?>&porder_by=<?php echo $orderby?>&start=<?php echo $start?><?php echo $search?><?php echo $img_id_var?>" >Title</a>
 			</th>
 			<th class='credit_column' >
-				<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=photo_credit&direction=<?=$direction?>&porder_by=<?=$orderby?>&start=<?=$start?><?=$search?><?=$img_id_var?>" >Photo Credit</a>
+				<a href="?type=slideshow_image&post_id=<?php echo $pid ?>&order_by=photo_credit&direction=<?php echo $direction?>&porder_by=<?php echo $orderby?>&start=<?php echo $start?><?php echo $search?><?php echo $img_id_var?>" >Photo Credit</a>
 			</th>
 			<th class='date_column' >
-				<a href="?type=slideshow_image&post_id=<?= $pid ?>&order_by=date&direction=<?=$direction?>&porder_by=<?=$orderby?>&start=<?=$start?><?=$search?><?=$img_id_var?>" >Upload Date</a>
+				<a href="?type=slideshow_image&post_id=<?php echo $pid ?>&order_by=date&direction=<?php echo $direction?>&porder_by=<?php echo $orderby?>&start=<?php echo $start?><?php echo $search?><?php echo $img_id_var?>" >Upload Date</a>
 			</th>
 			<th>
 				&nbsp;
@@ -152,33 +152,33 @@
 						onmouseover="this.style.border='3px solid red';" 
 						onmouseout="this.style.border='none';" 
 				<? if($img_id) { ?>
-						onclick="wpss_replace_photo( <?=$img_id?>, <?=$photo->post_id?>, '<?=$photo->url?>');"
+						onclick="wpss_replace_photo( <?php echo $img_id?>, <?php echo $photo->post_id?>, '<?php echo $photo->url?>');"
 				<? } else { ?>
-						onclick="wpss_send_and_return('<?=$photo->post_id?>', jQuery('#photo_title_<?=$photo->post_id?>').val() );" 
+						onclick="wpss_send_and_return('<?php echo $photo->post_id?>', jQuery('#photo_title_<?php echo $photo->post_id?>').val() );" 
 				<? } ?> 
-						style='margin:0px;' title="<?=$photo->alt?>" alt="<?=$photo->alt?>" src="<?=$photo->thumb_url?>" />
+						style='margin:0px;' title="<?php echo $photo->alt?>" alt="<?php echo $photo->alt?>" src="<?php echo $photo->thumb_url?>" />
 					<p class="caption">
-						<?= $photo->caption ?>
+						<?php echo  $photo->caption ?>
 					</p>
 				</td>
 				<td class="title_column">
-					<select id="photo_title_<?=$photo->post_id?>">
-						<option><?=$photo->title?></option>
+					<select id="photo_title_<?php echo $photo->post_id?>">
+						<option><?php echo $photo->title?></option>
 					<?
 						foreach($photo->extra_titles as $title)
 						{ ?>
-						<option><?=$title?></option>
+						<option><?php echo $title?></option>
 						<? } ?>
 					</select>
 				</td>
 				<td class="credit_column">
-					<?=$photo->photo_credit?>
+					<?php echo $photo->photo_credit?>
 				</td>
 				<td class="date_column">
-					<?=date("Y-m-d", strtotime($photo->date_modified) ) ?>
+					<?php echo date("Y-m-d", strtotime($photo->date_modified) ) ?>
 				</td>
 				<td>
-					<a href="?type=slideshow_image&post_id=<?=$photo->post_id . $img_id_var?>" class="button" >Edit</a>
+					<a href="?type=slideshow_image&post_id=<?php echo $photo->post_id . $img_id_var?>" class="button" >Edit</a>
 				</td>
 			
 			</tr>
@@ -192,6 +192,6 @@
 	}
 	?>	
 		<div >
-			<?= $msg ?>
+			<?php echo $msg ?>
 		</div>
 		

@@ -1,1 +1,1 @@
-<img class="program-photo" alt="<?= htmlentities($photo->alt) ?>" src="<?= $photo->medium_url ?>" />
+<img class="program-photo" alt="<?php echo htmlentities($photo->alt) ?>" src="<?php echo $photo->medium_url ?>" />

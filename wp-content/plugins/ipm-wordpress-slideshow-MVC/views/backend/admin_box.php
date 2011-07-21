@@ -26,7 +26,7 @@
 	<span class='wpss_required' >&nbsp;</span> Required fields
 </div>
 <div id="slideshow_content_box">
-<?= $content ?>
+<?php echo $content ?>
 </div>
 <div class='slideshow_box_footer' style='text-align:right; display: none;'>
 	<input class="button button-highlighted" id="wpss_save" type="submit" value="Save" name="save" />

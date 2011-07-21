@@ -8,56 +8,56 @@ if($type == "slideshows")
 ?>
 <div class="program-slideshow">
 
-	<h3><?= $slideshow->title ?></h3>
+	<h3><?php echo $slideshow->title ?></h3>
 
-	<div class="scrollable" rel="#overlay<?=$slideshow->slideshow_id ?>"><ul class="items">
+	<div class="scrollable" rel="#overlay<?php echo$slideshow->slideshow_id ?>"><ul class="items">
 	<!-- here goes the intro slide stuff -->
 	
 		<li class="item">
 		
-			<a rel="slideshow-colorbox" class="colorbox" href="<?= $slideshow->thumb->large_url ?>" >
-				<img alt="<?= $slideshow->description ?>" src="<?= $slideshow->thumb->large_url ?>" />
+			<a rel="slideshow-colorbox" class="colorbox" href="<?php echo $slideshow->thumb->large_url ?>" >
+				<img alt="<?php echo $slideshow->description ?>" src="<?php echo $slideshow->thumb->large_url ?>" />
 				<div class="slideshow-enlarge enlarge-title"></div>
 			</a>
 			
 			<p class="photo-number">
-			<?= count($slideshow->photos)?>
+			<?php echo count($slideshow->photos)?>
 			 Images</p>
 		
 		<? if( !empty($slideshow->thumb->original_url) ) { ?>
-				<p class="photo-credit">Photo: <a href="<?= $slideshow->thumb->original_url ?>"><?= $slideshow->thumb->photo_credit ?></a></p>
+				<p class="photo-credit">Photo: <a href="<?php echo $slideshow->thumb->original_url ?>"><?php echo $slideshow->thumb->photo_credit ?></a></p>
 		<? } else { ?>		
-				<p class="photo-credit">Slideshow: <?= $slideshow->thumb->photo_credit ?></p>
+				<p class="photo-credit">Slideshow: <?php echo $slideshow->thumb->photo_credit ?></p>
 		<? } ?>
 		
 			<div class="clear"></div>
-		<p class="photo-caption"><?= $slideshow->thumb->description ?></p>
+		<p class="photo-caption"><?php echo $slideshow->thumb->description ?></p>
 	</li><!--item-->
 	
 	<!-- and now, the rest of the images -->
 	<? foreach ($slideshow->photos as $key => $photo) { ?>
 	<li class="item">
 		<? if( !empty($photo->url) ) { ?>
-			<a rel="slideshow-colorbox" class="colorbox" href="<?= $photo->large_url ?>" >
+			<a rel="slideshow-colorbox" class="colorbox" href="<?php echo $photo->large_url ?>" >
 			<? if(!empty($photo->thumb_url) ) { ?>
-				<img alt="<?= $photo->alt ?>" src="<?= $photo->large_url ?>" />	
+				<img alt="<?php echo $photo->alt ?>" src="<?php echo $photo->large_url ?>" />	
 			<? } ?>
 			<div class="slideshow-enlarge enlarge-slide"></div>
 			</a>
 			
-			<p class="photo-number">Image <?= $key + 1 ?>
+			<p class="photo-number">Image <?php echo $key + 1 ?>
 			of
-			<?= count($slideshow->photos) ?>
+			<?php echo count($slideshow->photos) ?>
 			</p>
 			
 			<? if(!empty($photo->
 			original_url) ) { ?>
-				<p class="photo-credit">Photo: <a href="<?= $photo->original_url ?>"><?= $photo->photo_credit ?></a></p>
+				<p class="photo-credit">Photo: <a href="<?php echo $photo->original_url ?>"><?php echo $photo->photo_credit ?></a></p>
 			<? } else { ?>
-				<p class="photo-credit">Photo: <?= $photo->photo_credit ?></p>
+				<p class="photo-credit">Photo: <?php echo $photo->photo_credit ?></p>
 			<? } ?>
 			<div class="clear"></div>
-			<p class="photo-caption"><?= $photo->caption ?></p>
+			<p class="photo-caption"><?php echo $photo->caption ?></p>
 		<? } ?>
 
 	</li><!--item-->
@@ -74,47 +74,47 @@ if($type == "slideshows")
 
 
 
-<div class="the-overlay" id="overlay]]><?= $slideshow->slideshow_id ?>" style="display:none;">
+<div class="the-overlay" id="overlay]]><?php echo $slideshow->slideshow_id ?>" style="display:none;">
 
-	<h3><?= $slideshow->title ?></h3>
+	<h3><?php echo $slideshow->title ?></h3>
 	
 	<div class="scrollable"><ul class="items">
 	
 	
 	
-	<li><a class="colorbox"><img alt="<?= $slideshow->alt ?>" src="<?= $slideshow->thumb->large_url ?>" /></a>
+	<li><a class="colorbox"><img alt="<?php echo $slideshow->alt ?>" src="<?php echo $slideshow->thumb->large_url ?>" /></a>
 				
 				<p class="photo-number">
-			<?= count($slideshow->photos) ?>
+			<?php echo count($slideshow->photos) ?>
 			Images</p>
 			
 				<? if(!empty($slideshow->thumb->original_url) ) { ?>
-				<p class="photo-credit">Photo: <a href="<?= $slideshow->thumb->original_url?>"><?= $slideshow->thumb->photo_credit ?></a></p>
+				<p class="photo-credit">Photo: <a href="<?php echo $slideshow->thumb->original_url?>"><?php echo $slideshow->thumb->photo_credit ?></a></p>
 			<? } else { ?>
-				<p class="photo-credit">Slideshow: <?= $slideshow->thumb->photo_credit ?></p>
+				<p class="photo-credit">Slideshow: <?php echo $slideshow->thumb->photo_credit ?></p>
 			<? } ?>
 		<div class="clear"></div>
-		<p class="photo-caption"><?= $slideshow->thumb->description ?></p>
+		<p class="photo-caption"><?php echo $slideshow->thumb->description ?></p>
 		</li>
 	
 	
 	
 	
 	<? foreach ($slideshow->photos as $key => $photo) { ?>
-		<li><a class="colorbox"><img alt="" src="<?= $photo->large_url ?>" /><a>
+		<li><a class="colorbox"><img alt="" src="<?php echo $photo->large_url ?>" /><a>
 				
-				<p class="photo-number">Image <?= $key + 1 ?>"/>
+				<p class="photo-number">Image <?php echo $key + 1 ?>"/>
 			of
-			<?= count($slideshow->photos)?>
+			<?php echo count($slideshow->photos)?>
 			</p>
 				
 			<? if(!empty($photo->original_url) ) { ?>
-				<p class="photo-credit">Photo: <a href="<?= $photo->original_url ?>"><?= $photo->photo_credit ?></a></p>
+				<p class="photo-credit">Photo: <a href="<?php echo $photo->original_url ?>"><?php echo $photo->photo_credit ?></a></p>
 			<? } else { ?>
-				<p class="photo-credit">Photo: <?= $photo->photo_credit ?></p>
+				<p class="photo-credit">Photo: <?php echo $photo->photo_credit ?></p>
 			<? } ?>
 		<div class="clear"></div>
-		<p class="photo-caption"><?= $photo->caption ?></p>
+		<p class="photo-caption"><?php echo $photo->caption ?></p>
 		</li>
 	<? } ?>
 	</ul></div> <!--the-images-->
@@ -130,19 +130,19 @@ else if($type == "photo")
 {
 	?>
 		<? if(!empty($photo->url)) { ?>
-			<div class="postimage-wrapper"><div class="the-image-wrapper"><img class="postimage" src="<?=$photo->large_url?>" alt="<?=$photo->alt?>" /></div>
+			<div class="postimage-wrapper"><div class="the-image-wrapper"><img class="postimage" src="<?php echo $photo->large_url?>" alt="<?php echo $photo->alt?>" /></div>
 		<? } ?>
 		
         <? if(!empty($photo->original_url) ) { ?>
-				<p class="photo-credit">Photo: <a href="<?=$photo->original_url?>"><?=$photo->photo_credit?></a></p>
+				<p class="photo-credit">Photo: <a href="<?php echo $photo->original_url?>"><?php echo $photo->photo_credit?></a></p>
 		<? } else { ?>
-				<p class="photo-credit">Photo: <?=$photo->photo_credit?></p>
+				<p class="photo-credit">Photo: <?php echo $photo->photo_credit?></p>
 		<? } ?>
 		
 		<div class="clear"></div>
 		
         <? if(!empty($photo->caption) ) { ?>
-			<p class="photo-caption"><?=$photo->caption?></p>
+			<p class="photo-caption"><?php echo $photo->caption?></p>
 		<? } ?>
 		
 		<? if(!empty($photo->url)) { ?>

@@ -1,11 +1,11 @@
 			<p>
 				<a href="?type=slideshow_image" class="button"  >Go back</a>
 			</p>
-			<form enctype="multipart/form-data" method="post" action="<?= attribute_escape($form_action_url) ?>" class="media-upload-form type-form validate" id="<?= $type ?>-form">
+			<form enctype="multipart/form-data" method="post" action="<?php echo attribute_escape($form_action_url) ?>" class="media-upload-form type-form validate" id="<?php echo $type ?>-form">
 
 			
-			<input type="hidden" name="post_id" id="post_id" value="<?= (int) $post_id ?>" />
-			<?= wp_nonce_field('media-form') ?>
+			<input type="hidden" name="post_id" id="post_id" value="<?php echo (int) $post_id ?>" />
+			<?php echo wp_nonce_field('media-form') ?>
 			
 			<script type="text/javascript">
 			<!--
@@ -23,6 +23,6 @@
 			<br />
 			<div id="media-items">
 				
-			<?= $media_items ?>
+			<?php echo $media_items ?>
 			
 			</div></form>

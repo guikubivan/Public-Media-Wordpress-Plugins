@@ -53,7 +53,7 @@ jQuery(document).ready(function(){
         
         
 		jQuery(document).ready(function(){
-			jQuery(".<?= $this->plugin_prefix ?>slideshow_container ul").sortable(
+			jQuery(".<?php echo $this->plugin_prefix ?>slideshow_container ul").sortable(
 			{
 				items: "li:not(.add_li)",
 				update: function(event, ui) {

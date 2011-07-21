@@ -1,1 +1,1 @@
-<span class="program-photo-wrapper"><img class="program-photo" alt="<?=htmlentities($photo->alt)?>" src="<?=$photo->thumb_url?>" /></span>
+<span class="program-photo-wrapper"><img class="program-photo" alt="<?php echo htmlentities($photo->alt)?>" src="<?php echo $photo->thumb_url?>" /></span>

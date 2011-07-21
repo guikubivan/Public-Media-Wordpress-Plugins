@@ -2,8 +2,8 @@
 	</tr>
 	<tr>
 		<th class='label'>
-			<label for='attachments[<?= $pid ?>][<?= $fieldname ?>]'>
-				<span class='alignleft'><?=$fieldlable?></span>";
+			<label for='attachments[<?php echo $pid ?>][<?php echo $fieldname ?>]'>
+				<span class='alignleft'><?php echo $fieldlable?></span>";
 		<? if($req){ ?>
 				<span class='alignright'>
 					<abbr class='required' title='required'>*</abbr>
@@ -13,4 +13,4 @@
 			</label>
 		</th>
 		<td class='field'>
-			<input type="text" name="attachments[<?=$pid ?>][<?= $fieldname?>]" id="attachments[<?=$pid?>][<?= $fieldname ?>]" />
+			<input type="text" name="attachments[<?php echo $pid ?>][<?php echo $fieldname ?>]" id="attachments[<?php echo $pid ?>][<?php echo $fieldname ?>]" />

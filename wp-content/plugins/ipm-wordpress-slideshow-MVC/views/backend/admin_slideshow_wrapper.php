@@ -26,7 +26,7 @@
 	{
 		?>
 		<li>
-			<?=$slideshow_editor?>
+			<?php echo $slideshow_editor?>
 		</li>	
 		<?
 	}
