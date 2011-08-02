@@ -32,7 +32,7 @@
 				</div>
 				<div>
 					<label >Alt text <small>Specific to this Slideshow</small></label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id?>_alt' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][alt]' style='width:300px' value='<?php echo htmlentities($photo->alt) ?>' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id?>_alt' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][alt]' style='width:300px' value='<?php echo htmlentities($photo->alt) ?>' class='editable <?php echo $this->plugin_prefix ?>required' />
 					
 				</div>
 				
