@@ -1,12 +1,7 @@
 
-		<script type="text/javascript">//<![CDATA[
+<script type="text/javascript">
 
 jQuery(document).ready(function(){
-
-	jQuery("#library-form, #image-form").submit(function() { //for media-upload.php
-		return check_required('wpss_required', true);
-
-	});
 
 	jQuery("#post").submit(function() {//for post.php//, #edit_slideshow_form
 		valid=true;
@@ -25,6 +20,12 @@ jQuery(document).ready(function(){
 		}
 		return valid;
 	});
+	
+	jQuery("#library-form, #image-form").submit(function() { //for media-upload.php
+		return check_required('wpss_required', true);
+
+	});
+	
 });
 
 
@@ -467,9 +468,42 @@ wpss_start_loading();
 				return true;
 			
 		}
+		
+//*********************GOOGLE MAPS STUFF**********************
+
+function loadMap(id, location, lat, long) {
+	div = document.getElementById("map_canvas_"+id);
+	//jQuery(div).toggle("slow");
+	if (GBrowserIsCompatible()) {
+		div.style.display = 'block';
+		setTimeout( function() {
+
+
+	       		var map = new GMap2(div);
+			map.setCenter(new GLatLng(lat, long), 7);
+			map.setUIToDefault();
+
+			var marker = new GMarker(new GLatLng(lat, long));	
+
+
+			GEvent.addListener(marker, 'click',
+				function() {
+					marker.openInfoWindowHtml(location);
+				}
+			);
+			map.addOverlay(marker);
+	    	}, 1 ); 
+ 
+	}/*else{
+		div.style.display='none';
+	}*/
+
+}
+
+window.onunload = GUnload;
+//*********************END OF GOOGLE MAPS STUFF**********************
 
 
 		
 		 // end of JavaScript function myplugin_ajax_elevation
-		//]]>
 		</script>
