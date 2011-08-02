@@ -105,6 +105,15 @@ public function save_post_image()
 		return true;
 	}
 
-
+public function get_post_photo()
+	{
+		$photo_id = get_post_meta($this->post_id, $this->plugin->plugin_prefix.'post_image', true);
+		if(!empty($photo_id) )
+		{
+			$this->photo = new IPM_SlideshowPhoto($this->plugin, $photo_id);
+			return $this->photo;
+		}
+		return false;
+	}
 }
 	
