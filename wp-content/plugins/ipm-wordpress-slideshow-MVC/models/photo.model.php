@@ -195,17 +195,29 @@ class IPM_Photo
 
 	public function update()
 	{
-		$success  = update_post_meta($this->post_id, "geo_location", addslashes($this->geo_location) );
-		if($success !== false)
-			$success  = update_post_meta($this->post_id, "photo_credit", addslashes($this->photo_credit) );
-		if($success !== false)
-			$success  = update_post_meta($this->post_id, "latitude", addslashes($this->latitude) );
-		if($success !== false)
-			$success  = update_post_meta($this->post_id, "longitude", addslashes($this->longitude) );
-		if($success !== false)
-			$success  = update_post_meta($this->post_id, "original_url", addslashes($this->original_url) );
+		$msg = "";
 		
-		return $success;
+		$success  = update_post_meta($this->post_id, "geo_location", addslashes($this->geo_location) );
+		if($success === false)
+			$msg .= "Failed to Geo Location"; 
+		
+		$success  = update_post_meta($this->post_id, "photo_credit", addslashes($this->photo_credit) );
+		if($success === false)
+			$msg .= "Failed to Photo Credit"; 
+		
+		$success  = update_post_meta($this->post_id, "latitude", addslashes($this->latitude) );
+		if($success === false)
+			$msg .= "Failed to Latitude"; 
+		
+		$success  = update_post_meta($this->post_id, "longitude", addslashes($this->longitude) );
+		if($success === false)
+			$msg .= "Failed to Longitude"; 
+		
+		$success  = update_post_meta($this->post_id, "original_url", addslashes($this->original_url) );
+		if($success === false)
+			$msg .= "Failed to Original URL"; 
+		
+		return $msg;
 		
 		
 	}
