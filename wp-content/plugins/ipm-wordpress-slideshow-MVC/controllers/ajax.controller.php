@@ -1,5 +1,7 @@
 <?php
-
+/* This class it defined for the use of ajax functions which are called by ajax actions on the backend mainly
+   for making database updates
+*/
 class IPM_Ajax
 {
 	private $plugin;
@@ -30,7 +32,8 @@ class IPM_Ajax
 	{}
 	public function php_get_slideshow()
 	{}
-	
+
+// This function is used to set the cover image for each slideshow	
 	public function php_set_cover_image()
 	{
 		$slideshow_id = $this->plugin->_post["slideshow_id"];
@@ -47,6 +50,7 @@ class IPM_Ajax
 		
 	}
 	
+//This function is used to change the photo order within the slideshow	
 	public function php_change_photo_order()
 	{
 		$slideshow_id = $this->plugin->_post["slideshow_id"];
@@ -61,6 +65,7 @@ class IPM_Ajax
 			
 	}
 	
+//This function is used to update the photo fields to the database	
 	function php_update_photo()
 	{
 		$photo_id = $this->plugin->_post['photo_id'];
@@ -74,9 +79,10 @@ class IPM_Ajax
 		$photo->original_url = $this->plugin->_post['original_url'];
 		echo $photo->update();
 		
-		die();
-		
+		die();		
 	}
+	
+//This function is used to update the slideshow fields to the database	
 	function php_update_slideshow()
 	{
 		$slideshow_id = $this->plugin->_post['slideshow_id'];
@@ -89,9 +95,10 @@ class IPM_Ajax
 		
 		$slideshow->update();
 		print_r($slideshow);
-		die();
-		
+		die();		
 	}
+	
+//This function removes the selected image form the slideshow	
 	function php_remove_photo_from_slideshow()
 	{
 		$photo_id = $this->plugin->_post['photo_id'];
@@ -124,6 +131,8 @@ class IPM_Ajax
 		
 		die();
 	}
+	
+//This function removes the selected slideshow form the post	
 	function php_remove_slideshow()
 		{
 			$slideshow_id = $this->plugin->_post['slideshow_id'];
@@ -168,7 +177,8 @@ class IPM_Ajax
 			
 			die();
 		}
-		
+
+//This function is called when a new slideshow needs to be added to the post		
 		function php_add_new_slideshow()
 		{
 			//create new slideshow
@@ -203,6 +213,7 @@ class IPM_Ajax
 			die($slideshow_editor);
 		}
 		
+//This function is called for adding a photo to the selected slideshow		
 	public function php_add_photo_to_slideshow()
 	{	usleep(400000);
 		$photo_post_id = $this->plugin->_post['photo_post_id'];
@@ -277,11 +288,10 @@ class IPM_Ajax
 			$editor = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$slideshow_photo, "slideshow_id" => $slideshow_id) );
 		}
 		
-		die($editor);
-		
-		
+		die($editor);				
 	}
 	
+//This function updates the drop down list for post iamge whenever an image or slideshow is added or removed	
 	function php_update_post_image_menu()
 		{
 			$post_id = $this->plugin->_post['post_id'];
@@ -312,13 +322,11 @@ class IPM_Ajax
 			}
 		}
 
-			die($msg);
-		
+			die($msg);		
 		}
 	
-
-
-function php_set_post_image()
+//This function is used to set the post image
+	function php_set_post_image()
 		{
 			$post_id = $this->plugin->_post['post_id'];
 			$photo_id = $this->plugin->_post["photo_id"];
@@ -329,12 +337,8 @@ function php_set_post_image()
 			
 			$post_slideshows->save_post_image();
 			
-			die();
-		
+			die();		
 		}
-
-
-
 }
 
 ?>

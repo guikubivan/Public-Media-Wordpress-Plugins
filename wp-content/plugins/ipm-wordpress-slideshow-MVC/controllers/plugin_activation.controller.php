@@ -48,6 +48,7 @@ class plugin_activation{
 	
 	}
     
+//This function creates all the required wpss tables in the database	
 	function activate(){
 	    global $wpdb;
 	
@@ -118,11 +119,13 @@ class plugin_activation{
 		if($this->default_multiple_slideshows) add_option($this->option_multiple_slideshows, $this->default_multiple_slideshows);
 	}
         
+//This function returns the plugin url        
 	function plugin_url(){
 		$result = get_bloginfo('url').'/wp-content/plugins/ipm-wordpress-slideshow-MVC/';
 		return $result;
 	}
-	
+
+//This function returns a list of all the stylesheets present in the plugin folder
 	function show_stylesheet_list($name, $selected = ''){
 		$stylesheets = $this->utils->get_files_array($this->plugin_path . "stylesheets");
 		echo "<select name=\"$name\">";
@@ -137,6 +140,7 @@ class plugin_activation{
 		echo "</select>";
 	}
 
+//This function is used to update the options table in the database
 	function add_or_update_setting($option){
 		if($_POST[$option]){
 
@@ -150,7 +154,7 @@ class plugin_activation{
 		return false;
 	}
 
-
+//This function provides the front-end for the slideshow manager page
 	function plugin_settings(){
 		$updated = false;
 		$updated = $this->add_or_update_setting($this->option_default_style_slideshow);
@@ -207,7 +211,7 @@ echo ' hello' ;
 
 	}
 
-
+//This functions hooks upto the Slideshow Manager option is the side menu
 	function manage_slideshows(){
 ?>
 		<div class='wrap'>
@@ -255,6 +259,7 @@ echo ' hello' ;
 		return $url;
 	}
 
+//This function is used to customize the upload image form
 	function media_field($name, $label, $id, $size='100%', $required=false){
 
 		$string = "<tr>";
@@ -299,6 +304,7 @@ echo ' hello' ;
 		return $string;
 	}
 	
+//This function is used to customize the upload image form	
 	public function mediaItem($string, $post){
 		global $post_mime_types;
 
@@ -368,6 +374,8 @@ echo ' hello' ;
 		}
 		return $string;
 	}
+
+//This function is called for saving the fixed properties of the photo to the database
 	function save_photo_fixed_props($post, $attachment){
 		foreach($this->fixed_photo_props as $prop){
 			if($attachment[$prop]){

@@ -168,12 +168,13 @@ class wpss_main{
   		wp_print_scripts( array( 'sack' )); //Doesn't seem like I need this
 	}
 
+//This function is called everytime a post draft is saved or published
 	public function save_slideshow($post_id, $post)
 	{
 		$this->get_post();
 		
 		$slideshows = $this->plugin->_post["slideshow"];
-	
+
 		$post_slideshows = new IPM_PostSlideshows($this, "", $this->_post['post_ID']);
 		$post_slideshows->post_image_id = $this->_post['wpss_post_photo'];
 		$post_slideshows->save_post_image();
@@ -224,11 +225,6 @@ class wpss_main{
 		}		
 	}
 		
-		
-		
-		
-		
-	
 	//generic render view function
 	private function render_view($view, $parameter, $end= "")
 	{
@@ -258,10 +254,7 @@ class wpss_main{
 		$view = "frontend/".$view;
 		$output = $this->render_view($view, $parameters, "backend");
 		return $output;
-	}
-		
-		
+	}		
 }
-
 
 ?>

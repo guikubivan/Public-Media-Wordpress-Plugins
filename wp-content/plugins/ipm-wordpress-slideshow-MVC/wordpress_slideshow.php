@@ -20,14 +20,17 @@ if(file_exists(ABSPATH.PLUGINDIR.'/wfiu_utils/ipm-utils-class.php')){
 	require_once(dirname(__FILE__) . '/ipm-utils-class.php');
 }
 
+//Including the class file plugin.php for using in-built generic plugin functions
 if ( ! function_exists( 'is_plugin_active_for_network' ) )
    require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-   
+
+//Including the class file for plugin activation and creation of tables   
 if(!class_exists ('plugin_activation')) {
 	require_once(dirname(__FILE__).'/controllers/plugin_activation.controller.php');
 	$plugin_activation_object = new plugin_activation();
 }
 
+//Including the class file of all the MODEL classes
 if(!class_exists ('IPM_Photo')) {
 	require_once(dirname(__FILE__).'/models/photo.model.php');
 }
@@ -41,15 +44,19 @@ if(!class_exists ('IPM_PostSlideshows')) {
 	require_once(dirname(__FILE__).'/models/post_slideshows.model.php');
 }
 
+//Including the class file for the AJAX controller
 if(!class_exists ('IPM_Ajax')) {
 	require_once(dirname(__FILE__).'/controllers/ajax.controller.php');
 }
+
+//Including the class file for Main Controller
 if(!class_exists ('wpss_actions')) {
 	require_once(dirname(__FILE__).'/controllers/main.controller.php');
 	$slideshow_plugin = new wpss_main($wpdb);
 }
 add_action( 'wpmu_new_blog', 'new_blog', 10, 6); 		
- 
+
+//This function is called when ever a new blog is created and it creates the required wpss tables
 function new_blog($blog_id, $user_id, $domain, $path, $site_id, $meta ) {
 	global $wpdb;
  
@@ -77,6 +84,7 @@ add_action('admin_menu', array(&$slideshow_plugin, 'show_editor_box'), 1);//add 
 //save and delete post hook
 add_action('save_post', array(&$slideshow_plugin,'save_slideshow'), 1, 2);
 
+//customizing the upload image form
 add_filter('media_meta', array(&$plugin_activation_object,'mediaItem'),  109, 2);//called at wp-admin/includes/media.php
 add_filter('attachment_fields_to_save', array(&$plugin_activation_object,'save_photo_fixed_props'), 109, 2);//called at wp-admin/includes/media.php
 

@@ -1,5 +1,7 @@
 <?php
-
+/*
+This class is used to carry out all the functions related to uploading and adding an image to the post 
+*/
 class WPSSMediaUpload
 {
 	
