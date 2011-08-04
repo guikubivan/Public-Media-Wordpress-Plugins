@@ -15,19 +15,19 @@
 		<div class='slideshow_fields'>
 			<div style="float: right;">	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_description">Slideshow description</label>
-				<textarea id='slideshow_<?php echo $slideshow->slideshow_id ?>_description' name='slideshow[<?php echo $slideshow->slideshow_id ?>][description]'  style='width:300px; height:125px' class='<?php echo $this->plugin_prefix ?>required' ><?php echo $slideshow->description ?></textarea>
+				<textarea id='slideshow_<?php echo $slideshow->slideshow_id ?>_description' name='slideshow[<?php echo $slideshow->slideshow_id ?>][description]'  style='width:300px; height:125px' class='<?php echo $this->plugin_prefix ?>required' ><?php echo htmlentities($slideshow->description, NULL, 'UTF-8') ?></textarea>
 			</div>	
 			<div>
 				<label for="slideshow_field_<?php echo $slideshow->slideshow_id?>_title">Slideshow title</label>
-				<input type='text' id='slideshow_<?php echo $slideshow->slideshow_id ?>_title' name='slideshow[<?php echo $slideshow->slideshow_id ?>][title]' style='width:50%' value='<?php echo  $slideshow->title ?>' class='<?php echo $this->plugin_prefix ?>required' />
+				<input type='text' id='slideshow_<?php echo $slideshow->slideshow_id ?>_title' name='slideshow[<?php echo $slideshow->slideshow_id ?>][title]' style='width:50%' value='<?php echo htmlentities($slideshow->title, NULL, 'UTF-8') ?>' class='<?php echo $this->plugin_prefix ?>required' />
 			</div>				
 			<div>	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_photo_credit">Slideshow photo credit</label>
-				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_photo_credit' style='width:50%' value='<?php echo  $slideshow->photo_credit ?>' />
+				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_photo_credit' style='width:50%' value='<?php echo htmlentities($slideshow->photo_credit, NULL, 'UTF-8') ?>' />
 			</div>	
 			<div>	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_geo_location">Slideshow geo location</label>
-				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][geo_location]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_geo_location' style='width:50%' value='<?php echo $slideshow->geo_location ?>' />
+				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][geo_location]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_geo_location' style='width:50%' value='<?php echo htmlentities($slideshow->geo_location, NULL, 'UTF-8') ?>' />
 				<? /*<img onClick='showMap(this.previousSibling.value,this.nextSibling.id, this.nextSibling.nextSibling.id, this);' class='map_icon centervertical' src='images/map_icon.jpg' /> */?>
 			</div>
 
