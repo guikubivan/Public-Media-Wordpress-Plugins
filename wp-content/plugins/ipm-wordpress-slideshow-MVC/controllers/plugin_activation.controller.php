@@ -2,6 +2,8 @@
 /*
 This is the wordpress_slideshow_classes.php file with the desired functions 
 from the previous version of the plugin
+Contains functionality for plugin activation, creation of wpss tables, customizing upload image form,
+slideshow manager and saving fixed properties of the photo.
 */
 
 $tab_order = 100;
@@ -374,7 +376,5 @@ echo ' hello' ;
 		}
 		return $post;
 	}
-
 }
-
 ?>
