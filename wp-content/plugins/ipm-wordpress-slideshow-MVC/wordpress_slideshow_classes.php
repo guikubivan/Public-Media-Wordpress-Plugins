@@ -1,4 +1,8 @@
 <?php
+/*
+This file is deprecated and no longer been used by the current version.
+It is kept just as a backup of the previous version.
+*/
 $tab_order = 100;
 
 
@@ -35,13 +39,13 @@ class wordpress_slideshow{
 		//parent::__construct('Slideshows', $this->fieldname, $this->fieldname);
 
 		//add_action('activate_wordpress_slideshow/wordpress_slideshow.php', array(&$this, 'activate'));
-		add_action('wp_ajax_action_get_coordinates', array(&$this, 'php_get_coordinates'));
+/*		add_action('wp_ajax_action_get_coordinates', array(&$this, 'php_get_coordinates'));
 		add_action('wp_ajax_action_get_slideshow', array(&$this, 'php_get_slideshow'));
 		add_action('wp_ajax_action_update_photo_property', array(&$this, 'php_update_photo_property'));
 		add_action('wp_ajax_action_replace_wp_photo', array(&$this, 'php_replace_wp_photo'));
-
-		$this->option_default_style_photo = $plugin_prefix.'slideshow_stylesheet';
-		$this->option_default_style_slideshow = $plugin_prefix.'photo_stylesheet';
+*/
+		$this->option_default_style_photo = $plugin_prefix.'photo_stylesheet';
+		$this->option_default_style_slideshow = $plugin_prefix.'slideshow_stylesheet';
 		$this->option_default_style_post_image = $plugin_prefix.'post_image_stylesheet';
 		$this->option_multiple_slideshows = $plugin_prefix.'multiple_slideshows';
 		$this->postmeta_post_image = $plugin_prefix.'post_image';
@@ -49,7 +53,7 @@ class wordpress_slideshow{
 	}
 
 	// use <!-- UNESCAPE [ some text ] --> to remove slashes from that section of the view
-	public function render_view( $view_name, $parameter = array(), $end = "frontend", $addslashes = false)
+/*	public function render_view( $view_name, $parameter = array(), $end = "frontend", $addslashes = false)
 	{
 		ob_start();
 		if(is_array($parameter))
@@ -106,7 +110,7 @@ class wordpress_slideshow{
 				}
     		}
 	}
-
+*/
 
 	function activate(){
 	    global $wpdb;
@@ -179,7 +183,7 @@ class wordpress_slideshow{
 	}
 
 
-
+/*
 	function php_get_coordinates(){
 		$location = $_POST['geo_location'];
 		$lat_id = $_POST['latitude_id'];
@@ -192,9 +196,9 @@ class wordpress_slideshow{
 		$long = $coords[1];
 
 
-		/*$retString = "document.getElementById('station_latitude').value = '". $lat . "';
-				document.getElementById('station_longitude').value = '". $long . "';";
-		*/
+		//$retString = "document.getElementById('station_latitude').value = '". $lat . "';
+			//	document.getElementById('station_longitude').value = '". $long . "';";
+		
 		$retString = "document.getElementById('$lat_id').value = '$lat';
 				document.getElementById('$long_id').value = '$long';";
 		die($retString);
@@ -453,7 +457,7 @@ class wordpress_slideshow{
 <?php
 
 	}
-
+*/
 	function plugin_url(){
 		$result = get_bloginfo('url').'/wp-content/plugins/ipm-wordpress-slideshow-MVC/';
 		return $result;
@@ -522,6 +526,7 @@ function initialize() {
 
 	}
 
+/*
 	function get_list_slideshows($type='select', $orderby = 'title', $direction ='asc'){
 		global $wpdb;
 		$ret = '';
@@ -758,10 +763,10 @@ function initialize() {
 								break;
 							}else{
 								$str = $good.$str."Success<br />";
-								/*$ncontent = str_replace($replace_string, '', $p->post_content);
+								//$ncontent = str_replace($replace_string, '', $p->post_content);
 								//echo htmlentities($ncontent);
-								if($_POST['extract'])$wpdb->query("UPDATE $wpdb->posts SET post_content='".addslashes($ncontent)."' WHERE ID=$p->ID;");
-								*/
+								//if($_POST['extract'])$wpdb->query("UPDATE $wpdb->posts SET post_content='".addslashes($ncontent)."' WHERE ID=$p->ID;");
+								
 								++$import;
 							}
 						}
@@ -792,7 +797,7 @@ function initialize() {
 
 <?php
 	} 
-
+*/
 	function show_stylesheet_list($name, $selected = ''){
 		$stylesheets = $this->utils->get_files_array(dirname(__FILE__) . "/stylesheets");
 		echo "<select name=\"$name\">";
@@ -879,27 +884,27 @@ echo ' hello' ;
 
 
 	function manage_slideshows(){
-		if($_GET['delete_slideshow']){
-			$this->process_delete_slideshow();
-		}else if($_POST[$this->plugin_prefix.'process']){
-			$this->save_slideshow('','');
-		}
+	//	if($_GET['delete_slideshow']){
+	//		$this->process_delete_slideshow();
+	//	}else if($_POST[$this->plugin_prefix.'process']){
+	//		$this->save_slideshow('','');
+	//	}
 ?>
 		<div class='wrap'>
 		<h2>Slideshow Management</h2>
-		<div id="wpss_tabs">
+	<!--	<div id="wpss_tabs">
 		     <ul>
 			 <li><a href="#wpss_settings"><span>Settings</span></a></li>
 			 <li><a href="#wpss_main"><span>Slideshows</span></a></li>
 			 <li><a href="#wpss_import"><span>Import</span></a></li>
 		     </ul>
 		</div>
-
+	-->
 		<div id='wpss_settings'>
 	<?php echo $this->plugin_settings(); ?>
 		</div>
 
-		<div id='wpss_main'>
+<!--		<div id='wpss_main'>
 <?php
 		echo "<form name='slideshow_management_form' id='slideshow_management_form' action='?page=" . $_GET['page'] . "&delete_slideshow=true' method='post'>";
 		echo "<input type='hidden' id='slideshow_id' name='slideshow_id' />";
@@ -952,11 +957,12 @@ echo ' hello' ;
 
                   <div id='wpss_import'>
                     <?php echo $this->import_utility(); ?>
-                  </div>
-                </div>
+                  </div> 
+            </div> -->
 <?php 
 	}
 
+/*
 	function page_form(){
 		$this->post_form('page');
 
@@ -1017,42 +1023,42 @@ echo ' hello' ;
 		}
 		$ret .= "<table  id='slideshowTable_$id' style='width:100%;display:none'>";
 		$ret .= $this->slideshowFields($id, $itemV);
-		/*$ret .= "<tr>
-				<td style='width:300px;'>Slideshow title: 
-				</td>
-				<td width='370px;'>
-				<input type='text' id='slideshowItem[$id][title]' name='slideshowItem[$id][title]' size='20' value='" . $itemV['title'] . "' class='".$this->plugin_prefix."required'/> *
-				</td>
-				<td style='vertical-align:top;width:400px;' rowspan='3'>
-				Slideshow description:<br />
-				<textarea id='slideshowItem[$id][description]' name='slideshowItem[$id][description]' rows='4' cols='38' class='".$this->plugin_prefix."required' >".$itemV['description']."</textarea>
-				</td>
-			</tr>
-			<tr>
-				<td>Slideshow photo credit:
-				</td>
-				<td>
-				<input type='text' name='slideshowItem[$id][photo_credit]' size='20' value='" . $itemV['photo_credit'] . "' />
-				</td>
-			</tr>
-			<tr>
-				<td class='topalign'>Slideshow geo location:
-				</td>
-				<td>
-				<input type='text' name='slideshowItem[$id][geo_location]' id='slideshowItem[$id][geo_location]' size='13' value='" . $itemV['geo_location'] . "' onkeyup='slideshow_getCoords(this.id);' onblur='slideshow_getCoords(this.id);' /><img onClick='showMap(this.previousSibling.value,this.nextSibling.id, this.nextSibling.nextSibling.id, this);' class='map_icon centervertical' src='".$this->plugin_url()."images/map_icon.jpg' /><input type='hidden' id='slideshowItem[$id][latitude]' name='slideshowItem[$id][latitude]' ReadOnly size='4' value='" . $itemV['latitude'] . "' /><input type='hidden' id='slideshowItem[$id][longitude]' name='slideshowItem[$id][longitude]' ReadOnly size='4' value='" . $itemV['longitude'] . "' /><!--&#176; latitude--><!--&#176; longitude-->
-				</td>
-
-			</tr>
-
-			</table>
-
-					<ul class='sortable' id='".$this->plugin_prefix."slideshow_photos_ul_${id}'></ul><span  id='addphoto_button_$id' class='button' style='margin-left:47%;' class='alignright' onClick='pickPhoto(this.previousSibling.id);' tip='Add Media'>Add photo</span>
- 
-
-";
-
-		$ret .= "</li>";			//$notes = str_replace(array("\r", "\n", "\0"), array('\r', '\n', '\0'), $notes);
-		 */
+		//$ret .= "<tr>
+			//	<td style='width:300px;'>Slideshow title: 
+			//	</td>
+			//	<td width='370px;'>
+			//	<input type='text' id='slideshowItem[$id][title]' name='slideshowItem[$id][title]' size='20' value='" . $itemV['title'] . "' class='".$this->plugin_prefix."required'/> *
+			//	</td>
+			//	<td style='vertical-align:top;width:400px;' rowspan='3'>
+			//	Slideshow description:<br />
+			//	<textarea id='slideshowItem[$id][description]' name='slideshowItem[$id][description]' rows='4' cols='38' class='".$this->plugin_prefix."required' >".$itemV['description']."</textarea>
+			//	</td>
+		//	</tr>
+		//	<tr>
+			//	<td>Slideshow photo credit:
+			//	</td>
+			//	<td>
+			//	<input type='text' name='slideshowItem[$id][photo_credit]' size='20' value='" . $itemV['photo_credit'] . "' />
+			//	</td>
+		//	</tr>
+		//	<tr>
+			//	<td class='topalign'>Slideshow geo location:
+			//	</td>
+			//	<td>
+			//	<input type='text' name='slideshowItem[$id][geo_location]' id='slideshowItem[$id][geo_location]' size='13' value='" . $itemV['geo_location'] . "' onkeyup='slideshow_getCoords(this.id);' onblur='slideshow_getCoords(this.id);' /><img onClick='showMap(this.previousSibling.value,this.nextSibling.id, this.nextSibling.nextSibling.id, this);' class='map_icon centervertical' src='".$this->plugin_url()."images/map_icon.jpg' /><input type='hidden' id='slideshowItem[$id][latitude]' name='slideshowItem[$id][latitude]' ReadOnly size='4' value='" . $itemV['latitude'] . "' /><input type='hidden' id='slideshowItem[$id][longitude]' name='slideshowItem[$id][longitude]' ReadOnly size='4' value='" . $itemV['longitude'] . "' /><!--&#176; latitude--><!--&#176; longitude-->
+			//	</td>
+//
+		//	</tr>
+//
+		//	</table>
+//
+				//	<ul class='sortable' id='".$this->plugin_prefix."slideshow_photos_ul_${id}'></ul><span  id='addphoto_button_$id' class='button' style='margin-left:47%;' class='alignright' onClick='pickPhoto(this.previousSibling.id);' tip='Add Media'>Add photo</span>
+//
+//
+//";
+//
+	//	$ret .= "</li>";			//$notes = str_replace(array("\r", "\n", "\0"), array('\r', '\n', '\0'), $notes);
+		 
 		return str_replace(array("\r", "\n", "\0"),array('\r', '\n', '\0'), addslashes($ret));
 
 	}
@@ -1061,34 +1067,34 @@ echo ' hello' ;
 		$wp_photo_id = $wpdb->get_var("SELECT wp_photo_id FROM $this->t_p WHERE photo_id=$pid;");
 		return $wp_photo_id;
 	}
-
+*/
 	function getPhoto($pid){
-		/*global $wpdb;
-
-		$photo_meta_rels = $wpdb->prefix.$this->plugin_prefix."photo_meta_relations";
-		$slideshow_photos = $wpdb->prefix.$this->plugin_prefix."photos";
-		$photo_meta = $wpdb->prefix.$this->plugin_prefix."photo_meta";
-		$query ="SELECT DISTINCT wp_photo_id, meta_name, meta_value FROM  $slideshow_photos as sp,$photo_meta as pm, $photo_meta_rels as pmr WHERE
-				sp.photo_id=pmr.photo_id AND
-				pmr.meta_id=pm.meta_id AND
-				sp.photo_id=$pid;";
-		//echo $query;
-		
-		$result = $wpdb->get_results($query);
-		$photo= array();
-		
-		foreach($result as $row){
-			$photo['wp_photo_id']=$row->wp_photo_id;
-			$photo[$row->meta_name]=$row->meta_value;
-		}
-
-
-		$fprops = $this->getPhotoFixedProps($photo['wp_photo_id']);
-		$photo = array_merge($photo,$fprops);
-		
-		
-		$photo['update']='yes';
-		echo "<pre>".print_r($photo, true)."</pre>";*/
+	//	global $wpdb;
+	//
+	//	$photo_meta_rels = $wpdb->prefix.$this->plugin_prefix."photo_meta_relations";
+	//	$slideshow_photos = $wpdb->prefix.$this->plugin_prefix."photos";
+	//	$photo_meta = $wpdb->prefix.$this->plugin_prefix."photo_meta";
+	//	$query ="SELECT DISTINCT wp_photo_id, meta_name, meta_value FROM  $slideshow_photos as sp,$photo_meta as pm, $photo_meta_rels as pmr WHERE
+	//			sp.photo_id=pmr.photo_id AND
+	//			pmr.meta_id=pm.meta_id AND
+	//			sp.photo_id=$pid;";
+	//          echo $query;
+	//	
+	//	$result = $wpdb->get_results($query);
+	//	$photo= array();
+	//	
+	//	foreach($result as $row){
+	//		$photo['wp_photo_id']=$row->wp_photo_id;
+	//		$photo[$row->meta_name]=$row->meta_value;
+	//	}
+	//
+	//
+	//	$fprops = $this->getPhotoFixedProps($photo['wp_photo_id']);
+	//	$photo = array_merge($photo,$fprops);
+	//	
+	//	
+	//	$photo['update']='yes';
+	//	echo "<pre>".print_r($photo, true)."</pre>";
 		
 		
 		$photo = new IPM_Photo($this, $pid);
@@ -1127,7 +1133,7 @@ echo ' hello' ;
 		return (array)$photos;
 
 	}
-
+/*
 	function getPhotoFixedProps($post_id){
 		global $wpdb;
 
@@ -1277,7 +1283,7 @@ jQuery(document).ready(function() {
 		}
 		return $url;
 	}
-
+*/
 	function process_thumb_url($url, $id=''){
 		//return $url;
 		$pic =  get_post_meta($id, '_wp_attachment_metadata');
@@ -1306,7 +1312,7 @@ jQuery(document).ready(function() {
 		}
 		return $url;
 	}
-
+/*
 	function process_large_url($url, $id=''){
 		//return $url;
 		$pic =  get_post_meta($id, '_wp_attachment_metadata');
@@ -1805,7 +1811,7 @@ jQuery(document).ready(function() {
 		echo "<div >$msg</div>";
 
 	}
-
+*/
 
 	function media_field($name, $label, $id, $size='100%', $required=false){
 
@@ -1903,6 +1909,7 @@ jQuery(document).ready(function() {
 
 
 	jQuery(\"label[for='attachments[$id][post_excerpt]']\").find(\"span:first\").html('Alt Text <br /><small>Default for slideshows</small>');
+	jQuery(\"label[for='attachments[$id][post_excerpt]']\").find(\"span:first\").after(\"<span class='alignright'><abbr class='required' title='required'>*</abbr></span>\");
 	jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]\").next().hide();
 
 	jQuery(\"tr.image_alt\").hide();
@@ -1916,7 +1923,8 @@ jQuery(document).ready(function() {
 	jQuery(\"label[for='attachments[$id][post_content]']\").find(\"span:first\").html('Caption');
 	jQuery(\"label[for='attachments[$id][post_content]']\").find(\"span:first\").after(\"<span class='alignright'><abbr class='required' title='required'>*</abbr></span>\");
 	jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_content\\\\]\").addClass('".$this->plugin_prefix."required');
-	jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_title\\\\]\").addClass('".$this->plugin_prefix."required');";
+	jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_title\\\\]\").addClass('".$this->plugin_prefix."required');
+	jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]\").addClass('".$this->plugin_prefix."required');";
 	if($img_id){
 		$oldphoto = $this->getPhoto($img_id);
 		$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_title\\\\]').val(\"".$this->utils->convertquotes($oldphoto['title'])."\");";
@@ -1952,7 +1960,7 @@ jQuery(document).ready(function() {
 
 		return $string;
 	}
-
+/*
 	function insert_slideshow($slideshow, $post_id, $sid=''){//if $sid is passsed, we know we are updating
 		global $wpdb;
 		$table = $wpdb->prefix.$this->plugin_prefix."slideshows";
@@ -1996,7 +2004,7 @@ jQuery(document).ready(function() {
 		}
 		return $post;
 	}
-
+*/
 	function save_photo_fixed_props($post, $attachment){
 		foreach($this->fixed_photo_props as $prop){
 			if($attachment[$prop]){
@@ -2005,7 +2013,7 @@ jQuery(document).ready(function() {
 		}
 		return $post;
 	}
-
+/*
 	function delete_slideshow($sid){
 		global $wpdb;
 		if(!$sid){
@@ -2066,9 +2074,9 @@ jQuery(document).ready(function() {
 			}
 
 			if(in_array($pProp, $this->fixed_photo_props) || !$pPropVal){
-				/*if(get_post_meta($pid, $pProp) != $pPropVal){
-					update_post_meta($pid, $pProp, $pPropVal);//unique
-				}*/
+	//			if(get_post_meta($pid, $pProp) != $pPropVal){
+	//				update_post_meta($pid, $pProp, $pPropVal);//unique
+	//			}
 				continue;
 			}
 
@@ -2207,9 +2215,9 @@ jQuery(document).ready(function() {
 			    return $post_id;
 		}
 
-		/*if( $post->post_type =='revision' || !$_POST[$this->plugin_prefix.'process']){
-			return;
-		}*/
+	//	if( $post->post_type =='revision' || !$_POST[$this->plugin_prefix.'process']){
+	//		return;
+	//	}
 
 		$slideshows = $_POST['slideshowItem'];
 		if(sizeof($slideshows)==0){//delete post meta
@@ -2319,9 +2327,10 @@ jQuery(document).ready(function() {
 
 	}
 	function delete_photos($post_id){
-		/*if($slideshows=get_post_meta($post_id,$this->fieldname, false)){
-			delete_post_meta($post_id, $this->fieldname);
-		}else*/ if($pid=get_post_meta($post_id,$this->plugin_prefix.'photo_id', true)){
+	//	if($slideshows=get_post_meta($post_id,$this->fieldname, false)){
+	//		delete_post_meta($post_id, $this->fieldname);
+	//	}else 
+	if($pid=get_post_meta($post_id,$this->plugin_prefix.'photo_id', true)){
 			$this->delete_photo($pid);
 		}
 	}
@@ -2329,10 +2338,10 @@ jQuery(document).ready(function() {
 	function send_to_editor_filter($html='', $send_id='', $attachment=''){
 	?>
 <script type="text/javascript">
-/* <![CDATA[ */
+// <![CDATA[ 
 var win = window.dialogArguments || opener || parent || top;
 win.send_to_editor('<?php echo addslashes($html); ?>');
-/* ]]> */
+// ]]> 
 </script>
 	<?php
 	exit;
@@ -2475,6 +2484,8 @@ win.send_to_editor('<?php echo addslashes($html); ?>');
 	function post_has_tags($text){
 		return $this->replace_photo_tags($text, true) || $this->replace_slideshow_tags($text, true);
 	}
+ 
+ */
 }
 
 //$test = new wordpress_slideshow('Recipe', 'recipe_text', 'recipe_content');
