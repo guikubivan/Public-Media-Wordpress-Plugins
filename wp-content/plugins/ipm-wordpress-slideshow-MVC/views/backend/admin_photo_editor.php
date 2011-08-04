@@ -16,29 +16,29 @@
 				
 				<div>
 					<label >Title:</label>
-					<input type='text'  id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id ?>_title' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][title]' style='width:300px' value='<?php echo htmlentities($photo->title)?>' class='<?php echo $this->plugin_prefix ?>required photo_title' />
+					<input type='text'  id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id ?>_title' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][title]' style='width:300px' value='<?php echo htmlentities($photo->title, NULL, 'UTF-8')?>' class='<?php echo $this->plugin_prefix ?>required photo_title' />
 				</div>
 				<div>	
 					<label >Photo credit</label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_photo_credit' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][photo_credit]' style='width:300px' value='<?php echo htmlentities($photo->photo_credit) ?>'  title='Click to edit' class='editable <?php echo $this->plugin_prefix ?>required' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_photo_credit' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][photo_credit]' style='width:300px' value='<?php echo htmlentities($photo->photo_credit, NULL, 'UTF-8') ?>'  title='Click to edit' class='editable <?php echo $this->plugin_prefix ?>required' />
 				</div>
 				<div>
 					<label >Geo location</label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_geo_location' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][geo_location]' style='width:300px' value='<?php echo htmlentities($photo->geo_location) ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_geo_location' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][geo_location]' style='width:300px' value='<?php echo htmlentities($photo->geo_location, NULL, 'UTF-8') ?>' class='editable' title='Click to edit' /<img onClick='showMapForPhoto(this.previousSibling.previousSibling.value);' class='map_icon centervertical' src='images/map_icon.jpg' />
 				</div>
 				<div>
 					<label >Original URL</label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_original_url' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][original_url]' style='width:300px' value='<?php echo htmlentities($photo->original_url) ?>'  title='Click to edit' class='editable' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo$photo->photo_id?>_original_url' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][original_url]' style='width:300px' value='<?php echo htmlentities($photo->original_url, NULL, 'UTF-8') ?>'  title='Click to edit' class='editable' />
 				</div>
 				<div>
 					<label >Alt text <small>Specific to this Slideshow</small></label>
-					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id?>_alt' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][alt]' style='width:300px' value='<?php echo htmlentities($photo->alt) ?>' class='editable <?php echo $this->plugin_prefix ?>required' />
+					<input type='text' id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id?>_alt' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][alt]' style='width:300px' value='<?php echo htmlentities($photo->alt, NULL, 'UTF-8') ?>' class='editable <?php echo $this->plugin_prefix ?>required' />
 					
 				</div>
 				
 				<div>
 					<label >Caption</label>
-					<textarea  id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id?>_caption' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][caption]' rows='2' style='width:300px' class='<?php echo $this->plugin_prefix ?>required' ><?php echo htmlentities($photo->caption) ?></textarea>
+					<textarea  id='slideshowItem_<?php echo $slideshow_id ?>_photos_<?php echo $photo->photo_id?>_caption' name='slideshow[<?php echo $slideshow_id ?>][photos][<?php echo $photo->photo_id ?>][caption]' rows='2' style='width:300px' class='<?php echo $this->plugin_prefix ?>required' ><?php echo htmlentities($photo->caption, NULL, 'UTF-8') ?></textarea>
 				</div>
 				
 				<div >
