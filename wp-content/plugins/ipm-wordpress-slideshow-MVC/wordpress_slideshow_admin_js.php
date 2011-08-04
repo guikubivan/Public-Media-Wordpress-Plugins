@@ -1,4 +1,5 @@
 <?php
+/* This file is deprecated and no longer used by the MVC version of the plugin */
 //	header("Content-Type: text/javascript");
 ?>
 <script type="text/javascript">

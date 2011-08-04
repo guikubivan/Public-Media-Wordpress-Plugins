@@ -1,4 +1,5 @@
 /* Caution! Ensure accessibility in print and other media types... */
+/* This file is deprecated and no longer used by the MVC version of the plugin */
 @media projection, screen { /* Use class for showing/hiding tab content, so that visibility can be better controlled in different media types... */
     .ui-tabs-hide {
         display: none;

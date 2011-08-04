@@ -1,4 +1,4 @@
-
+/* This file is deprecated and no longer used by the MVC version of the plugin */
 function simplifyUploadInterface(){
 	jQuery("#tab-gallery").hide();
 	jQuery("#tab-library").hide();

@@ -1,4 +1,4 @@
-
+/* This file is deprecated and no longer used by the MVC version of the plugin */
 jQuery(document).ready(function(){
 
 	jQuery("#library-form, #image-form").submit(function() { //for media-upload.php

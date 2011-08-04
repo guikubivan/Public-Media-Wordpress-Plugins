@@ -1,6 +1,6 @@
 <?php
 /*
-This file is deprecated and no longer been used by the current version.
+This file is deprecated and no longer been used by the MVC version.
 It is kept just as a backup of the previous version.
 */
 $tab_order = 100;

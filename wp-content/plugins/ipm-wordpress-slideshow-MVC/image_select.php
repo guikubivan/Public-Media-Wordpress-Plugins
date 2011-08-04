@@ -1,4 +1,5 @@
 <?php 
+/* This file is deprecated and no longer used by the MVC version of the plugin */
 
 
 require_once('/www/wfiu/wp-admin/admin.php');
