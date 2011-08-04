@@ -23,11 +23,6 @@ if(file_exists(ABSPATH.PLUGINDIR.'/wfiu_utils/ipm-utils-class.php')){
 if ( ! function_exists( 'is_plugin_active_for_network' ) )
    require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
    
-if(!class_exists ('wordpress_slideshow')) {
-	require_once(dirname(__FILE__).'/wordpress_slideshow_classes.php');
-	$wp_slideshow = new wordpress_slideshow();
-}
-
 if(!class_exists ('plugin_activation')) {
 	require_once(dirname(__FILE__).'/controllers/plugin_activation.controller.php');
 	$plugin_activation_object = new plugin_activation();
