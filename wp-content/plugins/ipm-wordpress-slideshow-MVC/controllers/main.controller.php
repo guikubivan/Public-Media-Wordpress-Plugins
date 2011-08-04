@@ -44,10 +44,10 @@ class wpss_main{
 		
 		$this->ajax = new IPM_Ajax($this);
 		
-		$this->option_default_style_photo = $this->plugin_prefix.'slideshow_stylesheet';
-		$this->option_default_style_slideshow = $this->plugin_prefix.'photo_stylesheet';
-		$this->option_default_style_post_image = $this->plugin_prefix.'post_image_stylesheet';
-		$this->option_multiple_slideshows = $this->plugin_prefix.'multiple_slideshows';
+		$this->option_default_style_photo = $plugin_prefix.'slideshow_stylesheet';
+		$this->option_default_style_slideshow = $plugin_prefix.'photo_stylesheet';
+		$this->option_default_style_post_image = $plugin_prefix.'post_image_stylesheet';
+		$this->option_multiple_slideshows = $plugin_prefix.'multiple_slideshows';
 		//$this->postmeta_post_image = $this->plugin_prefix.'post_image';
 		
 	}	
@@ -127,7 +127,12 @@ class wpss_main{
 		
 		//Register javascript 
 		wp_register_script( 'google_map_api', 'http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$google_api_key);
-		wp_register_script('google_map_api_utils', WPSSDIR.'/google_maps_utils.js', array ('google_map_api'));
+		//wp_register_script('google_map_api_utils', WPSSDIR.'/google_maps_utils.js', array ('google_map_api'));
+		if(file_exists(ABSPATH.PLUGINDIR.'/wfiu_utils/google_maps_utils.js')){
+			wp_register_script('google_map_api_utils', get_bloginfo('url').'/wp-content/plugins/wfiu_utils/google_maps_utils.js', array ('google_map_api'));
+		}else{
+			wp_register_script('google_map_api_utils', $this->plugin_url().'google_maps_utils.js', array ('google_map_api'));
+		}
 		wp_localize_script( 'google_map_api_utils', 'WPGoogleAPI', array('key' => $google_api_key));
 
 		wp_register_script( 'wp_slideshow', $this->plugin_url.'new_slideshow_admin.js', array('jquery', 'google_map_api', 'google_map_api_utils'));
