@@ -20,7 +20,7 @@ class IPM_FrontEnd
 	function show_photos($stylesheet='')
 	{
 		$this->plugin->get_post();	
-		if( !$this->post_has_tags() )
+		if( !$this->post_has_tags($this->plugin->post->post_content) )
 		{
 			$post_slideshows = new IPM_PostSlideshows($this->plugin);
 			$post_slideshows->get_slideshows();
@@ -50,16 +50,16 @@ class IPM_FrontEnd
 	}
 	
 	//check if the post content has short tags that can be replaced without actually printing the images 
-	private function post_has_tags(){
-		return $this->replace_tags(true); //$this->replace_photo_tags($this->plugin->post->post_content, true) || $this->replace_slideshow_tags($this->plugin->post->post_content, true);
+	private function post_has_tags($text){
+		return $this->replace_tags($text, true); //$this->replace_photo_tags($this->plugin->post->post_content, true) || $this->replace_slideshow_tags($this->plugin->post->post_content, true);
 	}
 	
 	//used to replace the short tags with photos/slideshows in the post content
-	function replace_tags($probe = false)
+	function replace_tags($text, $probe = false)
 	{
 			
-		$this->plugin->get_post();	
-		$text = $this->plugin->post->post_content;
+		//$this->plugin->get_post();	
+		//$text = $this->plugin->post->post_content;
 		$post_slideshows = new IPM_PostSlideshows($this->plugin);
 		$post_slideshows->get_slideshows();
 		
@@ -67,6 +67,7 @@ class IPM_FrontEnd
 		{
 			foreach($post_slideshows->slideshows as $s_key => $slideshow)
 			{
+				$s_index = $s_key + 1;
 				//replace all the slideshow tags with slideshows inside the post
 				if(preg_match_all("/\[\s*slideshow\s*\-?\s*".$s_index."\s*([^\]\s]*)\s*\]/",$text, $matches)>0)
 				{
@@ -85,8 +86,8 @@ class IPM_FrontEnd
 						$out = $this->get_slideshow_clip($sids[$h],$stylesheet);
 						$text = str_replace($matches[0][$i], $out, $text);*/
 						
-						$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_photo);
-						$output = $this->plugin->render_frontend_view($stylesheet, array("type"=>"slideshow", "slideshows"=>array($slideshow), "photo"=>"") );
+						$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_slideshow);
+						$output = $this->plugin->render_frontend_view($stylesheet, array("type"=>"slideshows", "slideshows"=>array($slideshow), "photo"=>"") );
 						$text = str_replace($matches[0][$i], $output, $text);
 					}
 				}

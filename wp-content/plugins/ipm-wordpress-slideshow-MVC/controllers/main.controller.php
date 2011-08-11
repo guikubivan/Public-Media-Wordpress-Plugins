@@ -53,11 +53,11 @@ class wpss_main{
 	}	
 	
 	//called by the the_content action on the front-end
-	public function front_end()
+	public function front_end($text)
 	{
 		require_once(WPSSCONTROLLERS."front_end.controller.php");
 		$front_end = new IPM_FrontEnd($this);
-		return $front_end->replace_tags();
+		return $front_end->replace_tags($text);
 	}
 	
 	//wrapper to redirect the front-end global function "wpss_photos($stylesheet) to the function through the front-end class
