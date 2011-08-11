@@ -10,7 +10,7 @@ if($type == "slideshows")
 
 	<h3><?php echo $slideshow->title ?></h3>
 
-	<div class="scrollable" rel="#overlay<?php echo$slideshow->slideshow_id ?>"><ul class="items">
+	<div class="scrollable" rel="#overlay<?php echo $slideshow->slideshow_id ?>"><ul class="items">
 	<!-- here goes the intro slide stuff -->
 	
 		<li class="item">
@@ -27,15 +27,17 @@ if($type == "slideshows")
 		<? if( !empty($slideshow->thumb->original_url) ) { ?>
 				<p class="photo-credit">Photo: <a href="<?php echo $slideshow->thumb->original_url ?>"><?php echo $slideshow->thumb->photo_credit ?></a></p>
 		<? } else { ?>		
-				<p class="photo-credit">Slideshow: <?php echo $slideshow->thumb->photo_credit ?></p>
+				<p class="photo-credit">Slideshow: <?php echo $slideshow->photo_credit ?></p>
 		<? } ?>
 		
 			<div class="clear"></div>
-		<p class="photo-caption"><?php echo $slideshow->thumb->description ?></p>
+		<p class="photo-caption"><?php echo $slideshow->description ?></p>
 	</li><!--item-->
 	
 	<!-- and now, the rest of the images -->
-	<? foreach ($slideshow->photos as $key => $photo) { ?>
+	<? foreach ($slideshow->photos as $key => $photo) { 
+	$photo_array[$key] = $photo;
+	?>
 	<li class="item">
 		<? if( !empty($photo->url) ) { ?>
 			<a rel="slideshow-colorbox" class="colorbox" href="<?php echo $photo->large_url ?>" >
@@ -50,8 +52,7 @@ if($type == "slideshows")
 			<?php echo count($slideshow->photos) ?>
 			</p>
 			
-			<? if(!empty($photo->
-			original_url) ) { ?>
+			<? if(!empty($photo->original_url) ) { ?>
 				<p class="photo-credit">Photo: <a href="<?php echo $photo->original_url ?>"><?php echo $photo->photo_credit ?></a></p>
 			<? } else { ?>
 				<p class="photo-credit">Photo: <?php echo $photo->photo_credit ?></p>
@@ -74,7 +75,7 @@ if($type == "slideshows")
 
 
 
-<div class="the-overlay" id="overlay]]><?php echo $slideshow->slideshow_id ?>" style="display:none;">
+<div class="the-overlay" id="overlay<?php echo $slideshow->slideshow_id ?>" style="display:none;">
 
 	<h3><?php echo $slideshow->title ?></h3>
 	
@@ -91,32 +92,32 @@ if($type == "slideshows")
 				<? if(!empty($slideshow->thumb->original_url) ) { ?>
 				<p class="photo-credit">Photo: <a href="<?php echo $slideshow->thumb->original_url?>"><?php echo $slideshow->thumb->photo_credit ?></a></p>
 			<? } else { ?>
-				<p class="photo-credit">Slideshow: <?php echo $slideshow->thumb->photo_credit ?></p>
+				<p class="photo-credit">Slideshow: <?php echo $slideshow->photo_credit ?></p>
 			<? } ?>
 		<div class="clear"></div>
-		<p class="photo-caption"><?php echo $slideshow->thumb->description ?></p>
+		<p class="photo-caption"><?php echo $slideshow->description ?></p>
 		</li>
-	
-	
-	
-	
-	<? foreach ($slideshow->photos as $key => $photo) { ?>
-		<li><a class="colorbox"><img alt="" src="<?php echo $photo->large_url ?>" /><a>
+		
+		<?php
+		for ($i=0; $i<=$key; $i++)
+		{ ?>
+			<li><a class="colorbox"><img alt="<?php echo $photo_array[$i]->alt ?>" src="<?php echo $photo_array[$i]->large_url ?>" /></a>
 				
-				<p class="photo-number">Image <?php echo $key + 1 ?>"/>
+				<p class="photo-number">Image <?php echo $i + 1 ?>
 			of
-			<?php echo count($slideshow->photos)?>
+			<?php echo count($slideshow->photos) ?>
 			</p>
-				
-			<? if(!empty($photo->original_url) ) { ?>
-				<p class="photo-credit">Photo: <a href="<?php echo $photo->original_url ?>"><?php echo $photo->photo_credit ?></a></p>
+			
+				<? if(!empty($photo_array[$i]->original_url) ) { ?>
+				<p class="photo-credit">Photo: <a href="<?php echo $photo_array[$i]->original_url?>"><?php echo $photo_array[$i]->photo_credit ?></a></p>
 			<? } else { ?>
-				<p class="photo-credit">Photo: <?php echo $photo->photo_credit ?></p>
+				<p class="photo-credit">Photo: <?php echo $photo_array[$i]->photo_credit ?></p>
 			<? } ?>
 		<div class="clear"></div>
-		<p class="photo-caption"><?php echo $photo->caption ?></p>
+		<p class="photo-caption"><?php echo $photo_array[$i]->caption ?></p>
 		</li>
-	<? } ?>
+	<?php } ?>
+	
 	</ul></div> <!--the-images-->
 	<a class="prevPage"></a> 
 	<a class="nextPage"></a> 
