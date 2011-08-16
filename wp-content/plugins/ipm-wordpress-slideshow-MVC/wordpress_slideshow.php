@@ -4,7 +4,7 @@ Plugin Name: IPM - Wordpress slideshow - MVC
 Plugin URI: http://www.wfiu.org
 Description: Let's you make a slideshow using wordpress' native way of storing photos.
 Version: 1.0
-Author: Pablo Vanwoerkom, Ben Serrette
+Author: Pablo Vanwoerkom, Ben Serrette, Priyank Shah
 Author URI: http://www.wfiu.org
 */
 define('WPINC', 'wp-includes');
@@ -87,6 +87,10 @@ add_action('save_post', array(&$slideshow_plugin,'save_slideshow'), 1, 2);
 //customizing the upload image form
 add_filter('media_meta', array(&$plugin_activation_object,'mediaItem'),  109, 2);//called at wp-admin/includes/media.php
 add_filter('attachment_fields_to_save', array(&$plugin_activation_object,'save_photo_fixed_props'), 109, 2);//called at wp-admin/includes/media.php
+
+//adding a Slideshow/Photos column to  All posts page
+add_filter('manage_posts_columns', array(&$slideshow_plugin,'add_column'));
+add_filter('manage_posts_custom_column', array(&$slideshow_plugin,'do_column'), 10, 2);
 
 $myutils = new IPM_Utils();
 function slideshow_manager_menu(){

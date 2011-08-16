@@ -15,7 +15,7 @@ class wpss_main{
 	
 	//instance of the ajax controller so we can call the ajax functions whenever
 	public $ajax;
-	
+	public $fieldname = 'slideshow_id';
 	public $plugin_prefix = 'wpss_';
 	public $plugin_url;
 	
@@ -255,6 +255,61 @@ class wpss_main{
 		$output = $this->render_view($view, $parameters, "backend");
 		return $output;
 	}		
-}
 
+
+	//add column when listing posts
+	function add_column($defaults){
+		$defaults['wpss'] = 'Slideshows/Photos';
+		return $defaults;
+	}
+
+	function do_column($column_name, $id){
+   		if( $column_name == 'wpss' ) {
+			if($slideshows=get_post_meta($id,$this->fieldname, false)){
+				if(is_array($slideshows)){
+					foreach($slideshows as $sid){
+						$sProps = $this->getSlideshowProps($sid);
+						$photos = $this->getPhotos($sid);
+						echo "<b>".$sProps['title']."</b> [" . $photos . " photo(s)]</br>";
+					}
+				}
+			}else if($pid=get_post_meta($id,$this->plugin_prefix.'photo_id', true)){
+				$photo = $this->getPhoto($pid);
+				echo "<b>".$photo['title'] . "</b>";
+			}else{
+				echo "";//N/A
+				}
+   		}
+	}
+
+	function getSlideshowProps($sid){
+		global $wpdb;
+		$table = $wpdb->prefix.$this->plugin_prefix."slideshows";
+		$results = $wpdb->get_row("SELECT * FROM $table WHERE ID=$sid");
+		return (array)$results;
+	}
+
+	function getPhoto($pid){
+		$photo_table = $this->wpdb->prefix.$this->plugin_prefix."photos";
+		$query = "SELECT `wp_photo_id` FROM `".$photo_table."` WHERE `photo_id` = '".$pid."'";
+		$result = $this->wpdb->get_results($query);
+		//print_r($result);
+		if($result===false)
+			return false;
+		else
+		{
+			$post_id = $result[0]->wp_photo_id;
+		}
+	
+		$photo = new IPM_Photo($this, $post_id);
+		$temp = $photo->getPhoto_emulator();
+		return $temp;
+	}
+
+	function getPhotos($sid){
+		global $wpdb;
+		$slideshow = new IPM_Slideshow($this, $sid);
+		return $slideshow->count_photos();
+	}
+}
 ?>

@@ -12,6 +12,7 @@
  * attach_to_post() - attach the slideshow to a specific post... It's usually better to modify the
  * 		slideshows attribute, the remove_slideshow(), and save_slideshows() in the IPM_PostSlideshow class
  * set_thumbnail( IPM_SlideshowPhoto ) - set the thumbnail and update the slideshow
+ * count_photos() - returns the number of photos in the slideshow
  * 
  * Attributes
  * slideshow_id
@@ -230,6 +231,21 @@ class IPM_Slideshow
 		
 		return $success;
 	}
+	
+	public function count_photos()
+	{
+		$query = "SELECT DISTINCT *  
+			FROM `".$this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations`
+			WHERE `slideshow_id` = '".$this->slideshow_id."' 
+			ORDER BY `photo_order` ";
+		$result = $this->wpdb->get_results($query);
+		$count = 0;
+		foreach($result as $key=>$row){
+			$count++;
+		}
+		return $count;
+	}
+	
 }
 
 ?>
