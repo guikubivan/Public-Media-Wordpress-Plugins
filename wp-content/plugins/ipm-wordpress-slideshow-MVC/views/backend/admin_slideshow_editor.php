@@ -15,7 +15,7 @@
 		<div class='slideshow_fields'>
 			<div style="float: right;">	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_description">Slideshow description</label>
-				<textarea id='slideshow_<?php echo $slideshow->slideshow_id ?>_description' name='slideshow[<?php echo $slideshow->slideshow_id ?>][description]'  style='width:300px; height:125px' class='<?php echo $this->plugin_prefix ?>required' ><?php echo htmlentities($slideshow->description, NULL, 'UTF-8') ?></textarea>
+				<textarea id='slideshow_<?php echo $slideshow->slideshow_id ?>_description' name='slideshow[<?php echo $slideshow->slideshow_id ?>][description]'  style='width:235px; height:125px' class='<?php echo $this->plugin_prefix ?>required' ><?php echo htmlentities($slideshow->description, NULL, 'UTF-8') ?></textarea>
 			</div>	
 			<div>
 				<label for="slideshow_field_<?php echo $slideshow->slideshow_id?>_title">Slideshow title</label>
@@ -51,7 +51,7 @@
 				$count ++;
 			}?>
 			<li class="add_li" id="slideshow_<?php echo $slideshow->slideshow_id?>_add_button" >
-				<span id='addphoto_button_<?php echo $slideshow->slideshow_id ?>' class='button' style='margin-left:45%;' class='alignright' onClick='pickPhoto(<?php echo $slideshow->slideshow_id ?>);' tip='Add Media'>Add photo</span>
+				<span id='addphoto_button_<?php echo $slideshow->slideshow_id ?>' class='button' style='margin-left:20%;' class='alignright' onClick='pickPhoto(<?php echo $slideshow->slideshow_id ?>);' tip='Add Media'>Add photo</span>
 			</li>
 		</ul>
 		

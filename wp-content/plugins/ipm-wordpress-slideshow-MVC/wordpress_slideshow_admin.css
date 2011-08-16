@@ -87,6 +87,10 @@ span.wpss_required{
 	background-color: #E4C27A;
 }
 
+input.wpss_required {
+	background-color: #E4C27A;
+}
+
 .organizer_item_heading {
 	text-align:center;
 	width:100%;

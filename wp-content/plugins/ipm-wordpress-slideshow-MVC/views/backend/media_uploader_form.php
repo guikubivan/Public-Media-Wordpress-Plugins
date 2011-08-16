@@ -39,6 +39,10 @@
 	.caption {
 		margin:0px;
 	}
+	
+	.dropdown {
+		width: 200px;
+	}
 </style> 
 
 <center>	<h2>Upload new photo</h2> 
@@ -162,7 +166,7 @@
 					</p>
 				</td>
 				<td class="title_column">
-					<select id="photo_title_<?php echo $photo->post_id?>">
+					<select id="photo_title_<?php echo $photo->post_id?>" class="dropdown">
 						<option><?php echo $photo->title?></option>
 					<?
 						foreach($photo->extra_titles as $title)
@@ -177,9 +181,7 @@
 				<td class="date_column">
 					<?php echo date("Y-m-d", strtotime($photo->date_modified) ) ?>
 				</td>
-				<td>
-					<a href="?type=slideshow_image&post_id=<?php echo $photo->post_id . $img_id_var?>" class="button" >Edit</a>
-				</td>
+				
 			
 			</tr>
 			
