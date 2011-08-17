@@ -59,6 +59,12 @@ if(!empty($_POST['schedule_settings_submit'])){
     delete_option($ps_default_weekly_width_option_name);
   }
 
+  if(!empty($_POST['default_playlist_blog'])){
+    update_option($ps_default_playlist_blog_option_name, $_POST['default_playlist_blog']);
+  }else{
+    delete_option($ps_default_playlist_blog_option_name);
+  }
+
   if(!empty($_POST['ps_timezone_string'])){
     update_option($ps_default_timezone_option_name, $_POST['ps_timezone_string']);
   }else{
@@ -155,6 +161,17 @@ if (sizeof($schedules)): ?>
             $option .= '</option>';
             echo $option;
       }
+      ?>
+    </select>
+
+    <h3>Default playlist blog</h3>
+    <p>By default, the plugin will use the playlists of the blog being viewed. However, you can change that here (currently only affects the "playlist-item-now-ajax" view).</p>
+    <select name="default_playlist_blog">
+      <option value="">
+        <?php echo attribute_escape(__('None')); ?>
+      </option>
+      <?php
+      echo "blogs list";
       ?>
     </select>
 
