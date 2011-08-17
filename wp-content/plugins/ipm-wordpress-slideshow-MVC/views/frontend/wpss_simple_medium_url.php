@@ -1,0 +1,1 @@
+<?php echo $photo->medium_url?>
