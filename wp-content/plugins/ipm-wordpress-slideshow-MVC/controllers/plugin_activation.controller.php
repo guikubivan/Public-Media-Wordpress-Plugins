@@ -344,7 +344,7 @@ echo ' hello' ;
 			
 			$string .= "jQuery(\"#media-item-$id\").find(\".submit\").find(\"td.savesend\").find(\"input:first\").hide();
 						jQuery(\"#media-item-$id\").find(\".submit\").find(\"td.savesend\").prepend(jQuery(\"#insert_photo_span_$id\").html());
-						jQuery(\"label[for='attachments[$id][post_excerpt]']\").find(\"span:first\").html('Alt Text <br /><small>Default for slideshows</small>');
+						jQuery(\"label[for='attachments[$id][post_excerpt]']\").find(\"span:first\").html('Alt Text <br /><small>Slideshow Default</small>');
 						jQuery(\"label[for='attachments[$id][post_excerpt]']\").find(\"span:first\").after(\"<span class='alignright'><abbr class='required' title='required'>*</abbr></span>\");
 						jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]\").next().hide();
 						jQuery(\"tr.image_alt\").hide();
