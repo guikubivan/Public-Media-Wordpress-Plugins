@@ -75,6 +75,7 @@ if(!empty($_POST['schedule_settings_submit'])){
 }
 $page_name = get_option($ps_page_option_name);
 $default_schedule_id = get_option($ps_default_schedule_option_name);
+$default_playlist_blog = get_option($ps_default_playlist_blog_option_name);
 $default_weekly_width = get_option($ps_default_weekly_width_option_name);
 $default_tzstring = get_option($ps_default_timezone_option_name);
 /************************************/
@@ -165,13 +166,20 @@ if (sizeof($schedules)): ?>
     </select>
 
     <h3>Default playlist blog</h3>
-    <p>By default, the plugin will use the playlists of the blog being viewed. However, you can change that here (currently only affects the "playlist-item-now-ajax" view).</p>
+    <p>By default, the plugin will use the playlists of the blog being viewed. However, you can choose a different blog here.</p>
     <select name="default_playlist_blog">
       <option value="">
-        <?php echo attribute_escape(__('None')); ?>
+        <? echo attribute_escape(__('None')); ?>
       </option>
-      <?php
-      echo "blogs list";
+      <?
+        $all_blogs = get_blogs_of_user( get_current_user_id() );
+        foreach($all_blogs as $b){
+          ?>
+            <option value="<?= $b->userblog_id ?>" <?= $b->userblog_id == $default_playlist_blog ? "SELECTED" : ""  ; ?>>
+              <?= $b->blogname; ?>
+            </option>
+          <?
+        }
       ?>
     </select>
 

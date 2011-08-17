@@ -34,7 +34,7 @@ METHODS
 
 */
 
-global $helper_schedule, $ps_page_option_name, $ps_default_schedule_option_name, $ps_default_weekly_width_option_name, $ps_default_timezone_option_name, $ps_query;
+global $helper_schedule, $ps_page_option_name, $ps_default_schedule_option_name, $ps_default_playlist_blog_option_name, $ps_default_weekly_width_option_name, $ps_default_timezone_option_name, $ps_query;
 
 $ps_page_option_name = "program_scheduler_page";
 $ps_default_schedule_option_name = "program_scheduler_default_id";

@@ -25,7 +25,7 @@ VALID ATTRIBUTES
   -label_id
   -station_id
 *********/
-global $wpdb, $ps_query;
+global $wpdb, $ps_query, $ps_default_playlist_blog_option_name;
 
 #echo date("g:i A Y-m-d ",$start_date);
 #echo date("g:i A Y-m-d ",$start); echo "<br/>";
@@ -45,7 +45,9 @@ if(!isset($show_only_last)) $show_only_last = false;
 
 $order_and_limit_clause = $show_only_last ? 'ORDER BY start_time DESC LIMIT 1' : 'ORDER BY start_time ASC';
 
-$query = $wpdb->prepare("SELECT * FROM ". $wpdb->prefix . "wfiu_playlist WHERE start_time >= %s AND start_time < %s AND start_time <= %s $station_clause $order_and_limit_clause",
+$default_playlist_blog_id = get_option($ps_default_playlist_blog_option_name);
+$blog_prefix = empty($default_playlist_blog_id) ? $wpdb->prefix : $wpdb->base_prefix . $default_playlist_blog_id . "_";
+$query = $wpdb->prepare("SELECT * FROM ". $blog_prefix . "wfiu_playlist WHERE start_time >= %s AND start_time < %s AND start_time <= %s $station_clause $order_and_limit_clause",
         $program_start, $program_end, $cur_datetime, $scheduleObj->id);
 
 $playlist = $wpdb->get_results($query);
