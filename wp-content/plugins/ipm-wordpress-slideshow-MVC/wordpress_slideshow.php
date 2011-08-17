@@ -131,6 +131,14 @@ function wpss_post_image($stylesheet= '', $post_id='')
 		if(!empty($post_slideshows->slideshows) )
 		{
 			$post_image = $post_slideshows->get_post_photo();
+			
+			//This if statement is to make the plugin backward's compatible for the case of posts having 
+			//slideshows but no custom field in postmeta table for the post image. 
+			if($post_image == false)
+			{
+				$post_image = $post_slideshows->slideshows[0]->thumb;
+			}
+			
 		}
 		else
 		{
