@@ -44,7 +44,7 @@ class IPM_FrontEnd
 				if($stylesheet = "")
 					echo "Error. The Slideshow Stylesheets have not been defined.";
 				else
-					echo "Unknown error.";
+					echo "";
 			}
 		}
 	}
