@@ -52,7 +52,8 @@ jQuery(document).ready(function(){
           });
         <?php endif; ?>
         
-        
+        <?php if(preg_match("/post.php/", $_SERVER[ 'REQUEST_URI' ]) ): ?>
+      
 		jQuery(document).ready(function(){
 			jQuery(".<?php echo $this->plugin_prefix ?>slideshow_container ul").sortable(
 			{
@@ -70,7 +71,8 @@ jQuery(document).ready(function(){
 			});
 		});
 		
-		
+		<?php endif; ?>
+        
 		function reorder_slideshow(slideshow_id, current_index, new_index)
 		{
 			wpss_start_loading();
