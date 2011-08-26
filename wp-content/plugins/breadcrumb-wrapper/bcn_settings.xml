@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<options>
+  <plugin name="Breadcrumb NavXT" version="3.9.0">
+    <option name="mainsite_display"></option>
+    <option name="mainsite_title">Home</option>
+    <option name="mainsite_anchor">&lt;a title="Go to %title%." href="%link%" id="%title%"&gt;</option>
+    <option name="mainsite_prefix"></option>
+    <option name="mainsite_suffix"></option>
+    <option name="home_display">1</option>
+    <option name="home_title">Earth Eats</option>
+    <option name="home_anchor">&lt;a title="Go to %title%." href="%link%" id="%title%"&gt;</option>
+    <option name="blog_display"></option>
+    <option name="blog_anchor">&lt;a title="Go to %title%." href="%link%"&gt;</option>
+    <option name="home_prefix">&lt;span class="item"&gt;</option>
+    <option name="home_suffix"></option>
+    <option name="separator"></option>
+    <option name="max_title_length">15</option>
+    <option name="current_item_linked"></option>
+    <option name="current_item_anchor">&lt;a title="Reload the current page." href="%link%" id="%title%"&gt;</option>
+    <option name="current_item_prefix"></option>
+    <option name="current_item_suffix">&lt;/span&gt;</option>
+    <option name="post_page_prefix">&lt;/span&gt;&lt;span class="item"&gt;</option>
+    <option name="post_page_suffix"></option>
+    <option name="post_page_anchor">&lt;a title="Go to %title%." href="%link%" id="%title%"&gt;</option>
+    <option name="post_page_root">0</option>
+    <option name="paged_prefix"></option>
+    <option name="paged_suffix"></option>
+    <option name="paged_display"></option>
+    <option name="post_post_prefix"></option>
+    <option name="post_post_suffix"></option>
+    <option name="post_post_anchor">&lt;a title="Go to %title%." href="%link%" id="%title%"&gt;</option>
+    <option name="post_post_root"></option>
+    <option name="post_post_taxonomy_display">1</option>
+    <option name="post_post_taxonomy_type">category</option>
+    <option name="attachment_prefix"></option>
+    <option name="attachment_suffix"></option>
+    <option name="404_prefix">&lt;/span&gt;&lt;span class="item"&gt;</option>
+    <option name="404_suffix"></option>
+    <option name="404_title">404</option>
+    <option name="search_prefix">&lt;/span&gt;&lt;span class="item"&gt;Search results for '</option>
+    <option name="search_suffix">'</option>
+    <option name="search_anchor">&lt;a title="Go to the first page of search results for %title%." href="%link%" id="%title%"&gt;</option>
+    <option name="post_tag_prefix">&lt;/span&gt;&lt;span class="item"&gt;</option>
+    <option name="post_tag_suffix"></option>
+    <option name="post_tag_anchor">&lt;a title="Go to the %title% tag archives." href="%link%" id="%title%"&gt;</option>
+    <option name="author_prefix">&lt;/span&gt;&lt;span class="item"&gt;Posts by </option>
+    <option name="author_suffix"></option>
+    <option name="author_anchor">&lt;a title="Go to the first page of posts by %title%." href="%link%"&gt;</option>
+    <option name="author_name">display_name</option>
+    <option name="category_prefix">&lt;/span&gt;&lt;span class="item"&gt;</option>
+    <option name="category_suffix"></option>
+    <option name="category_anchor">&lt;a title="Go to the %title% category archives." href="%link%" id="%title%"&gt;</option>
+    <option name="archive_category_prefix">Archive for </option>
+    <option name="archive_category_suffix"></option>
+    <option name="archive_post_tag_prefix">&lt;/span&gt;&lt;span class="item"&gt;Posts tagged '</option>
+    <option name="archive_post_tag_suffix">'</option>
+    <option name="date_anchor">&lt;a title="Go to the %title% archives." href="%link%" id="%title%"&gt;</option>
+    <option name="archive_date_prefix">&lt;/span&gt;&lt;span class="item"&gt;</option>
+    <option name="archive_date_suffix"></option>
+    <option name="tag_prefix"></option>
+    <option name="tag_suffix"></option>
+    <option name="tag_anchor">&lt;a title="Go to the %title% tag archives." href="%link%"&gt;</option>
+    <option name="author_display"></option>
+    <option name="archive_tag_prefix"></option>
+    <option name="archive_tag_suffix"></option>
+    <option name="link_category_prefix"></option>
+    <option name="link_category_suffix"></option>
+    <option name="link_category_anchor">&lt;a title="Go to the %title% Categories archives." href="%link%" id="%title%"&gt;</option>
+    <option name="archive_link_category_prefix"></option>
+    <option name="archive_link_category_suffix"></option>
+  </plugin>
+</options>
