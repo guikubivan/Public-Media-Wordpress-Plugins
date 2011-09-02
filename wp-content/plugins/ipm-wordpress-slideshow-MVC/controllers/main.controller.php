@@ -25,6 +25,10 @@ class wpss_main{
 	public $default_style_photo = 'wpss_program_single_new.xsl';
 	public $default_style_slideshow = 'wpss_program_single_new.xsl';
 	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
+	public $default_style_photo_left = 'wpss_program_single_new_left.xsl';
+	public $default_style_slideshow_left = 'wpss_program_single_new_left.xsl';
+	public $default_style_photo_right = 'wpss_program_single_new_right.xsl';
+	public $default_style_slideshow_right = 'wpss_program_single_new_right.xsl';
 	
 	//these are global options that can be pulled from the wordpress options table if need be.
 	public $option_default_style_photo = "";
@@ -174,6 +178,8 @@ class wpss_main{
 		$this->get_post();
 		
 		$slideshows = $this->plugin->_post["slideshow"];
+		$this->_post = $_POST;
+		$slideshows = $this->_post["slideshow"];
 
 		$post_slideshows = new IPM_PostSlideshows($this, "", $this->_post['post_ID']);
 		$post_slideshows->post_image_id = $this->_post['wpss_post_photo'];

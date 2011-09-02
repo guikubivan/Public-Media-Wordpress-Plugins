@@ -19,6 +19,11 @@ class plugin_activation{
 	public $default_style_photo = 'wpss_program_single_new.xsl';
 	public $default_style_slideshow = 'wpss_program_single_new.xsl';
 	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
+	public $default_style_photo_left = 'wpss_program_single_new_left.xsl';
+	public $default_style_slideshow_left = 'wpss_program_single_new_left.xsl';
+	public $default_style_photo_right = 'wpss_program_single_new_right.xsl';
+	public $default_style_slideshow_right = 'wpss_program_single_new_right.xsl';
+		
 	public $default_multiple_slideshows = true;
 	public $photo_id_translation = Array();
 	public $wpdb;

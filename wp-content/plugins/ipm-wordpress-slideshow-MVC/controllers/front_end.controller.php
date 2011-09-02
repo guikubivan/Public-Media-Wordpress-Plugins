@@ -57,7 +57,6 @@ class IPM_FrontEnd
 	//used to replace the short tags with photos/slideshows in the post content
 	function replace_tags($text, $probe = false)
 	{
-			
 		//$this->plugin->get_post();	
 		//$text = $this->plugin->post->post_content;
 		$post_slideshows = new IPM_PostSlideshows($this->plugin);
@@ -69,7 +68,14 @@ class IPM_FrontEnd
 			{
 				$s_index = $s_key + 1;
 				//replace all the slideshow tags with slideshows inside the post
-				if(preg_match_all("/\[\s*slideshow\s*\-?\s*".$s_index."\s*([^\]\s]*)\s*\]/",$text, $matches)>0)
+				
+				$patterns1 = array("/\[\s*slideshow\s*\-?\s*".$s_index."\s*([^\]\s]*)\s*\]/",
+								   "/\[\s*slideshow\s*\-?\s*".$s_index."\s*,\s*left\s*([^\]\s]*)\s*\]/",
+								   "/\[\s*slideshow\s*\-?\s*".$s_index."\s*,\s*right\s*([^\]\s]*)\s*\]/");
+				
+				foreach($patterns1 as $pat1)
+				{
+				if(preg_match_all($pat1,$text, $matches)>0)
 				{
 					for($i=0;$i<sizeof($matches[0]);++$i){
 						if($probe){
@@ -85,21 +91,31 @@ class IPM_FrontEnd
 						}
 						$out = $this->get_slideshow_clip($sids[$h],$stylesheet);
 						$text = str_replace($matches[0][$i], $out, $text);*/
+						if (strstr($matches[0][$i], "left"))
+							$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_slideshow_left);
 						
-						$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_slideshow);
+						else if (strstr($matches[0][$i], "right"))
+							$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_slideshow_right);
+						
+						else
+							$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_slideshow);
+						
 						$output = $this->plugin->render_frontend_view($stylesheet, array("type"=>"slideshows", "slideshows"=>array($slideshow), "photo"=>"") );
 						$text = str_replace($matches[0][$i], $output, $text);
 					}
 				}
-				
+				}
 				
 				foreach( $slideshow->photos as $key => $photo)
 				{
 					//replace all the photo tags inside the post
-					$patterns = array("/\[\s*photo\s*\-?\s*".($key+1)."\s*([^\]\s]*)\s*\]/", "/\[\s*slideshow\s*".($s_key+1)."\s*,\s*photo\s*\-?\s*".($key+1)."\s*([^\]\s]*)\s*\]/");
-			      	foreach($patterns as $pat)
+					$patterns2 = array("/\[\s*photo\s*\-?\s*".($key+1)."\s*([^\]\s]*)\s*\]/", "/\[\s*slideshow\s*".($s_key+1)."\s*,\s*photo\s*\-?\s*".($key+1)."\s*([^\]\s]*)\s*\]/",
+									  "/\[\s*photo\s*\-?\s*".($key+1)."\s*,\s*left\s*([^\]\s]*)\s*\]/", "/\[\s*slideshow\s*".($s_key+1)."\s*,\s*photo\s*\-?\s*".($key+1)."\s*,\s*left\s*([^\]\s]*)\s*\]/",
+									  "/\[\s*photo\s*\-?\s*".($key+1)."\s*,\s*right\s*([^\]\s]*)\s*\]/", "/\[\s*slideshow\s*".($s_key+1)."\s*,\s*photo\s*\-?\s*".($key+1)."\s*,\s*right\s*([^\]\s]*)\s*\]/");
+			      	
+			      	foreach($patterns2 as $pat2)
 			      	{
-						if(preg_match_all($pat,$text, $matches)>0)
+						if(preg_match_all($pat2,$text, $matches)>0)
 						{
 							for($i=0;$i<sizeof($matches[0]);++$i)
 							{
@@ -119,8 +135,14 @@ class IPM_FrontEnd
 								//$stylsheet;
 								//$out = $this->get_photo_clip($ids[$h],$stylesheet);
 								//$text .= $stylesheet;
+								if (strstr($matches[0][$i], "left"))
+									$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_photo_left);
+									
+								else if (strstr($matches[0][$i], "right"))
+									$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_photo_right);
 								
-								$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_photo);
+								else	
+									$stylesheet = $this->plugin->convert_stylesheet($this->plugin->default_style_photo);
 								
 								$output = $this->plugin->render_frontend_view($stylesheet, array("type"=>"photo", "slideshows"=>array(), "photo"=>$photo) );
 								$text = str_replace($matches[0][$i], $output, $text);
