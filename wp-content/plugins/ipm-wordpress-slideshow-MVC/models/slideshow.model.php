@@ -194,26 +194,24 @@ class IPM_Slideshow
 			echo $photo->photo_id . " ";
 		echo "\n";
 		
-		if($current_index > $new_index)
-		{
-			$tmp = $current_index;
-			$current_index = $new_index;
-			$new_index = $tmp;
-		}
 		
 		$photos = array_values($this->photos);
-		$photo = $photos[$current_index];
-		
 		$new_photos = array();
-		for($k = 0; $k < $current_index; $k ++)
-			$new_photos[] = $photos[$k];
-		for($k = $current_index +1; $k <= $new_index; $k++)
-			$new_photos[] = $photos[$k];
-		$new_photos[] = $photo;
-		for($k = $new_index + 1; $k < count($photos); $k++)
-			$new_photos[] = $photos[$k];
+		$new_photos = $photos;	
 		
-		$this->photos = $new_photos;
+		if($current_index > $new_index)
+		{
+			$update_bound = $new_index + ($current_index - $new_index);
+			for($i=$new_index; $i<$update_bound; $i++)
+			{
+				$new_photos[$i+1] = $photos[$i];
+			}
+				
+			$new_photos[$new_index] = $photos[$current_index];
+								
+			$this->photos = $new_photos;	
+		}
+		
 		
 		foreach($this->photos as $photo)
 			echo $photo->photo_id . " ";
