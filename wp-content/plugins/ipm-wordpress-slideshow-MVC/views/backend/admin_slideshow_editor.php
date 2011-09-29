@@ -19,15 +19,15 @@
 			</div>	
 			<div>
 				<label for="slideshow_field_<?php echo $slideshow->slideshow_id?>_title">Slideshow title</label>
-				<input type='text' id='slideshow_<?php echo $slideshow->slideshow_id ?>_title' name='slideshow[<?php echo $slideshow->slideshow_id ?>][title]' style='width:50%' value='<?php echo htmlentities($slideshow->title, NULL, 'UTF-8') ?>' class='<?php echo $this->plugin_prefix ?>required' />
+				<input type='text' id='slideshow_<?php echo $slideshow->slideshow_id ?>_title' name='slideshow[<?php echo $slideshow->slideshow_id ?>][title]' style='width:50%' value="<?php echo htmlentities($slideshow->title, NULL, 'UTF-8') ?>" class='<?php echo $this->plugin_prefix ?>required' />
 			</div>				
 			<div>	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_photo_credit">Slideshow photo credit</label>
-				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_photo_credit' style='width:50%' value='<?php echo htmlentities($slideshow->photo_credit, NULL, 'UTF-8') ?>' />
+				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][photo_credit]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_photo_credit' style='width:50%' value="<?php echo htmlentities($slideshow->photo_credit, NULL, 'UTF-8') ?>" />
 			</div>	
 			<div>	
 				<label for="slideshow_<?php echo $slideshow->slideshow_id?>_geo_location">Slideshow geo location</label>
-				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][geo_location]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_geo_location' style='width:50%' value='<?php echo htmlentities($slideshow->geo_location, NULL, 'UTF-8') ?>' />
+				<input type='text' name='slideshow[<?php echo $slideshow->slideshow_id ?>][geo_location]' id='slideshow_<?php echo $slideshow->slideshow_id ?>_geo_location' style='width:50%' value="<?php echo htmlentities($slideshow->geo_location, NULL, 'UTF-8') ?>" />
 				<? /*<img onClick='showMap(this.previousSibling.value,this.nextSibling.id, this.nextSibling.nextSibling.id, this);' class='map_icon centervertical' src='images/map_icon.jpg' /> */?>
 			</div>
 
