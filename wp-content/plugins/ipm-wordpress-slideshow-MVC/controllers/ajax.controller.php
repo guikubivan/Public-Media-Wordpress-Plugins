@@ -215,7 +215,7 @@ class IPM_Ajax
 		
 //This function is called for adding a photo to the selected slideshow		
 	public function php_add_photo_to_slideshow()
-	{	usleep(400000);
+	{	usleep(600000);
 		$photo_post_id = $this->plugin->_post['photo_post_id'];
 		$slideshow_id = $this->plugin->_post['slideshow_id'];
 		$slideshow_photo = new IPM_SlideshowPhoto($this->plugin); //create new Photo-Slideshow Relationship
@@ -224,7 +224,8 @@ class IPM_Ajax
 		if($slideshow_id == "new_single") //adding a new single photo
 		{
 			$slideshow_photo->insert();
-			$slideshow_photo->title = $this->plugin->_post["title"];
+			if($this->plugin->_post["title"] != "")
+				$slideshow_photo->title = $this->plugin->_post["title"];
 			$slideshow_photo->update();
 			
 			$post_slideshow = new IPM_PostSlideshows($this->plugin);  
@@ -255,7 +256,8 @@ class IPM_Ajax
 			
 			//create NEW photo
 			$slideshow_photo->insert();
-			$slideshow_photo->title = $this->plugin->_post["title"];
+			if($this->plugin->_post["title"] != "")
+				$slideshow_photo->title = $this->plugin->_post["title"];
 			$slideshow_photo->update();
 			
 			//add new photo to slideshow
@@ -282,7 +284,8 @@ class IPM_Ajax
 		else
 		{
 			$success = $slideshow_photo->insert(); //add the record to the database
-			$success = $slideshow_photo->title = $this->plugin->_post["title"];
+			if($this->plugin->_post["title"] != "")
+				$slideshow_photo->title = $this->plugin->_post["title"];
 			$success = $slideshow_photo->update();
 			$success = $slideshow_photo->add_to_slideshow($slideshow_id); //link the record to the slideshow
 			$editor = $this->plugin->render_backend_view("admin_photo_editor.php", array("photo"=>$slideshow_photo, "slideshow_id" => $slideshow_id) );

@@ -331,7 +331,8 @@ echo ' hello' ;
 				$string .= "wpss_replace_photo_javascript($img_id,$id,'".$items['url']."');";
 				$string .= "}\">Replace photo";
 			}else{
-				$string .= "wpss_send_and_return('$id','".addslashes(html_entity_decode($img_title, NULL, 'UTF-8'))."');";
+//				$string .= "wpss_send_and_return('$id','".addslashes(html_entity_decode($img_title, NULL, 'UTF-8'))."');";
+				$string .= "wpss_send_and_return('$id','');";
 				$string .= "}\">Insert photo";
 			}
 			$string .= "</button></span>";
