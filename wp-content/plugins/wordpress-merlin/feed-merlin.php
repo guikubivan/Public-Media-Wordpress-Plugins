@@ -20,7 +20,7 @@ echo '<?xml version="1.0" encoding="'.get_option('blog_charset').'"?'.'>'; ?>
 	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
 	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
 	xmlns:pbscontent="http://www.pbs.org/rss/pbscontent/" 
-	xmlns:media="http://search.yahoo.com/mrss/" 
+	<?php //xmlns:media="http://search.yahoo.com/mrss/" ?>
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	<?php do_action('rss2_ns'); ?>
 >
