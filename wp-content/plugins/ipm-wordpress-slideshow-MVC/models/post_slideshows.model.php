@@ -70,6 +70,9 @@ class IPM_PostSlideshows
 	public function save_single_photo()
 	{
 		update_post_meta($this->post_id, $this->plugin->plugin_prefix.'photo_id', $this->photo->photo_id);
+		
+		update_post_meta($this->post_id, '_thumbnail_id', $this->photo->post_id);		
+
 	}
 	
 	public function get_single_photo()
@@ -102,6 +105,10 @@ class IPM_PostSlideshows
 public function save_post_image()
 	{
 		update_post_meta($this->post_id, $this->postmeta_post_image, $this->post_image_id);
+		
+		$newPhoto = new IPM_SlideshowPhoto($this->plugin, $this->post_image_id);
+		update_post_meta($this->post_id, '_thumbnail_id', $newPhoto->post_id);		
+		
 		return true;
 	}
 
