@@ -25,10 +25,6 @@ class wpss_main{
 	public $default_style_photo = 'wpss_program_single_new.xsl';
 	public $default_style_slideshow = 'wpss_program_single_new.xsl';
 	public $default_style_post_image = 'wpss_program_thumb_small.xsl';
-	public $default_style_photo_left = 'wpss_program_single_new_left.xsl';
-	public $default_style_slideshow_left = 'wpss_program_single_new_left.xsl';
-	public $default_style_photo_right = 'wpss_program_single_new_right.xsl';
-	public $default_style_slideshow_right = 'wpss_program_single_new_right.xsl';
 	
 	//these are global options that can be pulled from the wordpress options table if need be.
 	public $option_default_style_photo = "";
@@ -180,11 +176,9 @@ class wpss_main{
 		$slideshows = $this->plugin->_post["slideshow"];
 		$this->_post = $_POST;
 		$slideshows = $this->_post["slideshow"];
-
-		$post_slideshows = new IPM_PostSlideshows($this, "", $this->_post['post_ID']);
-		$post_slideshows->post_image_id = $this->_post['wpss_post_photo'];
-		$post_slideshows->save_post_image();
 	
+		$post_slideshows = new IPM_PostSlideshows($this, "", $this->_post['post_ID']);
+		
 		if(is_array($slideshows))
 		{
 			foreach($slideshows as $key => $slideshow)
@@ -192,6 +186,7 @@ class wpss_main{
 					
 				if($key == "single")
 				{
+					$post_slideshows->save_single_photo();
 					//@Priyank Wrote this loop	
 					foreach($slideshow['photos'] as $key => $photo)
 					{
@@ -207,6 +202,8 @@ class wpss_main{
 				}
 				else
 				{
+					$post_slideshows->post_image_id = $this->_post['wpss_post_photo'];
+					$post_slideshows->save_post_image();
 					$ipm_slideshow = new IPM_Slideshow($this, $key);
 					$ipm_slideshow->title = $slideshow['title'];	
 					$ipm_slideshow->photo_credit = $slideshow['photo_credit'];	
