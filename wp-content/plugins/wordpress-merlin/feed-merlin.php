@@ -58,7 +58,11 @@ echo '<?xml version="1.0" encoding="'.get_option('blog_charset').'"?'.'>'; ?>
 	<?php do_action('rss2_head'); ?>
 	
 	<?php while( have_posts()) : the_post(); ?>
-	<?php $program_name = get_post_meta($post->ID, 'program_name', true); 
+	<?php 
+		$add_to_merlin = get_post_meta($post->ID, 'add_to_merlin', true);
+		if($add_to_merlin == "Yes")
+	 	{
+		$program_name = get_post_meta($post->ID, 'program_name', true); 
 		$producing_member_station = get_post_meta($post->ID, 'producing_member_station',  true);
 		$owner_member_station = get_post_meta($post->ID, 'owner_member_station', true);
 		$thumbnail = get_post_meta($post->ID, 'thumbnail', true);
@@ -98,7 +102,7 @@ echo '<?xml version="1.0" encoding="'.get_option('blog_charset').'"?'.'>'; ?>
 		
 		
 		?>
-		<?php the_category_merlin() ?>
+		<?php the_category_merlin($post->ID) ?>
 		<guid isPermaLink="false"><?php the_guid(); ?></guid>
 		<description><![CDATA[<?php echo ($merlin_long_excerpt); ?>]]></description>
 		<media:description>
@@ -128,7 +132,8 @@ echo '<?xml version="1.0" encoding="'.get_option('blog_charset').'"?'.'>'; ?>
 		<?php rss_enclosure(); ?>
 		<?php do_action('rss2_item'); ?>
 	</item>
-	<?php endwhile; ?>
+	<?php }
+	 endwhile; ?>
 
 </channel>
 </rss>
