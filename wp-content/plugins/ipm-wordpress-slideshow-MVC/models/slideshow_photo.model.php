@@ -251,6 +251,14 @@ class IPM_SlideshowPhoto extends IPM_Photo
 	public function add_to_slideshow($slideshow, $order=0)
 	{
 		$relation_table = $this->wpdb->prefix.$this->wpss->plugin_prefix."slideshow_photo_relations";
+		
+		$query = "SELECT * FROM ".$relation_table." WHERE `slideshow_id` = '".$slideshow."' ;";						
+		$resultsCount=$this->wpdb->get_results($query);
+		$count = 0;
+		foreach($resultsCount as $row)
+			$count++;
+		
+		$order = $count;
 		$result = $this->wpdb->query("REPLACE INTO ".$relation_table." VALUES( '".$slideshow."', '".$this->photo_id."', '".$order."' );");//LINK PHOTO TO SLIDESHOW
 		if($result === false)
 			return false;
@@ -305,4 +313,3 @@ class IPM_SlideshowPhoto extends IPM_Photo
 	
 }
 
-?>

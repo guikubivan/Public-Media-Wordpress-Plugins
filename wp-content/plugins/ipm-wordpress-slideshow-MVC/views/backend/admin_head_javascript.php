@@ -55,7 +55,12 @@ jQuery(document).ready(function(){
         <?php if(preg_match("/post.php/", $_SERVER[ 'REQUEST_URI' ]) ): ?>
       
 		jQuery(document).ready(function(){
-			jQuery(".<?php echo $this->plugin_prefix ?>slideshow_container ul").sortable(
+			make_images_sortable();
+		});
+		
+		function make_images_sortable()
+		{
+		jQuery(".<?php echo $this->plugin_prefix ?>slideshow_container ul").sortable(
 			{
 				items: "li:not(.add_li)",
 				update: function(event, ui) {
@@ -69,7 +74,7 @@ jQuery(document).ready(function(){
 					reorder_slideshow( slideshow_id, current_index, new_index);
 				}
 			});
-		});
+		}
 		
 		<?php endif; ?>
         
@@ -309,11 +314,13 @@ jQuery(document).ready(function(){
 				if(number_of_slideshows > 0) 
 				{
 					jQuery("#slideshows_wrapper_ul").append("<li>"+mysack.response+"</li>");
+					make_images_sortable();
 				}
 				else
 				{
 					jQuery("#slideshow_content_box").empty();
 					jQuery("#slideshow_content_box").html(mysack.response);
+					make_images_sortable();
 				}
 				wpss_stop_loading( mysack.response );
 			};
@@ -373,7 +380,8 @@ jQuery(document).ready(function(){
 			{ 
 				if(current_slideshow != "single" && current_slideshow != "new_single")
 				{
-					jQuery("#slideshow_"+current_slideshow+"_add_button").before("<li>"+mysack.response+"</li>");
+					var order = jQuery("ul[slideshow_id|="+current_slideshow+"]").children().size() - 1;
+					jQuery("#slideshow_"+current_slideshow+"_add_button").before("<li order="+order+">"+mysack.response+"</li>");
 				}
 				else if(current_slideshow == "single" || current_slideshow == "new_single")
 				{
@@ -502,7 +510,7 @@ function loadMap(id, location, lat, long) {
 
 }
 
-window.onunload = GUnload;
+//window.onunload = GUnload;
 //*********************END OF GOOGLE MAPS STUFF**********************
 
 
