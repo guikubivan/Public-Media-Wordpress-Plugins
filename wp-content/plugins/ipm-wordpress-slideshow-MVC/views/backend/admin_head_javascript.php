@@ -52,7 +52,8 @@ jQuery(document).ready(function(){
           });
         <?php endif; ?>
         
-        <?php //if(preg_match("/post.php/", $_SERVER[ 'REQUEST_URI' ]) ): ?>
+          <?php if( preg_match("/post.php/", $_SERVER[ 'REQUEST_URI' ]) 
+				|| preg_match("/post-new.php/", $_SERVER[ 'REQUEST_URI' ]) ): ?>
       
 		jQuery(document).ready(function(){
 			make_images_sortable();
@@ -76,7 +77,7 @@ jQuery(document).ready(function(){
 			});
 		}
 		
-		<?php //endif; ?>
+		<?php endif; ?>
         
 		function reorder_slideshow(slideshow_id, current_index, new_index)
 		{
