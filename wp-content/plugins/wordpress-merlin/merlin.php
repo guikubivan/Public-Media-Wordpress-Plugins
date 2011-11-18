@@ -39,16 +39,37 @@ if (function_exists('add_theme_support')) {
 
 /* Use the admin_menu action to define the custom boxes */
 add_action('admin_menu', 'merlin_add_custom_box');
+add_action('activate_wordpress-merlin/merlin.php', 'activate');
+add_action('deactivate_wordpress-merlin/merlin.php', 'deactivate');
 
 /* Adds a custom section to the "side" of the post edit screen */
 function merlin_add_custom_box() {
      add_meta_box('merlin', 'Merlin Data', 'merlin_custom_box', 'post', 'side', 'high');
 }
 
+function activate() {
+	
+	if(!category_exists('Merlin')) {
+	//Define the merlin category
+	$my_cat = array('cat_name' => 'Merlin', 
+					'category_description' => '', 
+					'category_nicename' => 'merlin', 
+					'category_parent' => '');
+
+	// Create the category
+	$my_cat_id = wp_insert_category($my_cat);
+	}
+}
+
+function deactivate(){
+	$my_cat_id = get_cat_ID('merlin'); 
+  	wp_delete_category($my_cat_id);	
+}
+
 /* prints the custom field in the new custom post section */
 function merlin_custom_box() {
      //get post meta value
-     global $post;
+    global $post;
 	$program_name = get_post_meta($post->ID, 'program_name', true);
 	$producing_member_station = get_post_meta($post->ID, 'producing_member_station',  true);
 	$owner_member_station = get_post_meta($post->ID, 'owner_member_station', true);
@@ -58,7 +79,7 @@ function merlin_custom_box() {
 	$options = get_option('merlin_channel_elements');
 	$primary_category = get_post_meta($post->ID, 'merlin_primary_category', true);
 	$secondary_category = get_post_meta($post->ID, 'merlin_secondary_category', true);
-	$add_to_merlin = get_post_meta($post->ID, 'add_to_merlin', true);
+//	$add_to_merlin = get_post_meta($post->ID, 'add_to_merlin', true);
 	
 	$parents = array();
 	$parents[0] = "Arts & Entertainment";
@@ -208,11 +229,11 @@ function merlin_custom_box() {
 		pbscontent:distribution
 		*/
 
-	 echo '<p><input type="checkbox" name="add_to_merlin" value="Yes"';
-	 if($add_to_merlin == "Yes")
-	 echo 'checked="yes"';
-	 echo '/>';
-	 echo '<label for="add_to_merlin"> Add to Merlin Feed</label></p>';	
+//	 echo '<p><input type="checkbox" name="add_to_merlin" value="Yes"';
+//	 if($add_to_merlin == "Yes")
+//	 echo 'checked="yes"';
+//	 echo '/>';
+//	 echo '<label for="add_to_merlin"> Add to Merlin Feed</label></p>';	
 		
      echo '<p><label for="program_name">Program Name</label>';
      echo '<input type="text" name="program_name" id="program_name" size="30" value="'.$program_name.'" maxlength="150"  /></p>';
@@ -251,7 +272,7 @@ function merlin_custom_box() {
 			}
 		}
 	}
-	 echo '</select>';	   
+	 echo '</select>';   
 		   
 	 echo '<p><label for="secondary_category">Secondary Category </label>';
 	 echo '<select name="secondary_category" id="secondary_category"> <option></option>'; 
@@ -270,7 +291,8 @@ function merlin_custom_box() {
 			}
 		}
 	}	   
-	 echo '</select>';	 	
+	 echo '</select><br>';
+	 
 }
 
 /* use save_post action to handle data entered */
@@ -316,8 +338,18 @@ function merlin_save_postdata($post_id) {
 	 $secondary_category = $_POST['secondary_category'];
 	 update_post_meta($post_id, 'merlin_secondary_category', $secondary_category);
 	 
-	 $add_to_merlin = $_POST['add_to_merlin'];
-	 update_post_meta($post_id, 'add_to_merlin', $add_to_merlin);
+//	 $add_to_merlin = $_POST['add_to_merlin'];
+//	 update_post_meta($post_id, 'add_to_merlin', $add_to_merlin);
+	 
+	 //$idObj = get_category_by_slug('merlin'); 
+  	 //$id = $idObj->term_id;
+	 //$save_cats = array();
+	 //$save_cats = wp_get_post_categories($post_id);
+	 //$save_cats[] = $id;
+	 //wp_set_post_categories($post_id, $save_cats);
+	 
+	 
+	
 	 
 
 }
