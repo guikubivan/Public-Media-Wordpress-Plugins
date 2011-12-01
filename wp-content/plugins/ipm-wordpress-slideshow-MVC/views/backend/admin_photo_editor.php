@@ -8,7 +8,7 @@
 			<div class='photo_fields'>
 				
 				<div style="float: right; max-width: 150px; text-align: center; vertical-align: bottom;" class="<? if(isset($ss_thumb) && !empty($ss_thumb) && $ss_thumb == $photo->photo_id) {?>wpss_cover_highlight<?}?>" >
-					<img style="width: 130px; height: auto; max-height: 130px;"  id='img_<?php echo $slideshow_id ?>_<?php echo $photo->photo_id?>' class='wpss_photo_thumb' title='Click to replace image' onclick='/*confirmChooseNewPhoto(<?php echo $slideshow_id ?>, <?php echo $photo->photo_id?>);*/' src='<?php echo $photo->thumb_url ?>' /><br />
+					<img style="width: 130px; height: auto; max-height: 130px;"  id='img_<?php echo $slideshow_id ?>_<?php echo $photo->photo_id?>' class='wpss_photo_thumb' title='Click to replace image' onclick='confirmChooseNewPhoto("<?php echo $slideshow_id ?>", <?php echo $photo->photo_id?>);' src='<?php echo $photo->thumb_url ?>' /><br />
 	<? if ($slideshow_id != "single") {?> <div onclick='setCoverImage("<?php echo $slideshow_id ?>", "<?php echo $photo->photo_id?>");' id='cover_button_<?php echo $slideshow_id ?>_<?php echo $photo->photo_id?>' class='button set_cover_button_<?php echo $slideshow_id ?>' style='text-align:center;margin-top:5px;' ><? if(isset($ss_thumb) && !empty($ss_thumb) && $ss_thumb == $photo->photo_id) {?>This is the slideshow thumbnail<?}else{?>Make this the slideshow thumbnail<?}?></div> <? } ?>
 				</div>
 				

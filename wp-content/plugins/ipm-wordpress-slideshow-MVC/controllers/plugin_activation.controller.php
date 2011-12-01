@@ -228,11 +228,38 @@ echo ' hello' ;
 <?php 
 	}
 
-	function getPhoto($pid){		
-		$photo = new IPM_Photo($this, $pid);
+	public function get_wp_photo_id($pid){
+		$wp_photo_id = $this->wpdb->get_var("SELECT wp_photo_id FROM $this->t_p WHERE photo_id=$pid;");
+		return $wp_photo_id;
+	}
+
+	public function getPhoto($pid){
+		$wp_photo_id = $this->get_wp_photo_id($pid);		
+		$photo = new IPM_Photo($this, $wp_photo_id);
 		$temp = $photo->getPhoto_emulator();
-		
 		return $temp;
+	}
+	
+	public function getPhotoTempProperties($pid){
+		$query = "SELECT * FROM 
+					`".$this->t_pmr."` 
+				WHERE 
+					`photo_id` = '".$pid."'
+					";
+		$result = $this->wpdb->get_results($query);
+		$values = array();
+		
+		for($index=0; $index<count($result); $index++)
+		{
+			if($result[$index]->meta_id == 1)
+				$values[1] = stripslashes($result[$index]->meta_value);
+			else if($result[$index]->meta_id == 2)
+				$values[2] = stripslashes($result[$index]->meta_value);
+			else if($result[$index]->meta_id == 3)
+				$values[3] = stripslashes($result[$index]->meta_value);
+		}
+		
+		return $values;
 	}
 
 	
@@ -364,11 +391,16 @@ echo ' hello' ;
 						jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_title\\\\]\").addClass('".$this->plugin_prefix."required');
 						jQuery(\"#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]\").addClass('".$this->plugin_prefix."required');";
 			if($img_id){
-						$oldphoto = $this->getPhoto($img_id);
-						$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_title\\\\]').val(\"".$this->utils->convertquotes($oldphoto['title'])."\");";
-						$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]').val(\"".$this->utils->convertquotes($oldphoto['alt'])."\");";
-						$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_content\\\\]').val(\"".$this->utils->convertquotes($oldphoto['caption'])."\");";
+					
+				//		$oldphoto = $this->getPhoto($img_id);
+				//		$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_title\\\\]').val(\"".$this->utils->convertquotes($oldphoto['title'])."\");";
+				//		$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]').val(\"".$this->utils->convertquotes($oldphoto['alt'])."\");";
+				//		$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_content\\\\]').val(\"".$this->utils->convertquotes($oldphoto['caption'])."\");";
 
+						$oldphoto = $this->getPhotoTempProperties($img_id);
+						$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_title\\\\]').val(\"".$this->utils->convertquotes($oldphoto[1])."\");";
+						$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_excerpt\\\\]').val(\"".$this->utils->convertquotes($oldphoto[2])."\");";
+						$string .= "jQuery('#attachments\\\\[$id\\\\]\\\\[post_content\\\\]').val(\"".$this->utils->convertquotes($oldphoto[3])."\");";
 			}
 			$string .= "  });
 						</script>";

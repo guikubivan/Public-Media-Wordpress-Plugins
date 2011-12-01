@@ -6,11 +6,17 @@ class IPM_Ajax
 {
 	private $plugin;
 	private $wpdb;
+	public $t_p;
+	public $plugin_prefix = 'wpss_';
+	
 	
 	public function __construct($plugin)
 	{
 		$this->plugin = $plugin;
 		$this->wpdb = $plugin->wpdb;
+		
+		$this->t_p = $this->wpdb->prefix.$this->plugin_prefix."photos";
+	
 		
 		add_action('wp_ajax_action_get_coordinates', array(&$this, 'php_get_coordinates'));
 		add_action('wp_ajax_action_get_slideshow', array(&$this, 'php_get_slideshow'));
@@ -178,6 +184,37 @@ class IPM_Ajax
 			die();
 		}
 
+
+		public function php_replace_wp_photo(){
+		$photo_id = $_POST['photo_id'];
+		$wp_photo_id = $_POST['wp_photo_id'];
+		$new_url = $_POST['new_url'];
+		$photo_credit = $_POST['photo_credit'];
+		$geo_location = $_POST['geo_location'];
+		$retStr = '';
+	/*	if($photo_credit=='undefined' || $geo_location=='undefined'){
+			$photo = $this->getPhotoFixedProps($wp_photo_id);
+			$photo_credit = $photo['photo_credit'];
+			$geo_location = $photo['geo_location'];
+			$original_url = $photo['original_url'];
+		}
+	 */
+		//$retStr = "var win = window.dialogArguments || opener || parent || top;";
+		if($photo_id && $wp_photo_id){
+			$result = $this->wpdb->query("UPDATE $this->t_p SET wp_photo_id=$wp_photo_id WHERE photo_id=$photo_id");
+			if($result){
+				$retStr = "'$new_url'";
+				//$retStr .= "slideshowOrganizer.replaceSubItem(currentSlideshowID, $photo_id, '$new_url',\"".$photo_credit."\", \"".$geo_location."\", \"".$original_url."\");";
+			}else{
+				$retStr = 'alert("Photo could not be updated (possibly picked same photo?)");';
+			}
+		}
+
+		die($retStr);
+	}
+
+
+
 //This function is called when a new slideshow needs to be added to the post		
 		function php_add_new_slideshow()
 		{
@@ -324,7 +361,6 @@ class IPM_Ajax
 				}
 			}
 		}
-
 			die($msg);		
 		}
 	

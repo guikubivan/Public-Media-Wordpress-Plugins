@@ -75,6 +75,7 @@ function new_blog($blog_id, $user_id, $domain, $path, $site_id, $meta ) {
 //activate plugin
 add_action('activate_ipm-wordpress-slideshow-MVC/wordpress_slideshow.php', array(&$plugin_activation_object, 'activate'));
 add_action('media_upload_slideshow_image', array(&$slideshow_plugin,'media_upload'));
+add_action('media_upload_replace_wp_image', array(&$slideshow_plugin,'media_upload'));
 
 //admin javacript, css, etc..
 add_action( "admin_print_scripts", array(&$slideshow_plugin, 'admin_print_scripts') );

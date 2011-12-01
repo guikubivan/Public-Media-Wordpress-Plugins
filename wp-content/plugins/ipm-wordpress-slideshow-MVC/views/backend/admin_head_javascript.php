@@ -52,7 +52,7 @@ jQuery(document).ready(function(){
           });
         <?php endif; ?>
         
-          <?php if( preg_match("/post.php/", $_SERVER[ 'REQUEST_URI' ]) 
+        <?php if( preg_match("/post.php/", $_SERVER[ 'REQUEST_URI' ]) 
 				|| preg_match("/post-new.php/", $_SERVER[ 'REQUEST_URI' ]) ): ?>
       
 		jQuery(document).ready(function(){
@@ -344,7 +344,84 @@ jQuery(document).ready(function(){
 		}
 		
 		
+	function confirmChooseNewPhoto(sid, imgID){
+	if(1){
+		if(window.confirm("Do you want to replace this image, but maintain the meta information?")){
+			chooseNewPhoto(sid,imgID);
+		}
+	}else{
+			alert("Please save the post first before replacing this image.");
+	}
+}
+
+function chooseNewPhoto(sid, imgID){
+	currentSlideshowID = sid;
+	//alert(imgID);
+	tb_show('', 'media-upload.php?img_id='+imgID+'&type=replace_wp_image&TB_iframe=true', false);
+
+
+}
+
+function wpss_replace_photo_javascript(photo_id, wp_photo_id, new_url){
+	var win = window.dialogArguments || opener || parent || top;
+	if(typeof(win.currentSlideshowID) !== 'undefined' ){
+	//	pcred = convertquotes(document.getElementById('attachments['+wp_photo_id+'][photo_credit]').value);
+	//	gloc = convertquotes(document.getElementById('attachments['+wp_photo_id+'][geo_location]').value);
+	//	win.ajax_replace_wp_photo(photo_id,wp_photo_id, new_url, pcred, gloc);
+	win.ajax_replace_wp_photo(photo_id,wp_photo_id, new_url);
+		
 	
+		//alert('img_'+win.currentSlideshowID+'_'+photo_id);
+
+
+	}else{alert('No slideshow currently selected.');
+		return;
+	}
+
+	win.tb_remove();
+//	win.resetPhotoJS();
+
+}
+
+function wpss_replace_photo(photo_id, wp_photo_id, new_url){
+	var win = window.dialogArguments || opener || parent || top;
+	if(typeof(win.currentSlideshowID) !== 'undefined' ){
+		win.ajax_replace_wp_photo(photo_id,wp_photo_id, new_url);
+		//alert('img_'+win.currentSlideshowID+'_'+photo_id);
+
+
+	}else{alert('No slideshow currently selected.');
+		return;
+	}
+
+	win.tb_remove();
+//	win.resetPhotoJS();
+}
+
+	function ajax_replace_wp_photo(photo_id, wp_photo_id, new_url, pcred, gloc){
+		   var mysack = new sack( 
+		       "<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );    
+
+		  mysack.execute = 1;
+		  mysack.method = 'POST';
+		  mysack.setVar( "action", "action_replace_wp_photo" );
+		  mysack.setVar( "photo_id", photo_id );
+		  mysack.setVar( "wp_photo_id", wp_photo_id );
+		  mysack.setVar( "new_url", new_url );
+		  mysack.setVar( "photo_credit", pcred );
+		  mysack.setVar( "geo_location", gloc );
+		  mysack.encVar( "cookie", document.cookie, false );
+		  mysack.onCompletion = function (){
+		  jQuery("#img_"+currentSlideshowID+"_"+photo_id).attr('src', new_url);
+					
+		  };
+		  mysack.onError = function() { alert('Ajax error in getting coordinates for given location.' )};	
+		  mysack.runAJAX();
+
+		  return true;
+
+		}
+		
 		
 		//Used for adding images to the slideshow... sets the current_slideshow global and opens the thick box
 		var current_slideshow = "";
