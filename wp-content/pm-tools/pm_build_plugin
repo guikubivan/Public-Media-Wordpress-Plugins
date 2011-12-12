@@ -56,7 +56,7 @@ do
 
     revision=`git describe --always HEAD`
 
-    new_dir="${dir}_rev${revision}"
+    new_dir="${dir}_rev#${revision}"
     cp -a $dir $new_dir
 
     echo "Compressing Javascript - Running any PHP files"
@@ -84,7 +84,7 @@ do
     #get the original foldername
     zipfile=`basename $dir`
     
-    zip -q -r ${ORG_PWD}/${zipfile}_rev${revision} `basename $new_dir`
+    zip -q -r ${ORG_PWD}/${zipfile}_rev\#${revision} `basename $new_dir`
     rm -Rf $new_dir
 
     cd $ORG_PWD
