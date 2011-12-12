@@ -1,9 +1,12 @@
 #!/bin/sh
+ORG_PWD=`pwd`
+SCRIPTPATH="$( cd "$( dirname "$0" )" && pwd )"
+
 die () {
     echo >&2 "$@"
     echo 
     echo Please enter a valid plugin name directory, it must be one of these:
-    find ../plugins/. -maxdepth 1 -type d | grep -o -E '\./[^/]*$' | grep -o -E '[^/]*$'
+    find $SCRIPTPATH/../plugins/. -maxdepth 1 -type d | grep -o -E '\./[^/]*$' | grep -o -E '[^/]*$'
 
     exit 1
 }
@@ -16,7 +19,7 @@ run_php () {
 
 compress_js () {
 #  extension="${1##*.}"
-  java -jar  yuicompressor-2.4.6.jar --type js -o ${1}.new $1
+  java -jar  $SCRIPTPATH/yuicompressor-2.4.6.jar --type js -o ${1}.new $1
   mv ${1}.new $1
 }
 
@@ -40,7 +43,7 @@ compress_css () {
 
   cat $1 >> ${1}.new
 
-  java -jar  yuicompressor-2.4.6.jar --type css -o $1 ${1}.new
+  java -jar $SCRIPTPATH/yuicompressor-2.4.6.jar --type css -o $1 ${1}.new
   rm ${1}.new
 }
 
@@ -51,46 +54,41 @@ while read dir
 do
     [ -d "$dir" ] || die "Directory $dir does not exist"
 
-    #echo $dir
-    #exit 1
-    new_dir="${dir}_build"
+    revision=`git describe --always HEAD`
+
+    new_dir="${dir}_rev${revision}"
     cp -a $dir $new_dir
 
     echo "Compressing Javascript - Running any PHP files"
-    for jsfile in `find ../plugins/${new_dir}/js/*php -type f`; do
+    for jsfile in `find ${new_dir}/js/*php -type f`; do
       echo $jsfile
       run_php $jsfile
     done
 
     echo 
     echo "Compressing Javascript - Running YUI compressor"
-    for jsfile in `find ../plugins/${new_dir}/js/ -type f`; do
+    for jsfile in `find ${new_dir}/js/ -type f`; do
       echo $jsfile
       compress_js $jsfile
     done
 
     echo 
     echo "Compressing CSS"
-    for cssfile in `find ../plugins/${new_dir}/css/ -type f`; do
+    for cssfile in `find ${new_dir}/css/ -type f`; do
       echo $cssfile
       compress_css $cssfile
     done
 
-    cur_dir=`pwd`
-
-    cd ../plugins/
-    zipfile=`echo $dir | grep -E -o '[^/]+$'`
-    revision=`git describe --always HEAD`
-
-    mv $dir ${dir}_current
-    mv $new_dir $dir
+    #zip command references the working directory for it's directory structure
+    cd $SCRIPTPATH/../plugins/
+    #get the original foldername
+    zipfile=`basename $dir`
     
-    zip -q -r ${cur_dir}/${zipfile}_rev#${revision}.zip ${dir##*/}
-    cd $cur_dir
+    zip -q -r ${ORG_PWD}/${zipfile}_rev${revision} `basename $new_dir`
+    rm -Rf $new_dir
 
-    rm -Rf $dir
-    mv ${dir}_current $dir
+    cd $ORG_PWD
 
 done <<EOF
-../plugins/$1
+$SCRIPTPATH/../plugins/$1
 EOF
