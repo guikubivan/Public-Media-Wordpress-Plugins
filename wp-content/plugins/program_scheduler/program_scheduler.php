@@ -321,8 +321,8 @@ if( is_admin() ){
 
   function add_pg_editor_page(){
 	global $helper_schedule;
-	if(current_user_can('edit_plugins')){
-		add_menu_page('Schedules', 'Schedules', "edit_plugins", ABSPATH.PLUGINDIR.'/program_scheduler/admin_manage_stations.php');
+	if(current_user_can('manage_options')){
+		add_menu_page('Schedules', 'Schedules', "manage_options", ABSPATH.PLUGINDIR.'/program_scheduler/admin_manage_stations.php');
 		//$schedules = get_how_option('schedules');
                 //
                 #add pages that are only accessible from Schedules page

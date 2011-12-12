@@ -43,6 +43,8 @@ if(!empty($_POST['schedule_settings_submit'])){
   if(!empty($_POST['schedule_page_name'])){
     update_option($ps_page_option_name, $_POST['schedule_page_name']);
     ps_flush_rewrite_rules();
+  }else{
+    delete_option($ps_page_option_name);
   }
   
 
@@ -131,7 +133,7 @@ if (sizeof($schedules)): ?>
     <p>Select page where you want the schedule to appear. This will modify your wordpress url structure so you can easily access and query the schedule.</p>
     <select name="schedule_page_name">
       <option value="">
-        <?php echo attribute_escape(__('Select page')); ?>
+        <?php echo attribute_escape(__('None')); ?>
       </option>
       <?php
       $pages = get_pages();
