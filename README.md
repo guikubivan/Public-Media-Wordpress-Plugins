@@ -2,6 +2,7 @@
 
 
 * Please use ABSPATH and PLUGINDIR when referencing plugin files. This is because at least Pablo symbolically links the plugins folder from a separate wordpress install (for development purposes).
+* Check each plugins folder for more README notes (program_scheduler only at this moment).
 
 ## Compressing and packaging plugins
 
