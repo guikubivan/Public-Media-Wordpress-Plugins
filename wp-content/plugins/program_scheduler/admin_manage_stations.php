@@ -85,17 +85,16 @@ $default_tzstring = get_option($ps_default_timezone_option_name);
 
 $query = "SELECT * FROM " . $helper_schedule->t_s . " ORDER BY name";
 $schedules = $wpdb->get_results($query);
+?>
 
-if (sizeof($schedules)): ?>
-  <h2>Schedules</h2>
+<h2>Schedules</h2>
 
-  <form action='' method='POST' />
-    <input type='text' name='schedule_name' value='Enter schedule name' onfocus="if(this.defaultValue==this.value) this.value = '';" />
-    <input type='submit' value='Add Schedule' />
-  </form>
+<form action='' method='POST' />
+	<input type='text' name='schedule_name' value='Enter schedule name' onfocus="if(this.defaultValue==this.value) this.value = '';" />
+	<input type='submit' value='Add Schedule' />
+</form>
 
-
-
+<? if (sizeof($schedules)): ?>
   <form action='' method='post'>
     <table>
 
