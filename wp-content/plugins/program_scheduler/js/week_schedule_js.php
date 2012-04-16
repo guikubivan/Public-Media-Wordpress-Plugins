@@ -1493,18 +1493,17 @@ jQuery(function($){
 				//selected: function(event, ui) { var a;},
                                 cancel: "div.calendar_overlay, div.event_details",
 				stop: function(event, ui) {
-                                        //target seems to always be the selectable object, so we can't test if it was a event div
 					if(cur_id > -1 )return;
-                                        target = ui.selectable == undefined ? event.target : ui.selectable
-                                        target = $(target);
-					if(target.find('td.ui-selected:first').length  == 0)return;
+					if($('td.ui-selected:first').length  == 0){
+					    return;
+					}
 
 					/*if(cur_id > -1){
 						toggleFocus(cur_id);
 					}*/
 
-					var sid= target.find('td.ui-selected:first').attr('id');
-					var eid = target.find('td.ui-selected:last').attr('id');
+					var sid= $('td.ui-selected:first').attr('id');
+					var eid = $('td.ui-selected:last').attr('id');
 					sind = sid.split('_');
 					eind = eid.split('_');
 
@@ -1540,8 +1539,6 @@ jQuery(function($){
                                         debug("Creating and drawing temporary event for selected region.")
 					createEvent(div_id, srow, scol, erow, ecol);
 					drawEvent(div_id, true);
-					//target.find('td.ui-selected').removeClass('selectable_cell');
-					//target.find('td.ui-selected').removeClass('ui-selected');
 				}
 
 			});

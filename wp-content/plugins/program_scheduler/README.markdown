@@ -1,3 +1,19 @@
+#Setup
+
+To set up, first activate the plugin. For a multi-sites setup, make sure you activate the plugin in a single site first to create the needed tables, then activate it for all sites.
+
+You can now start managing Schedules and add events to your schedules. You can also change some settings in the settings page, such as in which page you want to output your schedule(s).
+
+To view it on the frontend, you will have to add the following to the header file in your theme to pull the css and js required:
+
+    if(function_exists("ps_frontend_enqueue")) ps_frontend_enqueue();
+ 
+*Note*: The plugin piggy-backs on wordpress' defined jquery libraries, so it probably won't work if you have added your own jquery manually for your frontend. However, you can try to derigester Wordpress' libraries and then register yours before wp_head() is called (see http://codex.wordpress.org/Function_Reference/wp_deregister_script). Basically, wordpress has to know about your jquery libraries. Or if you can try this plugin if you'd like to use google's provided jquery libraries: http://wordpress.org/extend/plugins/use-google-libraries.
+
+#Upgrading from Program Scheduler 1.0
+
+As of now, this plugin is not upgradable from Program Scheduler 1.0. Please delete the previous plugin and remove all related tables.
+
 #Template functions
 
 ##Main Function

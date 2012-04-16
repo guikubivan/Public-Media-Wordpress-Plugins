@@ -93,6 +93,7 @@ add_filter( "the_content", "ps_maybe_show_schedule");
  ************Frontend-only functions********
  *******************************************/
 if ( !is_admin() ) { // instruction to only load if it is not the admin area
+  #I don't think we use this -Pablo
   function ps_frontend_include(){
           echo '<link rel="stylesheet" href="' . get_bloginfo('url') . '/wp-content/plugins/program_scheduler/css/datepicker.css" type="text/css" />'."\n";
           echo '<link rel="stylesheet" href="'. get_bloginfo('url') .'/wp-content/plugins/program_scheduler/css/viewer.css" type="text/css" />'."\n";
