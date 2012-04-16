@@ -4,7 +4,7 @@ To set up, first activate the plugin. For a multi-sites setup, make sure you act
 
 You can now start managing Schedules and add events to your schedules. You can also change some settings in the settings page, such as in which page you want to output your schedule(s).
 
-To view it on the frontend, you will have to add the following to the header file in your theme to pull the css and js required:
+To view it on the frontend, you will have to add the following to the header file in your theme,just before wp_head() is called. This bit of code pulls the css and js required for the frontend:
 
     if(function_exists("ps_frontend_enqueue")) ps_frontend_enqueue();
  
